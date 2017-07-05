@@ -1,0 +1,14 @@
+{
+  "name": "pubgredzone",
+  "version": "1.0.0",
+  "description": "webapp for viewing the most exciting PlayerUnknown's BattleGrounds streams on Twitch",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cullen Taylor",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3"
+  }
+}
