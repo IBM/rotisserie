@@ -7,6 +7,16 @@ function dep_check() {
   fi
 }
 
+function npm_check() {
+  local package="$1"
+  local result=$(npm list | grep "$package" | cut -d' ' -f2 | sed 's/\@..*//')
+
+  if [[ -z "$result" ]]; then
+    echo "ERROR npm dependency not satisfied: $1"
+    exit 1
+  fi
+}
+
 function var_check() {
   local var_name="$1"
   if [[ -z "${!1}" ]]; then
@@ -17,12 +27,14 @@ function var_check() {
 
 function ensure_deps() {
   var_check client_id
+  var_check client_secret
   dep_check convert
   dep_check ffmpeg
   dep_check identify
   dep_check jq
   dep_check node
-  dep_check timeout
+  dep_check gtimeout
+  npm_check express
 }
 
 function main() {
