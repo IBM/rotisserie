@@ -9,6 +9,7 @@
   "author": "Cullen Taylor",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.15.3"
+    "express": "^4.15.3",
+    "twitch-api": "^0.4.6"
   }
 }
