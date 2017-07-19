@@ -7,8 +7,8 @@ const fs = require('fs');
 const app = express();
 
 function listStreams(twitch, callback) {
-  twitch.getStreams([game="PLAYERUNKNOWN\'/S BATTLEGROUNDS"],
-  function(err, body){
+  var parameters = {'game':'PLAYERUNKNOWN\'S BATTLEGROUNDS', 'langauge':'en'};
+  twitch.streams.live(parameters, function(err, body){
     if (err){
       console.log(err);
     }
@@ -20,13 +20,8 @@ function listStreams(twitch, callback) {
 
 function main() {
   // init client and auth with Twitch
-  var TwitchApi = require('twitch-api');
-  var twitch = new TwitchApi({
-      clientId: process.env.client_id,
-      //clientSecret: process.env.client_secret,
-      redirectUri: 'http://localhost',
-      response_type: 'code'
-  });
+  var twitch = require('twitch-api-v5');
+  twitch.clientID = process.env.client_id;
 
   /* TODO: determine if obtaining an access token is required. most likely not.
   var access_token = "";

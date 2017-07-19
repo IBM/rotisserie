@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.15.3",
-    "twitch-api": "^0.4.6"
+    "twitch-api-v5": "^2.0.2"
   }
 }
