@@ -50,13 +50,13 @@ function main() {
   listStreams(twitch, function(response) {
     streams = response;
     console.log(streams);
-    // TODO: pass list of streams to recording function here.
+    // TODO: pass list of streams to recordStreams here.
   });
 
   ensureDir('./streams/clips');
   ensureDir('./streams/screenshots');
 
-  /* TODO: uncomment and serve when writing to index.html is ready.
+  /* TODO: uncomment when writing to index.html is ready.
   //serve index.html
   app.get('*', function (req, res) {
     res.sendFile(__dirname + '/public/index.html')
