@@ -46,18 +46,6 @@ function main() {
   var twitch = require('twitch-api-v5');
   twitch.clientID = process.env.client_id;
 
-  /* TODO: determine if obtaining an access token is required. most likely not.
-  var access_token = "";
-  twitch.getAccessToken(twitch.code, function(err, body){
-    if (err){
-      console.log(err);
-    }
-    else {
-      access_token = body.access_token;
-    }
-  });
-  */
-
   var streams = "";
   listStreams(twitch, function(response) {
     streams = response;
