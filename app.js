@@ -9,10 +9,22 @@ function main() {
   var TwitchApi = require('twitch-api');
   var twitch = new TwitchApi({
       clientId: process.env.client_id,
-      clientSecret: process.env.client_secret,
-      redirectUri: 'localhost',
-      scopes: '']
+      //clientSecret: process.env.client_secret,
+      redirectUri: 'http://localhost',
+      response_type: 'code'
   });
+
+  var access_token = "";
+  twitch.getAccessToken(twitch.code, function(err, body){
+    if (err){
+      console.log(err);
+    }
+    else {
+      access_token = body.access_token;
+    }
+  });
+
+  console.log(access_token);
 
   //serve index.html
   app.get('*', function (req, res) {

@@ -33,7 +33,7 @@ function ensure_deps() {
   dep_check identify
   dep_check jq
   dep_check node
-  dep_check gtimeout
+  dep_check timeout
   npm_check express
 }
 
