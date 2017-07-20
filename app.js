@@ -24,7 +24,7 @@ function ensureDir(dirPath) {
 }
 
 function listStreams(twitch, callback) {
-  var parameters = {'game':'PLAYERUNKNOWN\'S BATTLEGROUNDS', 'langauge':'en'};
+  var parameters = {'game':'PLAYERUNKNOWN\'S BATTLEGROUNDS', 'language':'en'};
   twitch.streams.live(parameters, function(err, body){
     if (err){
       console.log(err);
@@ -35,7 +35,7 @@ function listStreams(twitch, callback) {
   });
 }
 
-function recordStreams(streamName) {
+function recordStream(streamName) {
   const { spawn } = require('child_process');
   const child = spawn('livestreamer', ['-Q', '-f', 'twitch.tv/'+streamName,
                       'best', '-o', './streams/clips/'+streamName])
@@ -46,11 +46,12 @@ function main() {
   var twitch = require('twitch-api-v5');
   twitch.clientID = process.env.client_id;
 
-  var streams = "";
+  // get list of twitch streams and record each one
+  // TODO: only record stream for 1-2 seconds
   listStreams(twitch, function(response) {
-    streams = response;
-    console.log(streams);
-    // TODO: pass list of streams to recordStreams here.
+    for(var stream in response.streams){
+      recordStream(response.streams[stream].channel.display_name)
+    }
   });
 
   ensureDir('./streams/clips');
