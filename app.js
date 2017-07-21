@@ -52,8 +52,10 @@ function main() {
   var twitch = require('twitch-api-v5');
   twitch.clientID = process.env.client_id;
 
+  ensureDir('./streams/clips');
+  ensureDir('./streams/screenshots');
+
   // get list of twitch streams and record each one
-  // TODO: only record stream for 1-2 seconds
   listStreams(twitch, function(response) {
     for(var stream in response.streams){
       var streamName = response.streams[stream].channel.display_name;
@@ -61,9 +63,6 @@ function main() {
       recordStream(streamName);
     }
   });
-
-  ensureDir('./streams/clips');
-  ensureDir('./streams/screenshots');
 
   /* TODO: uncomment when writing to index.html is ready.
   //serve index.html
