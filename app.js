@@ -40,10 +40,19 @@ function recordStream(streamName) {
   const setTimeoutPromise = util.promisify(setTimeout);
   const { spawn } = require('child_process');
   const child = spawn('livestreamer', ['-Q', '-f', 'twitch.tv/'+streamName,
-                      'best', '-o', './streams/clips/'+streamName])
+                      'best', '-o', './streams/clips/' + streamName + '.mp4'])
+  var ffmpeg = require('fluent-ffmpeg');
   setTimeoutPromise(20000).then(() => {
     console.log('stopping recording of stream ' + streamName);
     child.kill('SIGINT');
+    if (fs.existsSync('./streams/clips/' + streamName + '.mp4')) {
+      console.log('taking screenshot')
+      var proc = new ffmpeg('./streams/clips/' + streamName + '.mp4').takeScreenshots({
+        count: 1,
+        folder: './streams/thumbnails',
+        filename: streamName + '.png'
+      });
+    }
   });
 }
 
@@ -53,7 +62,7 @@ function main() {
   twitch.clientID = process.env.client_id;
 
   ensureDir('./streams/clips');
-  ensureDir('./streams/screenshots');
+  ensureDir('./streams/thumbnails');
 
   // get list of twitch streams and record each one
   listStreams(twitch, function(response) {
