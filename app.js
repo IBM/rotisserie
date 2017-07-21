@@ -5,6 +5,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const util = require('util');
 const app = express();
 
 const mkdirSync = function(dirPath) {
@@ -36,9 +37,14 @@ function listStreams(twitch, callback) {
 }
 
 function recordStream(streamName) {
+  const setTimeoutPromise = util.promisify(setTimeout);
   const { spawn } = require('child_process');
   const child = spawn('livestreamer', ['-Q', '-f', 'twitch.tv/'+streamName,
                       'best', '-o', './streams/clips/'+streamName])
+  setTimeoutPromise(20000).then(() => {
+    console.log('stopping recording of stream ' + streamName);
+    child.kill('SIGINT');
+  });
 }
 
 function main() {
@@ -50,7 +56,9 @@ function main() {
   // TODO: only record stream for 1-2 seconds
   listStreams(twitch, function(response) {
     for(var stream in response.streams){
-      recordStream(response.streams[stream].channel.display_name)
+      var streamName = response.streams[stream].channel.display_name;
+      console.log('recording stream ' + streamName);
+      recordStream(streamName);
     }
   });
 
