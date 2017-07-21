@@ -41,7 +41,7 @@ function main() {
   ensure_deps
 
   # start javascript app
-  # node app.js
+  node app.js
 }
 
 main "$@"
