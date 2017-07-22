@@ -43,7 +43,7 @@ function recordStreams(streamsList, clipsDir, callback) {
     var streamName = streamsList.streams[stream].channel.display_name;
     console.log('recording clip of stream: ' + streamName);
     const child = spawn('livestreamer', ['-Q', '-f', 'twitch.tv/' + streamName,
-                        'best', '-o', clipsDir + streamName + '.mp4'])
+                        '720p', '-o', clipsDir + streamName + '.mp4'])
     setTimeout(function() {
       child.kill('SIGINT');
     }, 20000);
@@ -67,9 +67,28 @@ function takeScreenshots(streamsList, clipsDir, thumbnailsDir, callback) {
   return callback('screenshotted all streams');
 }
 
+function cropScreenshots(streamsList, thumbnailsDir, cropsDir, callback) {
+  var gm = require('gm').subClass({imageMagick: true});
+  for(var stream in streamsList.streams){
+    var streamName = streamsList.streams[stream].channel.display_name;
+    console.log('cropping screenshot of stream: ' + streamName);
+    if (fs.existsSync(thumbnailsDir + streamName + '.png')) {
+      var vertPix = gm(thumbnailsDir + streamName + '.png').identify(function (err, data) {
+        if(!err) console.log(data.size.height);
+      });
+
+      gm(thumbnailsDir + streamName + '.png').crop(28, 20, 1190, 25).write(cropsDir + streamName, function(err) {
+        if (!err) console.log('done');
+      });
+    }
+  }
+  return callback('cropped all screenshots');
+}
+
 function main() {
   const clipsDir = "./streams/clips/";
   const thumbnailsDir = "./streams/thumbnails/";
+  const cropsDir = "./streams/crops/";
 
   // init client and auth with Twitch
   var twitch = require('twitch-api-v5');
@@ -77,6 +96,7 @@ function main() {
 
   ensureDir(clipsDir);
   ensureDir(thumbnailsDir);
+  ensureDir(cropsDir);
 
   // get list of twitch streams and record each one
   listStreams(twitch, function(response) {
@@ -88,6 +108,11 @@ function main() {
         console.log(response);
         });
       }, 21000);
+      setTimeout(function() {
+        cropScreenshots(streamsList, thumbnailsDir, cropsDir, function(response){
+          console.log(response);
+        });
+      }, 24000);
     });
   });
 
