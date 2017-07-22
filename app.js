@@ -36,11 +36,12 @@ function listStreams(twitch, callback) {
   });
 }
 
-function recordStream(streamName) {
+function recordStream(streamName, clipsDir) {
   const setTimeoutPromise = util.promisify(setTimeout);
   const { spawn } = require('child_process');
-  const child = spawn('livestreamer', ['-Q', '-f', 'twitch.tv/'+streamName,
-                      'best', '-o', './streams/clips/' + streamName + '.mp4'])
+  const child = spawn('livestreamer', ['-Q', '-f', 'twitch.tv/' + streamName,
+                      'best', '-o', clipsDir + streamName + '.mp4'])
+  console.log('recording clip of stream: ' + streamName);
   setTimeout(function() {
     child.kill('SIGINT');
     takeScreenshot(streamName);
@@ -50,7 +51,7 @@ function recordStream(streamName) {
 function takeScreenshot(streamName) {
   var ffmpeg = require('fluent-ffmpeg');
   if (fs.existsSync('./streams/clips/' + streamName + '.mp4')) {
-    console.log('taking screenshot')
+    console.log('taking screenshot of stream: ' + streamName)
     var proc = new ffmpeg('./streams/clips/' + streamName + '.mp4').takeScreenshots({
       count: 1,
       folder: './streams/thumbnails',
@@ -60,19 +61,21 @@ function takeScreenshot(streamName) {
 }
 
 function main() {
+  const clipsDir = "./streams/clips/";
+  const thumbnailsDir = "./streams/thumbnails/";
+
   // init client and auth with Twitch
   var twitch = require('twitch-api-v5');
   twitch.clientID = process.env.client_id;
 
-  ensureDir('./streams/clips');
-  ensureDir('./streams/thumbnails');
+  ensureDir(clipsDir);
+  ensureDir(thumbnailsDir);
 
   // get list of twitch streams and record each one
   listStreams(twitch, function(response) {
     for(var stream in response.streams){
       var streamName = response.streams[stream].channel.display_name;
-      console.log('recording stream ' + streamName);
-      recordStream(streamName);
+      recordStream(streamName, clipsDir);
     }
   });
 
