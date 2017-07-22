@@ -73,12 +73,8 @@ function cropScreenshots(streamsList, thumbnailsDir, cropsDir, callback) {
     var streamName = streamsList.streams[stream].channel.display_name;
     console.log('cropping screenshot of stream: ' + streamName);
     if (fs.existsSync(thumbnailsDir + streamName + '.png')) {
-      var vertPix = gm(thumbnailsDir + streamName + '.png').identify(function (err, data) {
-        if(!err) console.log(data.size.height);
-      });
-
-      gm(thumbnailsDir + streamName + '.png').crop(28, 20, 1190, 25).write(cropsDir + streamName, function(err) {
-        if (!err) console.log('done');
+      gm(thumbnailsDir + streamName + '.png').crop(28, 20, 1190, 25).write(cropsDir + streamName + '.png', function(err) {
+       if (err) console.log(err);
       });
     }
   }
@@ -110,7 +106,7 @@ function main() {
       }, 21000);
       setTimeout(function() {
         cropScreenshots(streamsList, thumbnailsDir, cropsDir, function(response){
-          console.log(response);
+        console.log(response);
         });
       }, 24000);
     });
