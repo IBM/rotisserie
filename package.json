@@ -12,6 +12,7 @@
     "express": "^4.15.3",
     "fluent-ffmpeg": "^2.1.2",
     "gm": "^1.23.0",
+    "node-tesseract": "^0.2.7",
     "twitch-api-v5": "^2.0.2"
   }
 }
