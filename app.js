@@ -41,19 +41,22 @@ function recordStream(streamName) {
   const { spawn } = require('child_process');
   const child = spawn('livestreamer', ['-Q', '-f', 'twitch.tv/'+streamName,
                       'best', '-o', './streams/clips/' + streamName + '.mp4'])
-  var ffmpeg = require('fluent-ffmpeg');
-  setTimeoutPromise(20000).then(() => {
-    console.log('stopping recording of stream ' + streamName);
+  setTimeout(function() {
     child.kill('SIGINT');
-    if (fs.existsSync('./streams/clips/' + streamName + '.mp4')) {
-      console.log('taking screenshot')
-      var proc = new ffmpeg('./streams/clips/' + streamName + '.mp4').takeScreenshots({
-        count: 1,
-        folder: './streams/thumbnails',
-        filename: streamName + '.png'
-      });
-    }
-  });
+    takeScreenshot(streamName);
+  }, 20000);
+}
+
+function takeScreenshot(streamName) {
+  var ffmpeg = require('fluent-ffmpeg');
+  if (fs.existsSync('./streams/clips/' + streamName + '.mp4')) {
+    console.log('taking screenshot')
+    var proc = new ffmpeg('./streams/clips/' + streamName + '.mp4').takeScreenshots({
+      count: 1,
+      folder: './streams/thumbnails',
+      filename: streamName + '.png'
+    });
+  }
 }
 
 function main() {
