@@ -81,6 +81,24 @@ function cropScreenshots(streamsList, thumbnailsDir, cropsDir, callback) {
   return callback('cropped all screenshots');
 }
 
+function interpretCrops(streamsList, cropsDir, callback) {
+  var tesseract = require('node-tesseract');
+  var options = {
+    psm: 8,
+    binary: '/usr/local/bin/tesseract'
+  };
+
+  for(var stream in streamsList.streams){
+    var streamName = streamsList.streams[stream].channel.display_name;
+    if (fs.existsSync(cropsDir + streamName + '.png')) {
+      tesseract.process(__dirname + cropsDir.replace(".", "") + streamName + '.png', options, function(err, text) {
+        if(err) console.log(err);
+        else console.log(text);
+      });
+    }
+  }
+}
+
 function main() {
   const clipsDir = "./streams/clips/";
   const thumbnailsDir = "./streams/thumbnails/";
@@ -109,6 +127,11 @@ function main() {
         console.log(response);
         });
       }, 24000);
+      setTimeout(function() {
+        interpretCrops(streamsList, cropsDir, function(response){
+        console.log(response);
+        });
+      }, 27000);
     });
   });
 
