@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 
-// TODO: determine logging strategy.
+// built-in requirements
+const fs = require('fs');
+const path = require('path');
+const util = require('util');
 
+// external dependencies
 const express = require('express');
 const ffmpeg = require('fluent-ffmpeg');
-const fs = require('fs');
 const gm = require('gm').subClass({imageMagick: true});
-const path = require('path');
 const { spawn } = require('child_process');
 const twitch = require('twitch-api-v5');
 const tesseract = require('node-tesseract');
-const util = require('util');
 
 const app = express();
 
@@ -32,6 +33,7 @@ function ensureDir(dirPath) {
 
 function listStreams(twitch, callback) {
   var parameters = {'game':'PLAYERUNKNOWN\'S BATTLEGROUNDS', 'language':'en'};
+
   twitch.streams.live(parameters, function(err, body){
     if (err){
       console.log(err);
@@ -46,6 +48,7 @@ function recordStreams(streamsList, clipsDir, callback) {
   for(var stream in streamsList.streams){
     var streamName = streamsList.streams[stream].channel.display_name;
     console.log('recording clip of stream: ' + streamName);
+
     const child = spawn('livestreamer', ['-Q', '-f', 'twitch.tv/' + streamName,
                         '720p', '-o', clipsDir + streamName + '.mp4'])
     setTimeout(function() {
@@ -58,6 +61,7 @@ function recordStreams(streamsList, clipsDir, callback) {
 function takeScreenshots(streamsList, clipsDir, thumbnailsDir, callback) {
   for(var stream in streamsList.streams){
     var streamName = streamsList.streams[stream].channel.display_name;
+
     if (fs.existsSync(clipsDir + streamName + '.mp4')) {
       console.log('taking screenshot of stream: ' + streamName)
       var proc = new ffmpeg(clipsDir + streamName + '.mp4').takeScreenshots({
@@ -74,26 +78,30 @@ function cropScreenshots(streamsList, thumbnailsDir, cropsDir, callback) {
   for(var stream in streamsList.streams){
     var streamName = streamsList.streams[stream].channel.display_name;
     console.log('cropping screenshot of stream: ' + streamName);
+
     if (fs.existsSync(thumbnailsDir + streamName + '.png')) {
-      gm(thumbnailsDir + streamName + '.png').crop(28, 20, 1190, 25).write(cropsDir + streamName + '.png', function(err) {
-       if (err) console.log(err);
-      });
+      gm(thumbnailsDir + streamName + '.png')
+        .crop(28, 20, 1190, 25)
+        .write(cropsDir + streamName + '.png', function(err) {
+          if (err) console.log(err);
+        });
     }
   }
   return callback('cropped all screenshots');
 }
 
-function interpretCrops(cropsDir, file, callback) {
+function interpretCrop(cropsDir, file, callback) {
   var options = {
     psm: 8,
     binary: '/usr/local/bin/tesseract'
   };
 
-  tesseract.process(__dirname + cropsDir.replace(".", "") + file, options, function(err, text) {
+  tesseract.process(__dirname + cropsDir.replace(".", "") + file, options,
+                    function(err, text) {
     var object = {};
     object.name = file.replace(".png", "");
     object.alive = text.replace(/^(?=\n)$|^\s*|\s*$|\n\n+/gm, '');;
-    if(object.alive && !isNaN(object.alive) && parseInt(object.alive, 10)){
+    if(object.alive && !isNaN(object.alive) && parseInt(object.alive, 10)) {
       return callback(object);
     }
   });
@@ -104,7 +112,7 @@ function main() {
   const thumbnailsDir = "./streams/thumbnails/";
   const cropsDir = "./streams/crops/";
 
-  // init client and auth with Twitch
+  // auth with Twitch
   twitch.clientID = process.env.client_id;
 
   ensureDir(clipsDir);
@@ -123,20 +131,21 @@ function main() {
         });
       }, 21000);
       setTimeout(function() {
-        cropScreenshots(streamsList, thumbnailsDir, cropsDir, function(response){
+        cropScreenshots(streamsList, thumbnailsDir, cropsDir, function(response) {
         console.log(response);
         });
       }, 24000);
       setTimeout(function() {
         fs.readdirSync(cropsDir).forEach(file => {
-          interpretCrops(cropsDir, file, function(response){
+          interpretCrop(cropsDir, file, function(response){
             array.push(response);
           });
         });
       }, 27000);
       setTimeout(function() {
         array.sort(function(a, b){return a.alive-b.alive});
-        console.log(array[0].name);
+        console.log(array);
+        console.log('lowest stream: ' + array[0].name);
       }, 29000);
     });
   });
