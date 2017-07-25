@@ -92,8 +92,7 @@ function interpretCrops(streamsList, cropsDir, callback) {
     var streamName = streamsList.streams[stream].channel.display_name;
     if (fs.existsSync(cropsDir + streamName + '.png')) {
       tesseract.process(__dirname + cropsDir.replace(".", "") + streamName + '.png', options, function(err, text) {
-        if(err) console.log(err);
-        else console.log(text);
+        return callback(text.replace(/^(?=\n)$|^\s*|\s*$|\n\n+/gm,''));
       });
     }
   }
@@ -127,11 +126,18 @@ function main() {
         console.log(response);
         });
       }, 24000);
+      var array = [];
       setTimeout(function() {
         interpretCrops(streamsList, cropsDir, function(response){
-        console.log(response);
+          if(response && !isNaN(response)){
+            array.push(response);
+          }
         });
       }, 27000);
+      setTimeout(function() {
+        array.sort(function(a, b){return b-a});
+        console.log(array);
+      }, 29000);
     });
   });
 
