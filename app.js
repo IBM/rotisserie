@@ -81,21 +81,21 @@ function cropScreenshots(streamsList, thumbnailsDir, cropsDir, callback) {
   return callback('cropped all screenshots');
 }
 
-function interpretCrops(streamsList, cropsDir, callback) {
+function interpretCrops(cropsDir, file, callback) {
   var tesseract = require('node-tesseract');
   var options = {
     psm: 8,
     binary: '/usr/local/bin/tesseract'
   };
 
-  for(var stream in streamsList.streams){
-    var streamName = streamsList.streams[stream].channel.display_name;
-    if (fs.existsSync(cropsDir + streamName + '.png')) {
-      tesseract.process(__dirname + cropsDir.replace(".", "") + streamName + '.png', options, function(err, text) {
-        return callback(text.replace(/^(?=\n)$|^\s*|\s*$|\n\n+/gm,''));
-      });
+  tesseract.process(__dirname + cropsDir.replace(".", "") + file, options, function(err, text) {
+    var object = {};
+    object.name = file.replace(".png", "");
+    object.alive = text.replace(/^(?=\n)$|^\s*|\s*$|\n\n+/gm, '');;
+    if(object.alive && !isNaN(object.alive)){
+      return callback(object);
     }
-  }
+  });
 }
 
 function main() {
@@ -114,6 +114,7 @@ function main() {
   // get list of twitch streams and record each one
   listStreams(twitch, function(response) {
     var streamsList = response;
+    var array = [];
     recordStreams(streamsList, clipsDir, function(response) {
       console.log(response);
       setTimeout(function() {
@@ -126,17 +127,16 @@ function main() {
         console.log(response);
         });
       }, 24000);
-      var array = [];
       setTimeout(function() {
-        interpretCrops(streamsList, cropsDir, function(response){
-          if(response && !isNaN(response)){
+        fs.readdirSync(cropsDir).forEach(file => {
+          interpretCrops(cropsDir, file, function(response){
             array.push(response);
-          }
+          });
         });
       }, 27000);
       setTimeout(function() {
-        array.sort(function(a, b){return b-a});
-        console.log(array);
+        array.sort(function(a, b){return b.alive-a.alive});
+        console.log(array[0].name);
       }, 29000);
     });
   });
