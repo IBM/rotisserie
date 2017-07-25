@@ -3,9 +3,15 @@
 // TODO: determine logging strategy.
 
 const express = require('express');
+const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
+const gm = require('gm').subClass({imageMagick: true});
 const path = require('path');
+const { spawn } = require('child_process');
+const twitch = require('twitch-api-v5');
+const tesseract = require('node-tesseract');
 const util = require('util');
+
 const app = express();
 
 const mkdirSync = function(dirPath) {
@@ -37,8 +43,6 @@ function listStreams(twitch, callback) {
 }
 
 function recordStreams(streamsList, clipsDir, callback) {
-  const setTimeoutPromise = util.promisify(setTimeout);
-  const { spawn } = require('child_process');
   for(var stream in streamsList.streams){
     var streamName = streamsList.streams[stream].channel.display_name;
     console.log('recording clip of stream: ' + streamName);
@@ -52,7 +56,6 @@ function recordStreams(streamsList, clipsDir, callback) {
 }
 
 function takeScreenshots(streamsList, clipsDir, thumbnailsDir, callback) {
-  var ffmpeg = require('fluent-ffmpeg');
   for(var stream in streamsList.streams){
     var streamName = streamsList.streams[stream].channel.display_name;
     if (fs.existsSync(clipsDir + streamName + '.mp4')) {
@@ -68,7 +71,6 @@ function takeScreenshots(streamsList, clipsDir, thumbnailsDir, callback) {
 }
 
 function cropScreenshots(streamsList, thumbnailsDir, cropsDir, callback) {
-  var gm = require('gm').subClass({imageMagick: true});
   for(var stream in streamsList.streams){
     var streamName = streamsList.streams[stream].channel.display_name;
     console.log('cropping screenshot of stream: ' + streamName);
@@ -82,7 +84,6 @@ function cropScreenshots(streamsList, thumbnailsDir, cropsDir, callback) {
 }
 
 function interpretCrops(cropsDir, file, callback) {
-  var tesseract = require('node-tesseract');
   var options = {
     psm: 8,
     binary: '/usr/local/bin/tesseract'
@@ -92,7 +93,7 @@ function interpretCrops(cropsDir, file, callback) {
     var object = {};
     object.name = file.replace(".png", "");
     object.alive = text.replace(/^(?=\n)$|^\s*|\s*$|\n\n+/gm, '');;
-    if(object.alive && !isNaN(object.alive)){
+    if(object.alive && !isNaN(object.alive) && parseInt(object.alive, 10)){
       return callback(object);
     }
   });
@@ -104,7 +105,6 @@ function main() {
   const cropsDir = "./streams/crops/";
 
   // init client and auth with Twitch
-  var twitch = require('twitch-api-v5');
   twitch.clientID = process.env.client_id;
 
   ensureDir(clipsDir);
@@ -135,7 +135,7 @@ function main() {
         });
       }, 27000);
       setTimeout(function() {
-        array.sort(function(a, b){return b.alive-a.alive});
+        array.sort(function(a, b){return a.alive-b.alive});
         console.log(array[0].name);
       }, 29000);
     });
