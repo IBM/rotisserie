@@ -8,7 +8,7 @@ notifications:
   email: false
 
 before_install:
-  - npm install i -g eslint
+  - npm install i -g eslint eslint-config-google
 
 install:
   - npm install .
