@@ -14,5 +14,6 @@
     "gm": "^1.23.0",
     "node-tesseract": "git+ssh://git@github.com/desmondmorris/node-tesseract.git",
     "twitch-api-v5": "^2.0.2"
-  }
+  },
+  "devDependencies": {}
 }
