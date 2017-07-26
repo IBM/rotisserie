@@ -1,5 +1,7 @@
 # pubgredzone
 
+[![Build Status](https://travis-ci.org/eggshell/pubgredzone.svg?branch=master)](https://travis-ci.org/eggshell/pubgredzone)
+
 Continuation/reiteration and port from BASH to node.js of [top-streams-player-unknown-battlegrounds](https://github.com/nibalizer/top-streams-player-unknown-battlegrounds).
 
 pubgredzone takes the concept of the [red zone](https://en.wikipedia.org/wiki/Red_zone_(gridiron_football))
