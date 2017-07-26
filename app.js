@@ -8,19 +8,13 @@ const path = require("path");
 const express = require("express");
 const FFMpeg = require("fluent-ffmpeg");
 const gm = require("gm").subClass({imageMagick: true});
+const Handlebars = require("handlebars");
 const {spawn} = require("child_process");
 const twitch = require("twitch-api-v5");
 const tesseract = require("node-tesseract");
 
+// construct express app
 const app = express();
-
-const mkdirSync = function(dirPath) {
-  try {
-    fs.mkdirSync(dirPath);
-  } catch (err) {
-    if (err.code !== "EEXIST") throw err;
-  }
-};
 
 /**
  * Ensures given filesystem directory if it does not exist.
@@ -29,6 +23,13 @@ const mkdirSync = function(dirPath) {
  */
 function ensureDir(dirPath) {
   const parts = dirPath.split(path.sep);
+  const mkdirSync = function(dirPath) {
+    try {
+      fs.mkdirSync(dirPath);
+    } catch (err) {
+      if (err.code !== "EEXIST") throw err;
+    }
+  };
 
   for (let i = 1; i <= parts.length; i++) {
     mkdirSync(path.join.apply(null, parts.slice(0, i)));
@@ -167,6 +168,31 @@ function interpretCrop(cropsDir, file, callback) {
 }
 
 /**
+ * Templates public/index.html and writes it to disk.
+ * @callback {function} - call to console.error or console.log from writeFile.
+ * @param {string} streamName - name of stream with lowest number of players
+ * alive as determined by logic in main.
+ * @param {requestCallback} callback - The callback that handles the response.
+ */
+function writeIndex(streamName, callback) {
+  const source = "<iframe src='http://player.twitch.tv/?channel=${{stream}}' " +
+                 "height='720' " + "width='1280' " + "frameborder='0' " +
+                 "scrolling='no' " + "allowfullscreen='true'></iframe>" +
+                 "<script type='text/javascript' " +
+                 "src='http://livejs.com/live.js'></script>";
+  const template = Handlebars.compile(source);
+  const data = {"stream": streamName};
+  const result = template(data);
+
+  fs.writeFile("./public/index.html", (result), (err) => {
+    if (err) {
+      return console.error("Failed to template index.html");
+    }
+    return console.log("Successfully templated index.html");
+  });
+}
+
+/**
  * Runs logic to get lowest stream and starts express app server.
  */
 function main() {
@@ -215,6 +241,7 @@ function main() {
         });
         console.log(array);
         console.log("lowest stream: " + array[0].name);
+        writeIndex(array[0].name);
       }, 29000);
     });
   });
