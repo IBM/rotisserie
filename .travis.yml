@@ -1,0 +1,16 @@
+---
+dist: trusty
+language: node_js
+node_js:
+  - "node"
+
+notifications:
+  email: false
+
+before_install:
+  - npm install i -g eslint
+
+install:
+  - npm install .
+
+script: eslint .
