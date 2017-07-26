@@ -26,6 +26,5 @@ module.exports = {
             "always"
         ],
         "guard-for-in": 0,
-        "require-jsdoc": 0
     }
 };

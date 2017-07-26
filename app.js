@@ -22,6 +22,11 @@ const mkdirSync = function(dirPath) {
   }
 };
 
+/**
+ * Ensures given filesystem directory if it does not exist.
+ * @param {string} dirPath - Relative or absolute path to
+ * desired directory.
+ */
 function ensureDir(dirPath) {
   const parts = dirPath.split(path.sep);
 
@@ -30,6 +35,13 @@ function ensureDir(dirPath) {
   }
 }
 
+/**
+ * Gets list of PUBG streams from Twitch API v5.
+ * @callback {object} body - JSON object from Twitch API call. Contains list
+ * of English language PUBG streams and their associated metadata.
+ * @param {string} twitch - Authenticated Twitch client object.
+ * @param {requestCallback} callback - The callback that handles the response.
+ */
 function listStreams(twitch, callback) {
   let parameters = {"game": "PLAYERUNKNOWN\'S BATTLEGROUNDS", "language": "en"};
 
@@ -39,6 +51,18 @@ function listStreams(twitch, callback) {
   });
 }
 
+/**
+ * Records short clip of each stream gathered in listStreams.
+ * @callback {string} - log message indicating all streams have a clip
+ * recorded.
+ * @param {object} streamsList - JSON object containing list of streams
+ * and their associated metadata.
+ * @param {string} clipsDir - Relative path to directory containing short
+ * recorded clips of each stream in streamsList.
+ * @param {requestCallback} callback - The callback that handles the response.
+ * @return {requestCallback} callback - The callback that sends the log
+ * message.
+ */
 function recordStreams(streamsList, clipsDir, callback) {
   for (let stream in streamsList.streams) {
     let streamName = streamsList.streams[stream].channel.display_name;
@@ -53,6 +77,20 @@ function recordStreams(streamsList, clipsDir, callback) {
   return callback("recorded all streams");
 }
 
+/**
+ * Takes screenshots of all clips recorded in recordStreams.
+ * @callback {string} - log message indicating all clips have had a screenshot
+ * taken from them.
+ * @param {object} streamsList - JSON object containing list of streams
+ * and their associated metadata.
+ * @param {string} clipsDir - Relative path to directory containing short
+ * recorded clips of each stream in streamsList.
+ * @param {string} thumbnailsDir - Relative path to directory containing
+ * screenshots of each clip recorded in recordStreams.
+ * @param {requestCallback} callback - The callback that handles the response.
+ * @return {requestCallback} callback - The callback that sends the log
+ * message.
+ */
 function takeScreenshots(streamsList, clipsDir, thumbnailsDir, callback) {
   for (let stream in streamsList.streams) {
     let streamName = streamsList.streams[stream].channel.display_name;
@@ -66,9 +104,24 @@ function takeScreenshots(streamsList, clipsDir, thumbnailsDir, callback) {
       });
     }
   }
-  return callback("screenshotted all streams");
+  return callback("took screenshots all streams");
 }
 
+/**
+ * Crops all screenshots taken in takeScreenshots to just the area containing
+ * the number of players alive in-game.
+ * @callback {string} - log message indicating all screenshots have been
+ * cropped.
+ * @param {object} streamsList - JSON object containing list of streams
+ * and their associated metadata.
+ * @param {string} thumbnailsDir - Relative path to directory containing
+ * screenshots of each clip recorded in recordStreams.
+ * @param {string} cropsDir - Relative path to directory containing cropped
+ * versions of all screenshots taken in takeScreenshots.
+ * @param {requestCallback} callback - The callback that handles the response.
+ * @return {requestCallback} callback - The callback that sends the log
+ * message.
+ */
 function cropScreenshots(streamsList, thumbnailsDir, cropsDir, callback) {
   for (let stream in streamsList.streams) {
     let streamName = streamsList.streams[stream].channel.display_name;
@@ -85,6 +138,17 @@ function cropScreenshots(streamsList, thumbnailsDir, cropsDir, callback) {
   return callback("cropped all screenshots");
 }
 
+/**
+ * Uses Tesseract OCR software to interpret the number in each cropped
+ * screenshot created in cropScreenshots.
+ * @callback {object} - object containing the name of the stream and its
+ * associated number of players alive.
+ * @param {string} cropsDir - Relative path to directory containing cropped
+ * versions of all screenshots taken in takeScreenshots.
+ * @param {string} file - filename of cropped screenshot to interpret. Gained
+ * from readdirSync call in runner.
+ * @param {requestCallback} callback - The callback that handles the response.
+ */
 function interpretCrop(cropsDir, file, callback) {
   const options = {
     psm: 8,
@@ -102,6 +166,9 @@ function interpretCrop(cropsDir, file, callback) {
     });
 }
 
+/**
+ * Runs logic to get lowest stream and starts express app server.
+ */
 function main() {
   const clipsDir = "./streams/clips/";
   const thumbnailsDir = "./streams/thumbnails/";
@@ -144,7 +211,7 @@ function main() {
 
       setTimeout(function() {
         array.sort(function(a, b) {
-          return a.alive-b.alive;
+          return a.alive - b.alive;
         });
         console.log(array);
         console.log("lowest stream: " + array[0].name);
