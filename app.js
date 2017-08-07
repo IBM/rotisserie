@@ -153,7 +153,6 @@ function cropScreenshots(streamsList, thumbnailsDir, cropsDir, callback) {
 function interpretCrop(cropsDir, file, callback) {
   const options = {
     psm: 8,
-    binary: "/usr/local/bin/tesseract",
   };
 
   tesseract.process(__dirname + cropsDir.replace(".", "") + file, options,
