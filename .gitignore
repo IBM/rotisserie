@@ -1,5 +1,8 @@
 streams/
 
+# Nodejs
+node_modules
+
 # Ignore macOS files
 *.DS_Store
 .AppleDouble
