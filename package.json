@@ -19,7 +19,8 @@
     "handlebars": "^4.0.10",
     "node-tesseract": "https://github.com/desmondmorris/node-tesseract.git",
     "node-uuid": "^1.4.8",
-    "twitch-api-v5": "^2.0.2"
+    "twitch-api-v5": "^2.0.2",
+    "workerpool": "^2.2.2"
   },
   "devDependencies": {}
 }
