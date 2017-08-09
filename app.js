@@ -117,7 +117,7 @@ function getLowestStream(pool, cropsDir) {
       });
       console.log(array);
       console.log("lowest stream: " + array[0].name);
-      setCurrentStream(array[0].name);
+      setCurrentStream(array[0]);
     }, 12000);
   });
 }
@@ -127,9 +127,10 @@ function getLowestStream(pool, cropsDir) {
  * getLowestStream.
  * @param {string} streamName - name of stream to set twitch player to.
  */ // eslint-disable-next-line no-unused-vars
-function setCurrentStream(streamName) {
-  currentStream["stream_name"] = streamName;
-  currentStream["stream_url"] = "https://player.twitch.tv/?channel=" + streamName;
+function setCurrentStream(stream) {
+  currentStream["stream_name"] = stream.name;
+  currentStream["alive"] = stream.alive;
+  currentStream["stream_url"] = "https://player.twitch.tv/?channel=" + stream.name;
   currentStream["updated"] = (new Date()).toJSON();
 }
 
