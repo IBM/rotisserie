@@ -11,7 +11,7 @@ $(document).ready(function() {
       console.log(currentStream);
       if (currentStream != data["stream_url"]) {
         $("#twitch_iframe").prop("src", data["stream_url"]);
-        $("#streamer_name").text(data["stream_name"]);
+        $("#streamer_name").text(data["stream_name"] + " - " + data["alive"]);
       }
     });
   }
