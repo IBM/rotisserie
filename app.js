@@ -6,7 +6,6 @@ const path = require("path");
 
 // external dependencies
 const express = require("express");
-const Handlebars = require("handlebars");
 const tesseract = require("node-tesseract");
 const twitch = require("twitch-api-v5");
 const workerpool = require("workerpool");
@@ -14,8 +13,7 @@ const workerpool = require("workerpool");
 // construct express app
 const app = express();
 
-var current_stream = { "stream_name": "foo",
-                       "stream_url": "https://example.com"};
+let currentStream = {"stream_name": "foo", "stream_url": "https://example.com"};
 
 /**
  * Ensures given filesystem directory if it does not exist.
@@ -81,12 +79,13 @@ function interpretCrop(cropsDir, file, callback) {
     });
 }
 
-function set_current_stream(streamName){
-  current_stream['stream_name'] = streamName;
-  current_stream['stream_url'] = "https://player.twitch.tv/?channel=" + streamName;
-  current_stream['updated'] = (new Date()).toJSON();
-}
-
+/**
+ * Runner for listing streams and firing up a worker for each of those streams
+ * to handle the stream processing.
+ * @param {object} pool - pool of workers to offload stream processing tasks on.
+ * @param {string} cropsDir - path to directory containing cropped thumbnails
+ * containing the number of players alive.
+ */
 function getLowestStream(pool, cropsDir) {
   // get list of twitch streams and record each one
   listStreams(twitch, function(response) {
@@ -118,9 +117,20 @@ function getLowestStream(pool, cropsDir) {
       });
       console.log(array);
       console.log("lowest stream: " + array[0].name);
-      set_current_stream(array[0].name);
+      setCurrentStream(array[0].name);
     }, 12000);
   });
+}
+
+/**
+ * Sets webpage to stream with lowest number of players alive, determined by
+ * getLowestStream.
+ * @param {string} streamName - name of stream to set twitch player to.
+ */ // eslint-disable-next-line no-unused-vars
+function setCurrentStream(streamName) {
+  currentStream["stream_name"] = streamName;
+  currentStream["stream_url"] = "https://player.twitch.tv/?channel=" + streamName;
+  currentStream["updated"] = (new Date()).toJSON();
 }
 
 /**
@@ -139,7 +149,10 @@ function main() {
   ensureDir(thumbnailsDir);
   ensureDir(cropsDir);
 
+  // init website with lowest stream.
   getLowestStream(pool, cropsDir);
+
+  // continue searching for lowest stream every 15 seconds.
   setInterval(function() {
     getLowestStream(pool, cropsDir);
   }, 15000);
@@ -151,11 +164,10 @@ function main() {
 
   // serve current stream url
   app.get("/current", function(req, res) {
-    res.json(current_stream);
+    res.json(currentStream);
   });
 
-  app.use(express.static('public'));
-
+  app.use(express.static("public"));
 
   // start http server and log success
   app.listen(3000, function() {
