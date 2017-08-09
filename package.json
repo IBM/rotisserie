@@ -8,9 +8,9 @@
   },
   "author": "Cullen Taylor",
   "license": "ISC",
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/eggshell/pubgredzone.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eggshell/pubgredzone.git"
   },
   "dependencies": {
     "express": "^4.15.3",
