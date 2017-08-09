@@ -14,6 +14,9 @@ const workerpool = require("workerpool");
 // construct express app
 const app = express();
 
+var current_stream = { "stream_name": "foo",
+                       "stream_url": "https://example.com"};
+
 /**
  * Ensures given filesystem directory if it does not exist.
  * @param {string} dirPath - Relative or absolute path to
@@ -78,47 +81,13 @@ function interpretCrop(cropsDir, file, callback) {
     });
 }
 
-/**
- * Templates public/index.html and writes it to disk.
- * @callback {function} - call to console.error or console.log from writeFile.
- * @param {string} streamName - name of stream with lowest number of players
- * alive as determined by logic in main.
- * @param {requestCallback} callback - The callback that handles the response.
- */
-function writeIndex(streamName, callback) {
-  const source = "<iframe src='http://player.twitch.tv/?channel=${{stream}}' " +
-                 "height='720' " + "width='1280' " + "frameborder='0' " +
-                 "scrolling='no' " + "allowfullscreen='true'></iframe>" +
-                 "<script type='text/javascript' " +
-                 "src='http://livejs.com/live.js'></script>";
-  const template = Handlebars.compile(source);
-  const data = {"stream": streamName};
-  const result = template(data);
-
-  fs.writeFile("./public/index.html", (result), (err) => {
-    if (err) {
-      return console.error("Failed to template index.html");
-    }
-    return console.log("Successfully templated index.html");
-  });
+function set_current_stream(streamName){
+  current_stream['stream_name'] = streamName;
+  current_stream['stream_url'] = "https://player.twitch.tv/?channel=" + streamName;
+  current_stream['updated'] = (new Date()).toJSON();
 }
 
-/**
- * Runs logic to get lowest stream and starts express app server.
- */
-function main() {
-  const clipsDir = "./streams/clips/";
-  const thumbnailsDir = "./streams/thumbnails/";
-  const cropsDir = "./streams/crops/";
-  let pool = workerpool.pool(__dirname + "/worker.js");
-
-  // auth with Twitch
-  twitch.clientID = process.env.client_id;
-
-  ensureDir(clipsDir);
-  ensureDir(thumbnailsDir);
-  ensureDir(cropsDir);
-
+function getLowestStream(pool, cropsDir) {
   // get list of twitch streams and record each one
   listStreams(twitch, function(response) {
     let streamsList = response;
@@ -149,14 +118,44 @@ function main() {
       });
       console.log(array);
       console.log("lowest stream: " + array[0].name);
-      writeIndex(array[0].name);
+      set_current_stream(array[0].name);
     }, 12000);
   });
+}
+
+/**
+ * Runs logic to get lowest stream and starts express app server.
+ */
+function main() {
+  const clipsDir = "./streams/clips/";
+  const thumbnailsDir = "./streams/thumbnails/";
+  const cropsDir = "./streams/crops/";
+  let pool = workerpool.pool(__dirname + "/worker.js");
+
+  // auth with Twitch
+  twitch.clientID = process.env.client_id;
+
+  ensureDir(clipsDir);
+  ensureDir(thumbnailsDir);
+  ensureDir(cropsDir);
+
+  getLowestStream(pool, cropsDir);
+  setInterval(function() {
+    getLowestStream(pool, cropsDir);
+  }, 15000);
 
   // serve index.html
-  app.get("*", function(req, res) {
+  app.get("/", function(req, res) {
     res.sendFile(__dirname + "/public/index.html");
   });
+
+  // serve current stream url
+  app.get("/current", function(req, res) {
+    res.json(current_stream);
+  });
+
+  app.use(express.static('public'));
+
 
   // start http server and log success
   app.listen(3000, function() {
