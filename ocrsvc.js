@@ -10,6 +10,14 @@ var tmpdir = require('os').tmpdir(); // let the os take care of removing zombie 
 var fs = require('fs');
 const app = express();
 
+app.get('/info', function (req, res) {
+  result = {
+    "app": "ocrsvc",
+    "version": "0.1",
+    "health": "good"
+  }
+  res.json(result);
+});
 
 app.post('/process', upload.single('image'), function (req, res, next) {
   console.log(req.file);
