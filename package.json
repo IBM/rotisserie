@@ -16,7 +16,6 @@
     "express": "^4.15.3",
     "fluent-ffmpeg": "^2.1.2",
     "gm": "^1.23.0",
-    "handlebars": "^4.0.10",
     "node-tesseract": "https://github.com/desmondmorris/node-tesseract.git",
     "node-uuid": "^1.4.8",
     "twitch-api-v5": "^2.0.2",
