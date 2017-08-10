@@ -16,7 +16,7 @@ const workerpool = require("workerpool");
 function recordStream(streamName, clipsDir) {
   console.log("recording clip of stream: " + streamName);
   const child = spawn("livestreamer", ["-Q", "-f", "--twitch-oauth-token",
-    process.env.client_id, "twitch.tv/" + streamName,
+    process.env.token, "twitch.tv/" + streamName,
     "720p", "-o", clipsDir + streamName + ".mp4"]);
   setTimeout(function() {
     child.kill("SIGINT");

@@ -125,8 +125,9 @@ function getLowestStream(pool, cropsDir) {
 /**
  * Sets webpage to stream with lowest number of players alive, determined by
  * getLowestStream.
- * @param {string} streamName - name of stream to set twitch player to.
- */ // eslint-disable-next-line no-unused-vars
+ * @param {object} stream - object containing name of string and number of
+ * players alive.
+ */
 function setCurrentStream(stream) {
   currentStream["stream_name"] = stream.name;
   currentStream["alive"] = stream.alive;
@@ -144,7 +145,7 @@ function main() {
   let pool = workerpool.pool(__dirname + "/worker.js");
 
   // auth with Twitch
-  twitch.clientID = process.env.client_id;
+  twitch.clientID = process.env.token;
 
   ensureDir(clipsDir);
   ensureDir(thumbnailsDir);
