@@ -30,6 +30,31 @@ app.post('/process', upload.single('image'), function (req, res, next) {
   });
 });
 
+app.post('/process_pubg', upload.single('image'), function (req, res, next) {
+  console.log(req.file);
+  var output = path.resolve(tmpdir, 'ocr-svc-' + uuid.v4());
+  fs.writeFile(output, req.file.buffer, function(err) {
+    if(err) {
+      return console.log(err);
+    }
+    console.log("The file was saved as " + output);
+  });
+  const options = {
+    psm: 8,
+  };
+  tesseract.process(output, options, function(err, text) {
+    var number = parseFloat(text.trim());
+    if ( isNaN(number) ) {
+      number = 100;
+    }
+    var result = {
+      "number": number,
+    }
+    console.log(result);
+    res.json(result);
+  });
+});
+
 
 // start http server and log success
 app.listen(3000, function() {
