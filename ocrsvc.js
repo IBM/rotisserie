@@ -50,7 +50,14 @@ app.post('/process', upload.single('image'), function (req, res, next) {
     }
     console.log("The file was saved as " + output);
   });
-  res.send("Neat!");
+  const options = {
+    psm: 8,
+  };
+  tesseract.process(output, options, function(err, text) {
+    result = "Detected Text: " + text.trim() + "\n";
+    console.log(result);
+    res.send(result);
+  });
 });
 
 
