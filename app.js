@@ -6,15 +6,14 @@ const path = require("path");
 
 // external dependencies
 const express = require("express");
-const FFMpeg = require("fluent-ffmpeg");
-const gm = require("gm").subClass({imageMagick: true});
-const Handlebars = require("handlebars");
-const {spawn} = require("child_process");
-const twitch = require("twitch-api-v5");
 const tesseract = require("node-tesseract");
+const twitch = require("twitch-api-v5");
+const workerpool = require("workerpool");
 
 // construct express app
 const app = express();
+
+let currentStream = {"stream_name": "foo", "stream_url": "https://example.com"};
 
 /**
  * Ensures given filesystem directory if it does not exist.
@@ -53,99 +52,12 @@ function listStreams(twitch, callback) {
 }
 
 /**
- * Records short clip of each stream gathered in listStreams.
- * @callback {string} - log message indicating all streams have a clip
- * recorded.
- * @param {object} streamsList - JSON object containing list of streams
- * and their associated metadata.
- * @param {string} clipsDir - Relative path to directory containing short
- * recorded clips of each stream in streamsList.
- * @param {requestCallback} callback - The callback that handles the response.
- * @return {requestCallback} callback - The callback that sends the log
- * message.
- */
-function recordStreams(streamsList, clipsDir, callback) {
-  for (let stream in streamsList.streams) {
-    let streamName = streamsList.streams[stream].channel.display_name;
-    console.log("recording clip of stream: " + streamName);
-
-    const child = spawn("livestreamer", ["-Q", "-f", "twitch.tv/" + streamName,
-      "720p", "-o", clipsDir + streamName + ".mp4"]);
-    setTimeout(function() {
-      child.kill("SIGINT");
-    }, 20000);
-  }
-  return callback("recorded all streams");
-}
-
-/**
- * Takes screenshots of all clips recorded in recordStreams.
- * @callback {string} - log message indicating all clips have had a screenshot
- * taken from them.
- * @param {object} streamsList - JSON object containing list of streams
- * and their associated metadata.
- * @param {string} clipsDir - Relative path to directory containing short
- * recorded clips of each stream in streamsList.
- * @param {string} thumbnailsDir - Relative path to directory containing
- * screenshots of each clip recorded in recordStreams.
- * @param {requestCallback} callback - The callback that handles the response.
- * @return {requestCallback} callback - The callback that sends the log
- * message.
- */
-function takeScreenshots(streamsList, clipsDir, thumbnailsDir, callback) {
-  for (let stream in streamsList.streams) {
-    let streamName = streamsList.streams[stream].channel.display_name;
-
-    if (fs.existsSync(clipsDir + streamName + ".mp4")) {
-      console.log("taking screenshot of stream: " + streamName);
-      new FFMpeg(clipsDir + streamName + ".mp4").takeScreenshots({
-        count: 1,
-        folder: thumbnailsDir,
-        filename: streamName + ".png",
-      });
-    }
-  }
-  return callback("took screenshots all streams");
-}
-
-/**
- * Crops all screenshots taken in takeScreenshots to just the area containing
- * the number of players alive in-game.
- * @callback {string} - log message indicating all screenshots have been
- * cropped.
- * @param {object} streamsList - JSON object containing list of streams
- * and their associated metadata.
- * @param {string} thumbnailsDir - Relative path to directory containing
- * screenshots of each clip recorded in recordStreams.
- * @param {string} cropsDir - Relative path to directory containing cropped
- * versions of all screenshots taken in takeScreenshots.
- * @param {requestCallback} callback - The callback that handles the response.
- * @return {requestCallback} callback - The callback that sends the log
- * message.
- */
-function cropScreenshots(streamsList, thumbnailsDir, cropsDir, callback) {
-  for (let stream in streamsList.streams) {
-    let streamName = streamsList.streams[stream].channel.display_name;
-    console.log("cropping screenshot of stream: " + streamName);
-
-    if (fs.existsSync(thumbnailsDir + streamName + ".png")) {
-      gm(thumbnailsDir + streamName + ".png")
-        .crop(28, 20, 1190, 25)
-        .write(cropsDir + streamName + ".png", function(err) {
-          if (err) console.log(err);
-        });
-    }
-  }
-  return callback("cropped all screenshots");
-}
-
-/**
  * Uses Tesseract OCR software to interpret the number in each cropped
  * screenshot created in cropScreenshots.
  * @callback {object} - object containing the name of the stream and its
  * associated number of players alive.
  * @param {string} cropsDir - Relative path to directory containing cropped
- * versions of all screenshots taken in takeScreenshots.
+ * versions of all screenshots taken in takeScreenshot.
  * @param {string} file - filename of cropped screenshot to interpret. Gained
  * from readdirSync call in runner.
  * @param {requestCallback} callback - The callback that handles the response.
@@ -155,6 +67,7 @@ function interpretCrop(cropsDir, file, callback) {
     psm: 8,
   };
 
+  console.log("interpreting: " + __dirname + cropsDir.replace(".", "") + file);
   tesseract.process(__dirname + cropsDir.replace(".", "") + file, options,
     function(err, text) {
       let object = {};
@@ -167,28 +80,59 @@ function interpretCrop(cropsDir, file, callback) {
 }
 
 /**
- * Templates public/index.html and writes it to disk.
- * @callback {function} - call to console.error or console.log from writeFile.
- * @param {string} streamName - name of stream with lowest number of players
- * alive as determined by logic in main.
- * @param {requestCallback} callback - The callback that handles the response.
+ * Runner for listing streams and firing up a worker for each of those streams
+ * to handle the stream processing.
+ * @param {object} pool - pool of workers to offload stream processing tasks on.
+ * @param {string} cropsDir - path to directory containing cropped thumbnails
+ * containing the number of players alive.
  */
-function writeIndex(streamName, callback) {
-  const source = "<iframe src='http://player.twitch.tv/?channel=${{stream}}' " +
-                 "height='720' " + "width='1280' " + "frameborder='0' " +
-                 "scrolling='no' " + "allowfullscreen='true'></iframe>" +
-                 "<script type='text/javascript' " +
-                 "src='http://livejs.com/live.js'></script>";
-  const template = Handlebars.compile(source);
-  const data = {"stream": streamName};
-  const result = template(data);
+function getLowestStream(pool, cropsDir) {
+  // get list of twitch streams and record each one
+  listStreams(twitch, function(response) {
+    let streamsList = response;
+    let array = [];
 
-  fs.writeFile("./public/index.html", (result), (err) => {
-    if (err) {
-      return console.error("Failed to template index.html");
+    for (let stream in streamsList.streams) {
+      let streamName = streamsList.streams[stream].channel.display_name;
+      pool.exec("processStream", [streamName])
+        .catch(function(err) {
+          console.log(err);
+        })
+        .then(function(response) {
+          // pool.clear(false);
+        });
     }
-    return console.log("Successfully templated index.html");
+
+    setTimeout(function() {
+      fs.readdirSync(cropsDir).forEach((file) => {
+        interpretCrop(cropsDir, file, function(response) {
+          array.push(response);
+        });
+      });
+    }, 10000);
+
+    setTimeout(function() {
+      array.sort(function(a, b) {
+        return a.alive - b.alive;
+      });
+      console.log(array);
+      console.log("lowest stream: " + array[0].name);
+      setCurrentStream(array[0]);
+    }, 14000);
   });
+}
+
+/**
+ * Sets webpage to stream with lowest number of players alive, determined by
+ * getLowestStream.
+ * @param {object} stream - object containing name of string and number of
+ * players alive.
+ */
+function setCurrentStream(stream) {
+  currentStream["stream_name"] = stream.name;
+  currentStream["alive"] = stream.alive;
+  currentStream["stream_url"] = "https://player.twitch.tv/?channel=" + stream.name;
+  currentStream["updated"] = (new Date()).toJSON();
 }
 
 /**
@@ -198,57 +142,34 @@ function main() {
   const clipsDir = "./streams/clips/";
   const thumbnailsDir = "./streams/thumbnails/";
   const cropsDir = "./streams/crops/";
+  let pool = workerpool.pool(__dirname + "/worker.js");
 
   // auth with Twitch
-  twitch.clientID = process.env.client_id;
+  twitch.clientID = process.env.token;
 
   ensureDir(clipsDir);
   ensureDir(thumbnailsDir);
   ensureDir(cropsDir);
 
-  // get list of twitch streams and record each one
-  listStreams(twitch, function(response) {
-    let streamsList = response;
-    let array = [];
-    recordStreams(streamsList, clipsDir, function(response) {
-      console.log(response);
-      setTimeout(function() {
-        takeScreenshots(streamsList, clipsDir, thumbnailsDir,
-          function(response) {
-            console.log(response);
-          });
-      }, 21000);
+  // init website with lowest stream.
+  getLowestStream(pool, cropsDir);
 
-      setTimeout(function() {
-        cropScreenshots(streamsList, thumbnailsDir, cropsDir,
-          function(response) {
-            console.log(response);
-          });
-      }, 24000);
-
-      setTimeout(function() {
-        fs.readdirSync(cropsDir).forEach((file) => {
-          interpretCrop(cropsDir, file, function(response) {
-            array.push(response);
-          });
-        });
-      }, 27000);
-
-      setTimeout(function() {
-        array.sort(function(a, b) {
-          return a.alive - b.alive;
-        });
-        console.log(array);
-        console.log("lowest stream: " + array[0].name);
-        writeIndex(array[0].name);
-      }, 29000);
-    });
-  });
+  // continue searching for lowest stream every 15 seconds.
+  setInterval(function() {
+    getLowestStream(pool, cropsDir);
+  }, 15000);
 
   // serve index.html
-  app.get("*", function(req, res) {
+  app.get("/", function(req, res) {
     res.sendFile(__dirname + "/public/index.html");
   });
+
+  // serve current stream url
+  app.get("/current", function(req, res) {
+    res.json(currentStream);
+  });
+
+  app.use(express.static("public"));
 
   // start http server and log success
   app.listen(3000, function() {
