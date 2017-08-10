@@ -118,7 +118,7 @@ function getLowestStream(pool, cropsDir) {
       console.log(array);
       console.log("lowest stream: " + array[0].name);
       setCurrentStream(array[0]);
-    }, 12000);
+    }, 14000);
   });
 }
 
