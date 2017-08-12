@@ -93,7 +93,7 @@ You can also run pubgredzone in a docker container.
 
 ```shell
   $ cd pubgredzone
-  $ docker build -t "pubgredzone:latest" .
+  $ docker build -t "pubgredzone:latest" --build-arg token=$token .
 ```
 
 * Start up the container:
