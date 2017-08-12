@@ -7,10 +7,18 @@ node_js:
 notifications:
   email: false
 
+matrix:
+  fast_finish: true
+
+env:
+  - TEST_RUN="eslint ."
+  - TEST_RUN="./tests/test_ocr_service.sh"
+
 before_install:
-  - npm install i -g eslint eslint-config-google
+  - npm install -g eslint eslint-config-google
+  - sudo apt-get install tesseract-ocr
 
 install:
   - npm install .
 
-script: eslint .
+script: "$TEST_RUN"
