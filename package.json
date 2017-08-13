@@ -1,6 +1,6 @@
 {
   "name": "pubgredzone",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "webapp for viewing the most exciting PlayerUnknown's BattleGrounds streams on Twitch",
   "main": "index.js",
   "scripts": {
