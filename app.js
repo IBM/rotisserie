@@ -6,7 +6,7 @@ const path = require("path");
 
 // external dependencies
 const express = require("express");
-const tesseract = require("node-tesseract");
+const request = require("request");
 const twitch = require("twitch-api-v5");
 const workerpool = require("workerpool");
 
@@ -52,34 +52,6 @@ function listStreams(twitch, callback) {
 }
 
 /**
- * Uses Tesseract OCR software to interpret the number in each cropped
- * screenshot created in cropScreenshots.
- * @callback {object} - object containing the name of the stream and its
- * associated number of players alive.
- * @param {string} cropsDir - Relative path to directory containing cropped
- * versions of all screenshots taken in takeScreenshot.
- * @param {string} file - filename of cropped screenshot to interpret. Gained
- * from readdirSync call in runner.
- * @param {requestCallback} callback - The callback that handles the response.
- */
-function interpretCrop(cropsDir, file, callback) {
-  const options = {
-    psm: 8,
-  };
-
-  console.log("interpreting: " + __dirname + cropsDir.replace(".", "") + file);
-  tesseract.process(__dirname + cropsDir.replace(".", "") + file, options,
-    function(err, text) {
-      let object = {};
-      object.name = file.replace(".png", "");
-      object.alive = text.replace(/^(?=\n)$|^\s*|\s*$|\n\n+/gm, "");
-      if (object.alive && !isNaN(object.alive) && parseInt(object.alive, 10)) {
-        return callback(object);
-      }
-    });
-}
-
-/**
  * Runner for listing streams and firing up a worker for each of those streams
  * to handle the stream processing.
  * @param {object} pool - pool of workers to offload stream processing tasks on.
@@ -105,8 +77,14 @@ function getLowestStream(pool, cropsDir) {
 
     setTimeout(function() {
       fs.readdirSync(cropsDir).forEach((file) => {
-        interpretCrop(cropsDir, file, function(response) {
-          array.push(response);
+        request.post('localhost:3001/process_pubg',
+                     {form: {img: fs.createReadStream(__dirname + '/unicycle.jpg')}},
+                     function (error, response, body) {
+            var parsed = JSON.parse(body);
+            var stream = {};
+            stream.name = file.replace(".png", "");
+            stream.alive = parsed.number;
+            array.push(stream);
         });
       });
     }, 10000);

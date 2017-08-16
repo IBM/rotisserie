@@ -6,24 +6,24 @@ test_image() {
   img=$1
   count=$2
   echo -n "Validating that $img has a count of $count... "
-  out_number=$(curl -s -F "image=@${img}" localhost:3000/process_pubg | jq '.number')
+  out_number=$(curl -s -F "image=@${img}" localhost:3001/process_pubg | jq '.number')
   [ $out_number -eq $count ]
   echo "OK!"
 }
 
 # Test if app is running
-if [[ $(curl -s http://localhost:3000/info | jq '.app' | grep -q 'ocrsvc') ]]; then
+if [[ $(curl -s http://localhost:3001/info | jq '.app' | grep -q 'ocr') ]]; then
   echo "App running"
 else
   echo "Starting App"
-  node ocrsvc.js 2>&1 >/dev/null &
+  node ocr.js 2>&1 >/dev/null &
 fi
 sleep 2
 
 echo "Validate info"
 set -e
 set -x
-curl -s http://localhost:3000/info | jq '.version' | grep -q -- '0.1'
+curl -s http://localhost:3001/info | jq '.version' | grep -q -- '0.1'
 echo ""
 
 pwd

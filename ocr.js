@@ -13,7 +13,7 @@ const app = express();
 
 app.get("/info", function(req, res) {
   result = {
-    "app": "ocrsvc",
+    "app": "ocr",
     "version": "0.1",
     "health": "good",
   };
@@ -66,6 +66,6 @@ app.post("/process_pubg", upload.single("image"), function(req, res, next) {
 
 
 // start http server and log success
-app.listen(3000, function() {
-  console.log("Example app listening on port 3000!");
+app.listen(3001, function() {
+  console.log("OCR service listening on port 3001!");
 });
