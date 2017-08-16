@@ -77,15 +77,15 @@ function getLowestStream(pool, cropsDir) {
 
     setTimeout(function() {
       fs.readdirSync(cropsDir).forEach((file) => {
-        request.post('localhost:3001/process_pubg',
-                     {form: {img: fs.createReadStream(__dirname + '/unicycle.jpg')}},
-                     function (error, response, body) {
-            var parsed = JSON.parse(body);
-            var stream = {};
+        request.post("localhost:3001/process_pubg",
+          {form: {img: fs.createReadStream(__dirname + "/unicycle.jpg")}},
+          function(error, response, body) {
+            let parsed = JSON.parse(body);
+            let stream = {};
             stream.name = file.replace(".png", "");
             stream.alive = parsed.number;
             array.push(stream);
-        });
+          });
       });
     }, 10000);
 
