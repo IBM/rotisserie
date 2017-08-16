@@ -43,4 +43,4 @@ test_image tests/images/BradWOTO.png 100 # This one is all messed up, better to 
 
 sleep 2
 
-kill `ps -ef | grep node | grep ocrs[v] | awk '{print $2}' `
+kill `ps -ef | grep node | grep ocr | awk '{print $2}' `
