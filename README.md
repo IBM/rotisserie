@@ -55,10 +55,23 @@ depending on your os:
   $ npm install .
 ```
 
-### Running It Locally
+### Getting an OAuth Token
 
-* [Get an oauth token from twitch](https://dev.twitch.tv/docs/v5/guides/authentication/#getting-tokens).
-  Once obtained, export your token as an environment variable:
+1. On a machine with a browser installed, run the following:
+
+```shell
+  $ livestreamer --twitch-oauth-authenticate
+```
+
+2. A browser window will open, and prompt you to authorize livestreamer to use
+   your twitch account. Click `Authorize`.
+
+3. Your browser will refresh, and a page saying "SORRY, this page does not exist
+   yet" will appear. Ignore this. In your address bar, there will be a callback
+   URL with `access_token=<TOKEN>`. This is your OAuth token, copy it down and
+   proceed to the next section.
+
+### Running It Locally
 
 ```shell
   $ export token="YOUR_OAUTH_TOKEN"
@@ -84,8 +97,8 @@ You can also run pubgredzone in a docker container.
   $ git clone git@github.com:eggshell/pubgredzone.git
 ```
 
-* [Get an oauth token from twitch](https://dev.twitch.tv/docs/v5/guides/authentication/#getting-tokens).
-  Once obtained, export your token as an environment variable:
+* Get an OAuth token using the instructions above, and export it as an
+  environment variable:
 
 ```shell
   $ export token="YOUR_OAUTH_TOKEN"
