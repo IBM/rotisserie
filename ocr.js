@@ -11,6 +11,10 @@ const tmpdir = require("os").tmpdir();
 const fs = require("fs");
 const app = express();
 
+const options = {
+  psm: 8,
+};
+
 app.get("/info", function(req, res) {
   result = {
     "app": "ocr",
@@ -29,9 +33,7 @@ app.post("/process", upload.single("image"), function(req, res, next) {
     }
     console.log("The file was saved as " + output);
   });
-  const options = {
-    psm: 8,
-  };
+
   tesseract.process(output, options, function(err, text) {
     result = "Detected Text: " + text.trim() + "\n";
     console.log(result);
@@ -48,9 +50,7 @@ app.post("/process_pubg", upload.single("image"), function(req, res, next) {
     }
     console.log("The file was saved as " + output);
   });
-  const options = {
-    psm: 8,
-  };
+
   tesseract.process(output, options, function(err, text) {
     let number = parseFloat(text.trim());
     if (isNaN(number)) {
@@ -59,7 +59,7 @@ app.post("/process_pubg", upload.single("image"), function(req, res, next) {
     let result = {
       "number": number,
     };
-    console.log(result);
+    // console.log(result);
     res.json(result);
   });
 });

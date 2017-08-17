@@ -77,15 +77,26 @@ function getLowestStream(pool, cropsDir) {
 
     setTimeout(function() {
       fs.readdirSync(cropsDir).forEach((file) => {
-        request.post("localhost:3001/process_pubg",
-          {form: {img: fs.createReadStream(__dirname + "/unicycle.jpg")}},
-          function(error, response, body) {
-            let parsed = JSON.parse(body);
-            let stream = {};
-            stream.name = file.replace(".png", "");
-            stream.alive = parsed.number;
-            array.push(stream);
-          });
+        let formData = {
+          image: fs.createReadStream(__dirname
+                                     + cropsDir.replace(".", "") + file),
+        };
+
+        let requestOptions = {
+          url: "http://localhost:3001/process_pubg",
+          formData: formData,
+        };
+
+        request.post(requestOptions, function(err, httpResponse, body) {
+          if (err) {
+            return console.error("upload failed");
+          }
+          let parsed = JSON.parse(body);
+          let object = {};
+          object.name = file.replace(".png", "");
+          object.alive = parsed.number;
+          array.push(object);
+        });
       });
     }, 10000);
 
@@ -101,7 +112,7 @@ function getLowestStream(pool, cropsDir) {
 }
 
 /**
- * Sets webpage to stream with lowest number of players alive, determined by
+  Sets webpage to stream with lowest number of players alive, determined by
  * getLowestStream.
  * @param {object} stream - object containing name of string and number of
  * players alive.
