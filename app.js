@@ -48,11 +48,11 @@ function listStreams(twitch, callback) {
   twitch.streams.live(parameters, function(err, body) {
     if (err) console.log(err);
     else {
-      all_ages_streams = body.streams.filter(function(stream){
+      allAgesStreams = body.streams.filter(function(stream) {
         console.log(stream.channel.mature);
         return stream.channel.mature == false;
       });
-      return callback(all_ages_streams);
+      return callback(allAgesStreams);
     }
   });
 }
