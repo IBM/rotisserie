@@ -61,6 +61,7 @@ app.post("/process_pubg", upload.single("image"), function(req, res, next) {
     };
     // console.log(result);
     res.json(result);
+    fs.unlink(output);
   });
 });
 
