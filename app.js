@@ -14,10 +14,12 @@ const workerpool = require("workerpool");
 const app = express();
 
 // setup global list
-let currentStream = {"stream_name": "foo",
-                     "alive": 100,
-                     "updated": (new Date()).toJSON(),
-                     "stream_url": "https://example.com"};
+let currentStream = {
+  "stream_name": "foo",
+  "alive": 100,
+  "updated": (new Date()).toJSON(),
+  "stream_url": "https://example.com",
+};
 let allStreams = [currentStream];
 
 /**
@@ -119,7 +121,7 @@ function updateStreamsList(pool, cropsDir) {
       console.log(array);
       console.log("lowest stream: " + array[0].name);
       currentStream = streamToObject(array[0]);
-      for (let idx in array){
+      for (let idx in array) {
         newAllStreams.push(streamToObject(array[idx]));
       }
       allStreams = newAllStreams;
@@ -132,6 +134,7 @@ function updateStreamsList(pool, cropsDir) {
  * getLowestStream.
  * @param {object} stream - object containing name of string and number of
  * players alive.
+ * @return {object} object - stream object containing stream metadata.
  */
 function streamToObject(stream) {
   object = {};
