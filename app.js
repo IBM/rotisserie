@@ -56,7 +56,6 @@ function listStreams(twitch, callback) {
     if (err) console.log(err);
     else {
       allAgesStreams = body.streams.filter(function(stream) {
-        console.log(stream.channel.mature);
         return stream.channel.mature == false;
       });
       return callback(allAgesStreams);
