@@ -81,6 +81,7 @@ depending on your os:
   the app:
 
 ```shell
+  $ node ocr.js 2>&1 >/dev/null &
   $ node app.js
 ```
 
@@ -104,17 +105,19 @@ You can also run pubgredzone in a docker container.
   $ export token="YOUR_OAUTH_TOKEN"
 ```
 
-* Build the docker image:
+* Build the docker images:
 
 ```shell
   $ cd pubgredzone
-  $ docker build -t "pubgredzone:latest" --build-arg token=$token .
+  $ docker build -f deploy/images/app/Dockerfile -t "pubgredzone:app" --build-arg token=$token .
+  $ docker build -f deploy/images/ocr/Dockerfile -t "pubgredzone:ocr" .
 ```
 
-* Start up the container:
+* Start up the containers:
 
 ```shell
-  $ docker run pubgredzone
+  $ docker run -d pubgredzone:ocr
+  $ docker run pubgredzone:app
 ```
 
 ## License
