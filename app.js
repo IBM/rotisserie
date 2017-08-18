@@ -47,7 +47,13 @@ function listStreams(twitch, callback) {
 
   twitch.streams.live(parameters, function(err, body) {
     if (err) console.log(err);
-    else return callback(body);
+    else {
+      all_ages_streams = body.streams.filter(function(stream){
+        console.log(stream.channel.mature);
+        return stream.channel.mature == false;
+      });
+      return callback(all_ages_streams);
+    }
   });
 }
 
@@ -64,8 +70,8 @@ function getLowestStream(pool, cropsDir) {
     let streamsList = response;
     let array = [];
 
-    for (let stream in streamsList.streams) {
-      let streamName = streamsList.streams[stream].channel.display_name;
+    for (let stream in streamsList) {
+      let streamName = streamsList[stream].channel.display_name;
       pool.exec("processStream", [streamName])
         .catch(function(err) {
           console.log(err);
