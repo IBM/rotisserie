@@ -13,7 +13,14 @@ const workerpool = require("workerpool");
 // construct express app
 const app = express();
 
-let currentStream = {"stream_name": "foo", "stream_url": "https://example.com"};
+// setup global list
+let currentStream = {
+  "stream_name": "foo",
+  "alive": 100,
+  "updated": (new Date()).toJSON(),
+  "stream_url": "https://example.com",
+};
+let allStreams = [currentStream];
 
 /**
  * Ensures given filesystem directory if it does not exist.
@@ -64,11 +71,12 @@ function listStreams(twitch, callback) {
  * @param {string} cropsDir - path to directory containing cropped thumbnails
  * containing the number of players alive.
  */
-function getLowestStream(pool, cropsDir) {
+function updateStreamsList(pool, cropsDir) {
   // get list of twitch streams and record each one
   listStreams(twitch, function(response) {
     let streamsList = response;
     let array = [];
+    let newAllStreams = [];
 
     for (let stream in streamsList) {
       let streamName = streamsList[stream].channel.display_name;
@@ -112,7 +120,11 @@ function getLowestStream(pool, cropsDir) {
       });
       console.log(array);
       console.log("lowest stream: " + array[0].name);
-      setCurrentStream(array[0]);
+      currentStream = streamToObject(array[0]);
+      for (let idx in array) {
+        newAllStreams.push(streamToObject(array[idx]));
+      }
+      allStreams = newAllStreams;
     }, 14000);
   });
 }
@@ -122,12 +134,15 @@ function getLowestStream(pool, cropsDir) {
  * getLowestStream.
  * @param {object} stream - object containing name of string and number of
  * players alive.
+ * @return {object} object - stream object containing stream metadata.
  */
-function setCurrentStream(stream) {
-  currentStream["stream_name"] = stream.name;
-  currentStream["alive"] = stream.alive;
-  currentStream["stream_url"] = "https://player.twitch.tv/?channel=" + stream.name;
-  currentStream["updated"] = (new Date()).toJSON();
+function streamToObject(stream) {
+  object = {};
+  object["stream_name"] = stream.name;
+  object["alive"] = stream.alive;
+  object["stream_url"] = "https://player.twitch.tv/?channel=" + stream.name;
+  object["updated"] = (new Date()).toJSON();
+  return object;
 }
 
 /**
@@ -147,11 +162,11 @@ function main() {
   ensureDir(cropsDir);
 
   // init website with lowest stream.
-  getLowestStream(pool, cropsDir);
+  updateStreamsList(pool, cropsDir);
 
   // continue searching for lowest stream every 15 seconds.
   setInterval(function() {
-    getLowestStream(pool, cropsDir);
+    updateStreamsList(pool, cropsDir);
   }, 15000);
 
   // serve index.html
@@ -159,9 +174,14 @@ function main() {
     res.sendFile(__dirname + "/public/index.html");
   });
 
-  // serve current stream url
+  // serve current leader stream object
   app.get("/current", function(req, res) {
     res.json(currentStream);
+  });
+
+  // serve all stream objects
+  app.get("/all", function(req, res) {
+    res.json(allStreams);
   });
 
   app.use(express.static("public"));
