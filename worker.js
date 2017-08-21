@@ -13,15 +13,18 @@ const workerpool = require("workerpool");
  * @param {string} clipsDir - Relative path to directory containing short
  * recorded clips of each stream in streamsList.
  */
-function recordStream(streamName, clipsDir) {
-  console.log("recording clip of stream: " + streamName);
-  const child = spawn("livestreamer", ["-Q", "-f", "--twitch-oauth-token",
-    process.env.token, "twitch.tv/" + streamName,
-    "720p", "-o", clipsDir + streamName + ".mp4"]);
-  setTimeout(function() {
-    child.kill("SIGINT");
-    console.log("recorded stream: " + streamName);
-  }, 4000);
+function recordStream(options) {
+  return new Promise ((resolve, reject) => {
+    console.log("recording clip of stream: " + streamName);
+    const child = spawn("livestreamer", ["-Q", "-f", "--twitch-oauth-token",
+      process.env.token, "twitch.tv/" + streamName,
+      "720p", "-o", clipsDir + streamName + ".mp4"]);
+    setTimeout(function() {
+      child.kill("SIGINT");
+      console.log("recorded stream: " + streamName);
+      resolve(options);
+    }, 4000);
+  });
 }
 
 /**
@@ -33,15 +36,19 @@ function recordStream(streamName, clipsDir) {
  * screenshots of each clip recorded in recordStreams.
  * @param {requestCallback} callback - The callback that handles the response.
  */
-function takeScreenshot(streamName, clipsDir, thumbnailsDir) {
-  if (fs.existsSync(clipsDir + streamName + ".mp4")) {
-    console.log("taking screenshot of stream: " + streamName);
-    new FFMpeg(clipsDir + streamName + ".mp4").takeScreenshots({
-      count: 1,
-      folder: thumbnailsDir,
-      filename: streamName + ".png",
-    });
-  }
+function takeScreenshot(options) {
+  return new Promise ((resolve, reject) => {
+    if (fs.existsSync(options.clipsDir + options.streamName + ".mp4")) {
+      console.log("taking screenshot of stream: " + options.streamName);
+      new FFMpeg(options.clipsDir + options.streamName + ".mp4").takeScreenshots({
+        count: 1,
+        folder: options.thumbnailsDir,
+        filename: options.streamName + ".png",
+      }).on('end', function() {
+        resolve(options)
+      });
+    }
+  });
 }
 
 /**
@@ -53,17 +60,32 @@ function takeScreenshot(streamName, clipsDir, thumbnailsDir) {
  * @param {string} cropsDir - Relative path to directory containing cropped
  * versions of all screenshots taken in takeScreenshot.
  */
-function cropScreenshot(streamName, thumbnailsDir, cropsDir) {
-  console.log("cropping screenshot of stream: " + streamName);
-  if (fs.existsSync(thumbnailsDir + streamName + ".png")) {
-    gm(thumbnailsDir + streamName + ".png")
-      .crop(28, 20, 1190, 25)
-      .write(cropsDir + streamName + ".png", function(err) {
-        if (err) console.log(err);
-      });
-  }
-  console.log("cropped screenshot of: " + streamName);
+function cropScreenshot(options) {
+  return new Promise ((resolve, reject) => {
+  console.log("cropping screenshot of stream: " + options.streamName);
+    if (fs.existsSync(options.thumbnailsDir + options.streamName + ".png")) {
+      gm(options.thumbnailsDir + options.streamName + ".png")
+        .crop(28, 20, 1190, 25)
+        .write(options.cropsDir + options.streamName + ".png", function(err) {
+          resolve(options);
+          if (err) reject(err);
+        });
+      console.log("cropped screenshot of: " + options.streamName);
+    } else {
+      reject(streamName + ": input file not found");
+    }
+  });
 }
+
+
+/**
+ * Verifies work
+ */
+function verify(options) {
+  console.log("Hit verify step for stream: " + options.streamName);
+  console.log("verify there is a cropped shot at: " + options.cropsDir + options.streamName + ".png");
+}
+
 
 
 /**
@@ -72,21 +94,22 @@ function cropScreenshot(streamName, thumbnailsDir, cropsDir) {
  * @param {string} streamName - name of stream to process.
  */
 function processStream(streamName) {
-  const clipsDir = "./streams/clips/";
-  const thumbnailsDir = "./streams/thumbnails/";
-  const cropsDir = "./streams/crops/";
 
   recordStream(streamName, clipsDir);
-  setTimeout(function() {
-    takeScreenshot(streamName, clipsDir, thumbnailsDir);
-  }, 6000);
-
-  setTimeout(function() {
-    cropScreenshot(streamName, thumbnailsDir, cropsDir);
-  }, 8000);
+  var data = {
+      streamName: streamName,
+      clipsDir: "./streams/clips/",
+      thumbnailsDir: "./streams/thumbnails/",
+      cropsDir:"./streams/crops/",
+  }
+  recordStream(data)
+      .then(takeScreenshot)
+      .then(cropScreenshot)
+      .then(verify);
 }
 
 // create a worker and register public functions
-workerpool.worker({
-  processStream: processStream,
-});
+//workerpool.worker({
+//  processStream: processStream,
+//});
+
