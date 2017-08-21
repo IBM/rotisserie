@@ -9,6 +9,7 @@ const workerpool = require("workerpool");
 
 /**
  * Records short clip of each stream gathered in listStreams.
+ * @param {object} options - object of other params
  * @param {string} streamName - name of stream to record.
  * @param {string} clipsDir - Relative path to directory containing short
  * recorded clips of each stream in streamsList.
@@ -29,6 +30,7 @@ function recordStream(options) {
 
 /**
  * Takes screenshots of all clips recorded in recordStreams.
+ * @param {object} options - object of other params
  * @param {string} streamName - name of stream's clip to screenshot.
  * @param {string} clipsDir - Relative path to directory containing short
  * recorded clips of each stream in streamsList.
@@ -54,6 +56,7 @@ function takeScreenshot(options) {
 /**
  * Crops all screenshots taken in takeScreenshot to just the area containing
  * the number of players alive in-game.
+ * @param {object} options - object of other params
  * @param {string} streamName - name of stream's screenshot to crop.
  * @param {string} thumbnailsDir - Relative path to directory containing
  * screenshots of each clip recorded in recordStream.
@@ -79,6 +82,10 @@ function cropScreenshot(options) {
 
 
 /**
+ * @param {object} options - object of other params
+ * @param {string} streamName - name of stream's screenshot to crop.
+ * @param {string} cropsDir - Relative path to directory containing cropped
+ * versions of all screenshots taken in takeScreenshot.
  * Verifies work
  */
 function verify(options) {
