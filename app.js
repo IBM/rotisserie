@@ -117,13 +117,17 @@ function updateStreamsList(pool, cropsDir) {
       array.sort(function(a, b) {
         return a.alive - b.alive;
       });
-      console.log(array);
-      console.log("lowest stream: " + array[0].name);
-      currentStream = streamToObject(array[0]);
-      for (let idx in array) {
-        newAllStreams.push(streamToObject(array[idx]));
+      if (array.length > 0) {
+        console.log(array);
+        console.log("lowest stream: " + array[0].name);
+        currentStream = streamToObject(array[0]);
+        for (let idx in array) {
+          newAllStreams.push(streamToObject(array[idx]));
+        }
+        allStreams = newAllStreams;
+      } else {
+        console.log("Empty array, not switching");
       }
-      allStreams = newAllStreams;
     }, 14000);
   });
 }
