@@ -74,7 +74,7 @@ function listStreams(twitch, callback) {
  * recorded clips of each stream in streamsList.
  */
 function recordStream(options) {
-  return new Promise ((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     console.log("recording clip of stream: " + options.streamName);
     const child = spawn("livestreamer", ["-Q", "-f", "--twitch-oauth-token",
       process.env.token, "twitch.tv/" + options.streamName,
@@ -98,16 +98,18 @@ function recordStream(options) {
  * @param {requestCallback} callback - The callback that handles the response.
  */
 function takeScreenshot(options) {
-  return new Promise ((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     if (fs.existsSync(options.clipsDir + options.streamName + ".mp4")) {
       console.log("taking screenshot of stream: " + options.streamName);
-      new FFMpeg(options.clipsDir + options.streamName + ".mp4").takeScreenshots({
-        count: 1,
-        folder: options.thumbnailsDir,
-        filename: options.streamName + ".png",
-      }).on('end', function() {
-        resolve(options)
-      });
+      new FFMpeg(options.clipsDir + options.streamName + ".mp4")
+        .takeScreenshots({
+          count: 1,
+          folder: options.thumbnailsDir,
+          filename: options.streamName + ".png",
+        })
+        .on("end", function() {
+          resolve(options);
+        });
     }
   });
 }
@@ -122,10 +124,9 @@ function takeScreenshot(options) {
  * @param {string} cropsDir - Relative path to directory containing cropped
  * versions of all screenshots taken in takeScreenshot.
  */
-
 function cropScreenshot(options) {
-  return new Promise ((resolve, reject) => {
-  console.log("cropping screenshot of stream: " + options.streamName);
+  return new Promise((resolve, reject) => {
+    console.log("cropping screenshot of stream: " + options.streamName);
     if (fs.existsSync(options.thumbnailsDir + options.streamName + ".png")) {
       gm(options.thumbnailsDir + options.streamName + ".png")
         .crop(28, 20, 1190, 25)
@@ -141,18 +142,18 @@ function cropScreenshot(options) {
 }
 
 
-
 /**
  * OCR the data (via web request)
  * Uses the pubgredzone-ocr microservice
+ * @param {object} options - object of other params
  *
  */
-
 function ocrCroppedShot(options) {
-  return new Promise ((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     let formData = {
       image: fs.createReadStream(__dirname
-                                 + options.cropsDir.replace(".", "") + options.streamName + ".png"),
+                                 + options.cropsDir.replace(".", "")
+                                 + options.streamName + ".png"),
     };
 
     let requestOptions = {
@@ -177,7 +178,6 @@ function ocrCroppedShot(options) {
 /**
  * Runner for listing streams and firing up a worker for each of those streams
  * to handle the stream processing.
- * @param {object} pool - pool of workers to offload stream processing tasks on.
  * @param {string} cropsDir - path to directory containing cropped thumbnails
  * containing the number of players alive.
  */
@@ -190,18 +190,18 @@ function updateStreamsList(cropsDir) {
 
     for (let stream in streamsList) {
       let streamName = streamsList[stream].channel.display_name;
-      var data = {
+      const data = {
         streamName: streamName,
         clipsDir: "./streams/clips/",
         thumbnailsDir: "./streams/thumbnails/",
-        cropsDir:"./streams/crops/",
-      }
+        cropsDir: "./streams/crops/",
+      };
 
       recordStream(data)
         .then(takeScreenshot)
         .then(cropScreenshot)
         .then(ocrCroppedShot)
-        .then(function(streamobj){
+        .then(function(streamobj) {
           array.push(streamobj);
         });
     }
