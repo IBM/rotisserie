@@ -37,7 +37,7 @@ spec:
         - name: pubgredzone-app
           image: container-registry.dev.ibmesports.com/pubgredzone-app:latest
           env:
-          - name: TOKEN
+          - name: token
             valueFrom:
               secretKeyRef:
                 name: pubgredzone
