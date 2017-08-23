@@ -157,7 +157,7 @@ function ocrCroppedShot(options) {
     };
 
     let requestOptions = {
-      url: "http://localhost:3001/process_pubg",
+      url: "http://" + process.env.OCR_HOST + "/process_pubg",
       formData: formData,
     };
 

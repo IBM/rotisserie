@@ -35,13 +35,15 @@ spec:
     spec:
       containers:
         - name: pubgredzone-app
-          image: container-registry.dev.ibmesports.com/pubgredzone-app:latest
+          image: container-registry.dev.ibmesports.com/pubgredzone-app:$IMAGE_TAG
           env:
           - name: token
             valueFrom:
               secretKeyRef:
                 name: pubgredzone
                 key: api-key
+          - name: OCR_HOST
+            value: pubgredzone.ibmesports.com
           ports:
             - containerPort: 3000
 ---
@@ -57,7 +59,7 @@ spec:
     spec:
       containers:
         - name: pubgredzone-ocr
-          image: container-registry.dev.ibmesports.com/pubgredzone-ocr:latest
+          image: container-registry.dev.ibmesports.com/pubgredzone-ocr:$IMAGE_TAG
           ports:
             - containerPort: 3001
 ---
@@ -78,6 +80,10 @@ spec:
         backend:
           serviceName: pubgredzone-app
           servicePort: 3000
+      - path: /process_pubg
+        backend:
+          serviceName: pubgredzone-ocr
+          servicePort: 3001
   - host: pubgred.zone
     http:
       paths:
