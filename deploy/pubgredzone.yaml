@@ -78,6 +78,9 @@ spec:
         backend:
           serviceName: pubgredzone-app
           servicePort: 3000
+      - path: /process_pubg
+          serviceName: pubgredzone-ocr
+          servicePort: 3001
   - host: pubgred.zone
     http:
       paths:

@@ -96,7 +96,7 @@ function updateStreamsList(pool, cropsDir) {
         };
 
         let requestOptions = {
-          url: "http://localhost:3001/process_pubg",
+          url: "http://pubgredzone.ibmesports.com/process_pubg",
           formData: formData,
         };
 
