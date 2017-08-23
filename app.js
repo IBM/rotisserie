@@ -165,12 +165,13 @@ function ocrCroppedShot(options) {
       if (err) {
         console.error("upload failed");
         reject(err);
+      } else {
+        let parsed = JSON.parse(body);
+        let object = {};
+        object.name = options.streamName;
+        object.alive = parsed.number;
+        resolve(object);
       }
-      let parsed = JSON.parse(body);
-      let object = {};
-      object.name = options.streamName;
-      object.alive = parsed.number;
-      resolve(object);
     });
   });
 }
