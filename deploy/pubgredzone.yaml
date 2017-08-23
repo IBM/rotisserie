@@ -36,6 +36,12 @@ spec:
       containers:
         - name: pubgredzone-app
           image: container-registry.dev.ibmesports.com/pubgredzone-app:latest
+          env:
+          - name: TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: pubgredzone
+                key: api-key
           ports:
             - containerPort: 3000
 ---
@@ -60,8 +66,19 @@ kind: Ingress
 metadata:
   name: pubgredzone-ingress
 spec:
+  tls:
+    - hosts: 
+      - pubgred.zone
+      secretName: pubgredzone
   rules:
   - host: pubgredzone.ibmesports.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: pubgredzone-app
+          servicePort: 3000
+  - host: pubgred.zone
     http:
       paths:
       - path: /
