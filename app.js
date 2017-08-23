@@ -76,7 +76,7 @@ function listStreams(twitch, callback) {
 function recordStream(options) {
   return new Promise((resolve, reject) => {
     console.log("recording clip of stream: " + options.streamName);
-    const child = spawn("livestreamer", ["-Q", "-f", "--twitch-oauth-token",
+    const child = spawn("livestreamer", ["--yes-run-as-root", "-Q", "-f", "--twitch-oauth-token",
       process.env.token, "twitch.tv/" + options.streamName,
       "720p", "-o", options.clipsDir + options.streamName + ".mp4"]);
     setTimeout(function() {
