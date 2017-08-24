@@ -53,7 +53,7 @@ function ensureDir(dirPath) {
  * @param {requestCallback} callback - The callback that handles the response.
  */
 function listStreams(twitch, callback) {
-  let parameters = {"game": "PLAYERUNKNOWN\'S BATTLEGROUNDS", "language": "en"};
+  let parameters = {"game": "PLAYERUNKNOWN\'S BATTLEGROUNDS", "language": "en", "length": 100};
 
   twitch.streams.live(parameters, function(err, body) {
     if (err) console.log(err);
