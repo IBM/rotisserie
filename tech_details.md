@@ -20,10 +20,19 @@ curl -s https://pubgred.zone/current | jq '.'
 
 Both of these endpoints contain basic data on the streams and including the number of players still alive.
 
+Front-end
+--------
+
 The 'switching' part of the applictaion is implemented client side. Simple timed ajax requests to the /all endpoint provide all the data needed to make decisions around switching. The twitch stream itself is embedded using twitch's iframe web player. Users who are not logged in to twitch or don't have paid accounts will be subjected to advertisements. Some twitch streams are flagged as 'mature.' The twitch video player asks the viewer to press an 'ok' dialog accepting that mature content might be part of the stream. To avoid that, PUBG Red Zone filters out mature streams from the pool.
 
 
-Possible future work:
+Deployment
+----------
+
+The application is packaged in three docker containers. The containers are built by scripts, invoked by a Makefile. One container hosts the main app, one container hosts the ocr service, and one container hosts nginx to serve static assets. A kubernetes manifest is provided to configure the deployment. Each app is deployed as a pod/service. An ingress resource is configured to be a load balancer in front of the services. Several paths are configured behind the ingress resource. A ssl cert from letsencrypt is loaded as a tls secret in kubernetes and attached to the ingress resource. A twitch api token is loaded as a generic kubernetes secret and is attached to the primary node application. Kubernetes rolling upgrades are initiated through the Makefile.
+
+Possible future work
+--------------------
 
 * Train and use a deep learning model to do OCR instead of tesseract - this would improve the accuracy of the number of people alive
 * Use websockets to communicate with the web frontend  - this would allow the switching event to be sent from the server to the client and so the client could switch right after a game completed instead of waiting for some timer to time out.
