@@ -116,8 +116,8 @@ You can also run pubgredzone in a docker container.
 * Start up the containers:
 
 ```shell
-  $ docker run -d -p 3001:3001 --name pubgredzone-ocr pubgredzone:ocr
-  $ docker run -d -p 3000:3000 --name pubgredzone-app pubgredzone:app
+  $ docker run -d pubgredzone:ocr
+  $ docker run pubgredzone:app
 ```
 
 ## License
