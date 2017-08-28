@@ -45,17 +45,15 @@ depending on your os:
   $ pip install livestreamer
 ```
 
-### Installing pubgredzone
+# Steps
 
-* Clone the repo and install with npm:
+1. [Get an OAuth Token for livestreamer]()
+2. [Build the images]()
+3. [Deploy locally]()
+4. [Deploy using Docker]()
+5. [Deploy using Kubernetes]()
 
-```shell
-  $ git clone git@github.com:eggshell/pubgredzone.git
-  $ cd pubgredzone
-  $ npm install .
-```
-
-### Getting an OAuth Token
+## 1. Getting an OAuth Token for Twitch
 
 1. On a machine with a browser installed, run the following:
 
@@ -71,7 +69,26 @@ depending on your os:
    URL with `access_token=<TOKEN>`. This is your OAuth token, copy it down and
    proceed to the next section.
 
-### Running It Locally
+## 2. Build the Images
+
+* Clone the repo and install with npm:
+
+```shell
+ $ git clone https://github.com/IBM/pubgredzone.git
+ $ cd pubgredzone
+ $ npm install .
+```
+
+* Build and Push the Docker Image
+
+```shell
+$ docker build -t <docker_username>/pubgredzone-ocr -f deploy/images/ocr.Dockerfile
+$ docker build -t <docker_username>/pubgredzone-app -f deploy/images/app.Dockerfile
+$ docker push <docker_username>/pubgredzone-ocr
+$ docker push <docker_username>/pubgredzone-app
+```
+
+## 3. Running It Locally
 
 ```shell
   $ export token="YOUR_OAUTH_TOKEN"
@@ -88,15 +105,9 @@ depending on your os:
 Now you can open a browser and navigate to `http://localhost:3000` to watch
 pubgredzone.
 
-## Running in a Container
+## 4. Running in a Container
 
 You can also run pubgredzone in a docker container.
-
-* Clone the repo:
-
-```shell
-  $ git clone git@github.com:eggshell/pubgredzone.git
-```
 
 * Get an OAuth token using the instructions above, and export it as an
   environment variable:
@@ -105,20 +116,14 @@ You can also run pubgredzone in a docker container.
   $ export token="YOUR_OAUTH_TOKEN"
 ```
 
-* Build the docker images:
-
-```shell
-  $ cd pubgredzone
-  $ docker build -f deploy/images/app/Dockerfile -t "pubgredzone:app" --build-arg token=$token .
-  $ docker build -f deploy/images/ocr/Dockerfile -t "pubgredzone:ocr" .
-```
-
 * Start up the containers:
 
 ```shell
-  $ docker run -d pubgredzone:ocr
-  $ docker run pubgredzone:app
+  $  docker run -d --name pubgredzone-ocr <docker_username>/pubgredzone-ocr
+  $ docker run --name pubgredzone-app --link pubgredzone-ocr:pubgredzone-ocr -p 3000:3000  -e OCR_HOST=pubgredzone-ocr:3001 -e token=$token <docker_username>/pubgredzone-app
 ```
+
+## 5. Running in Kubernetes
 
 ## License
 
