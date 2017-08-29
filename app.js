@@ -53,7 +53,8 @@ function ensureDir(dirPath) {
  * @param {requestCallback} callback - The callback that handles the response.
  */
 function listStreams(twitch, callback) {
-  let parameters = {"game": "PLAYERUNKNOWN\'S BATTLEGROUNDS", "language": "en", "length": 100};
+  let parameters = {"game": "PLAYERUNKNOWN\'S BATTLEGROUNDS",
+    "language": "en", "length": 100};
 
   twitch.streams.live(parameters, function(err, body) {
     if (err) console.log(err);
@@ -72,13 +73,15 @@ function listStreams(twitch, callback) {
  * @param {string} streamName - name of stream to record.
  * @param {string} clipsDir - Relative path to directory containing short
  * recorded clips of each stream in streamsList.
+ * @return {promise} - A promise that resolves if a stream is recorded.
  */
 function recordStream(options) {
   return new Promise((resolve, reject) => {
     console.log("recording clip of stream: " + options.streamName);
-    const child = spawn("livestreamer", ["--yes-run-as-root", "-Q", "-f", "--twitch-oauth-token",
-      process.env.token, "twitch.tv/" + options.streamName,
-      "720p", "-o", options.clipsDir + options.streamName + ".mp4"]);
+    const child = spawn("livestreamer", ["--yes-run-as-root", "-Q", "-f",
+      "--twitch-oauth-token", process.env.token,
+      "twitch.tv/" + options.streamName, "720p", "-o",
+      options.clipsDir + options.streamName + ".mp4"]);
     setTimeout(function() {
       child.kill("SIGINT");
       console.log("recorded stream: " + options.streamName);
@@ -95,7 +98,7 @@ function recordStream(options) {
  * recorded clips of each stream in streamsList.
  * @param {string} thumbnailsDir - Relative path to directory containing
  * screenshots of each clip recorded in recordStreams.
- * @param {requestCallback} callback - The callback that handles the response.
+ * @return {promise} - a promise that resolves if a screenshot is taken.
  */
 function takeScreenshot(options) {
   return new Promise((resolve, reject) => {
@@ -123,6 +126,7 @@ function takeScreenshot(options) {
  * screenshots of each clip recorded in recordStream.
  * @param {string} cropsDir - Relative path to directory containing cropped
  * versions of all screenshots taken in takeScreenshot.
+ * @return {promise} - a promise which resolves if a screenshot is cropped.
  */
 function cropScreenshot(options) {
   return new Promise((resolve, reject) => {
@@ -146,7 +150,8 @@ function cropScreenshot(options) {
  * OCR the data (via web request)
  * Uses the pubgredzone-ocr microservice
  * @param {object} options - object of other params
- *
+ * @return {promise} - a promise that is resolved if the a screenshot is ocr'd
+ * successfully.
  */
 function ocrCroppedShot(options) {
   return new Promise((resolve, reject) => {

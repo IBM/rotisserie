@@ -1,7 +1,7 @@
 # pubgredzone
 
 [![npm version](https://badge.fury.io/js/pubgredzone.svg)](https://badge.fury.io/js/pubgredzone)
-[![Build Status](https://travis-ci.org/eggshell/pubgredzone.svg?branch=master)](https://travis-ci.org/eggshell/pubgredzone)
+[![Build Status](https://api.travis-ci.org/IBM/pubgredzone.svg?branch=master)](https://travis-ci.org/IBM/pubgredzone)
 [![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/eggshell/pubgredzone/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
