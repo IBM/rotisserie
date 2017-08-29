@@ -54,7 +54,9 @@ app.post("/process_pubg", upload.single("image"), function(req, res, next) {
   tesseract.process(output, options, function(err, text) {
     if (err) {
       res.json({"number": 100});
-      console.log("File crashed tesseract-ocr: " + output);
+      console.log(
+        "Tesseract failed to process file: %s with error: %s", output, err
+      );
     } else {
       let number = parseFloat(text.trim());
       // Return any garbage as 100 (dead, out of game, etc)
