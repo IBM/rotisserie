@@ -1,15 +1,16 @@
-FROM ubuntu:16.04
-
-RUN apt-get update; apt-get install -y ffmpeg imagemagick curl git
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get update && apt-get install nodejs -y
-RUN apt-get install -y python-dev python-pip; pip install livestreamer
+FROM node:8-alpine
 
 COPY . /
-RUN npm install
+RUN echo http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
+    apk add --no-cache livestreamer ffmpeg imagemagick  py2-singledispatch && \
+    npm install
+
+ARG OCR_HOST
+ENV OCR_HOST=$OCR_HOST
 
 ARG token
 ENV token=$token
 
 EXPOSE 3000
+
 CMD ["node", "app.js"]
