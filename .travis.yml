@@ -1,24 +1,22 @@
 ---
-dist: trusty
-language: node_js
-node_js:
-  - "node"
-
 notifications:
   email: false
 
-matrix:
-  fast_finish: true
+jobs:
+  include:
+    - stage: lint
+      script: eslint .
+      language: node_js
+      node_js:
+        - "node"
+      install:
+        - npm install -g eslint eslint-config-google
 
-env:
-  - TEST_RUN="eslint ."
-  - TEST_RUN="./tests/test_ocr_service.sh"
-
-before_install:
-  - npm install -g eslint eslint-config-google
-  - sudo apt-get install tesseract-ocr
-
-install:
-  - npm install .
-
-script: "$TEST_RUN"
+    - stage: test app
+      language: bash
+      services:
+        - docker
+      script:
+        - ./tests/build-containers
+        - ./tests/deploy-containers
+        - ./tests/test_ocr_service.sh
