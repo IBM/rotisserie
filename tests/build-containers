@@ -1,0 +1,4 @@
+#!/bin/bash
+
+docker build -f deploy/images/app.Dockerfile -t "pubgredzone:app" . && \
+  docker build -f deploy/images/ocr.Dockerfile -t "pubgredzone:ocr" .

@@ -1,6 +1,9 @@
 #!/bin/bash
+set -Eux
+set -o pipefail
+trap "exit 1" ERR
 
-echo "Testing ocr service"
+echo "Testing OCR service"
 
 test_image() {
   img=$1
@@ -12,22 +15,14 @@ test_image() {
 }
 
 # Test if app is running
-if [[ $(curl -s http://localhost:3001/info | jq '.app' | grep -q 'ocr') ]]; then
-  echo "App running"
-else
-  echo "Starting App"
-  node ocr.js 2>&1 >/dev/null &
+sleep 10
+if ! $(curl -s http://localhost:3001/info | jq '.app' | grep -q 'ocr'); then
+    echo "OCR application is not running."
+    exit 1
 fi
-sleep 2
 
-echo "Validate info"
-set -e
-set -x
+echo "Validate version"
 curl -s http://localhost:3001/info | jq '.version' | grep -q -- '0.1'
-echo ""
-
-pwd
-ls
 
 echo "Validate images/ocr"
 test_image tests/images/DrDisRespectLIVE.png 8
@@ -40,7 +35,3 @@ test_image tests/images/BradWOTO.png 100 # This one is all messed up, better to 
 
 # Failing Tests
 #test_image images/Nick28T.png 68 (shows as 58)
-
-sleep 2
-
-kill `ps -ef | grep node | grep ocr | awk '{print $2}' `

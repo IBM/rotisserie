@@ -1,0 +1,6 @@
+#!/bin/bash
+
+docker run -d -p 3001:3001 --name pubgredzone-ocr pubgredzone:ocr
+docker run -d -e token=$token -e OCR_HOST="127.0.0.1:3001" -p 3000:3000 --name pubgredzone-app pubgredzone:app
+
+docker ps | grep -q pubgredzone:app && docker ps | grep -q pubgredzone:ocr
