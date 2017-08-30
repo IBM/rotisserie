@@ -73,8 +73,17 @@ depending on your os:
 
 ### Running It Locally
 
+* Create an environment variable for your token.
+
 ```shell
   $ export token="YOUR_OAUTH_TOKEN"
+```
+
+* Create an environment variable for the OCR_HOST. This can be set to localhost:3001
+  or the IP address + port of a remote OCR host.
+
+```shell
+  $ export OCR_HOST="localhost:3001"
 ```
 
 * Navigate to the `pubgredzone` dir if you aren't there already, and start
@@ -105,19 +114,26 @@ You can also run pubgredzone in a docker container.
   $ export token="YOUR_OAUTH_TOKEN"
 ```
 
+* The app container requires a value for the OCR_HOST. Set the OCR_HOST to match
+  the host and port of the OCR container.
+
+```shell
+  $ export OCR_HOST="IP:3001"
+```
+
 * Build the docker images:
 
 ```shell
   $ cd pubgredzone
-  $ docker build -f deploy/images/app/Dockerfile -t "pubgredzone:app" --build-arg token=$token .
-  $ docker build -f deploy/images/ocr/Dockerfile -t "pubgredzone:ocr" .
+  $ docker build -f deploy/images/app.Dockerfile -t pubgredzone:app .
+  $ docker build -f deploy/images/ocr.Dockerfile -t pubgredzone:ocr .
 ```
 
 * Start up the containers:
 
 ```shell
-  $ docker run -d pubgredzone:ocr
-  $ docker run pubgredzone:app
+  $ docker run -d -p 3001:3001 --name pubgredzone-ocr pubgredzone:ocr
+  $ docker run -d -e token=$token -e OCR_HOST=$OCR_HOST -p 3000:3000 --name pubgredzone-app pubgredzone:app
 ```
 
 ## License
