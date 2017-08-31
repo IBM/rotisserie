@@ -1,7 +1,7 @@
 # pubgredzone
 
 [![npm version](https://badge.fury.io/js/pubgredzone.svg)](https://badge.fury.io/js/pubgredzone)
-[![Build Status](https://travis-ci.org/IBM/pubgredzone.svg?branch=master)](https://travis-ci.org/IBM/pubgredzone)
+[![Build Status](https://api.travis-ci.org/IBM/pubgredzone.svg?branch=master)](https://travis-ci.org/IBM/pubgredzone)
 [![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/eggshell/pubgredzone/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -96,9 +96,18 @@ $ docker push <docker_username>/pubgredzone-app
 
 ## 3. Running It Locally
 
+* Create an environment variable for your token.
+
 ```shell
   $ export token="YOUR_OAUTH_TOKEN"
   $ export OCR_HOST=localhost:3001
+```
+
+* Create an environment variable for the OCR_HOST. This can be set to localhost:3001
+  or the IP address + port of a remote OCR host.
+
+```shell
+  $ export OCR_HOST="localhost:3001"
 ```
 
 * Navigate to the `pubgredzone` dir if you aren't there already, and start
