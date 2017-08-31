@@ -13,13 +13,18 @@ in American football and applies it to the popular online battle royale game
 idea is to always be viewing the most popular PUBG twitch stream with the least
 amount of people alive in-game.
 
-## Installation
+## Included Component
 
-You can run your own instance of pubgredzone either for local development
-or just pure entertainment. Ubuntu and macOS are the currently supported
-platforms.
+- [Kubernetes Clusters](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov)
+- [Docker](https://www.docker.com)
 
-### Prerequisite Software
+## Featured Technologies
+
+- [Container Orchestration](https://www.ibm.com/cloud-computing/bluemix/containers)
+- [Microservices](https://www.ibm.com/developerworks/community/blogs/5things/entry/5_things_to_know_about_microservices?lang=en)
+- [Node.js](https://nodejs.org/)
+
+# Prerequisite
 
 The following pieces of software are required to run pubgredzone locally:
 
@@ -44,6 +49,8 @@ depending on your os:
   $ brew install tesseract ffmpeg imagemagick
   $ pip install livestreamer
 ```
+
+Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/README.md) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
 
 # Steps
 
@@ -79,7 +86,7 @@ depending on your os:
  $ npm install .
 ```
 
-* Build and Push the Docker Image
+* Build and Push the Docker Image. You would need to push it if you want to deploy the application in Kubernetes.
 
 ```shell
 $ docker build -t <docker_username>/pubgredzone-ocr -f deploy/images/ocr.Dockerfile
@@ -120,11 +127,55 @@ You can also run pubgredzone in a docker container.
 * Start up the containers:
 
 ```shell
-  $  docker run -d --name pubgredzone-ocr <docker_username>/pubgredzone-ocr
-  $ docker run --name pubgredzone-app --link pubgredzone-ocr:pubgredzone-ocr -p 3000:3000  -e OCR_HOST=pubgredzone-ocr:3001 -e token=$token <docker_username>/pubgredzone-app
+  $ docker run -d --name pubgredzone-ocr <docker_username>/pubgredzone-ocr
+  $ docker run --name pubgredzone-app --link pubgredzone-ocr:pubgredzone-ocr -p 3000:3000 -e OCR_HOST=pubgredzone-ocr:3001 -e token=$token <docker_username>/pubgredzone-app
 ```
 
+Now you can open a browser and navigate to `http://localhost:3000` to watch
+pubgredzone.
+
 ## 5. Running in Kubernetes
+
+* Create a Kubernetes Secret for your OAuth token.
+
+1. You will need to encode the data you want in Base64 for the Kubernetes Secret.
+
+```shell
+$ echo -n "YOUR_OAUTH_TOKEN" | base64
+```
+
+2. Modify the token-secret.yaml file to use your token
+
+```yaml
+...
+data:
+  token: YOUR_OAUTH_TOKEN_IN_BASE64
+```
+
+3. Finally, create the Kubernetes Secret.
+
+```shell
+$ kubectl create -f token-secret.yaml
+```
+
+* Deploy the OCR service then the main application.
+
+```shell
+$ kubectl apply -f pubgredzone-ocr.yaml
+$ kubectl apply -f pubgredzone-app.yaml
+```
+
+* To access your application. You would need the public IP address of your cluster. If you don't have a load balancer, you can use the Node Port.
+
+```shell
+# For clusters provisioned with Bluemix
+$ bx cs workers YOUR_CLUSTER_NAME
+
+# For Minikube
+$ minikube ip
+```
+
+* Now you can go to `http://IP_ADDRESS:30080`
 
 ## License
 
