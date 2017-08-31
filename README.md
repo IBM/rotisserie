@@ -1,7 +1,7 @@
 # pubgredzone
 
 [![npm version](https://badge.fury.io/js/pubgredzone.svg)](https://badge.fury.io/js/pubgredzone)
-[![Build Status](https://travis-ci.org/eggshell/pubgredzone.svg?branch=master)](https://travis-ci.org/eggshell/pubgredzone)
+[![Build Status](https://travis-ci.org/IBM/pubgredzone.svg?branch=master)](https://travis-ci.org/IBM/pubgredzone)
 [![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/eggshell/pubgredzone/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -16,7 +16,6 @@ amount of people alive in-game.
 ## Included Component
 
 - [Kubernetes Clusters](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov)
-- [Docker](https://www.docker.com)
 
 ## Featured Technologies
 
@@ -54,11 +53,11 @@ Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/ge
 
 # Steps
 
-1. [Get an OAuth Token for livestreamer]()
-2. [Build the images]()
-3. [Deploy locally]()
-4. [Deploy using Docker]()
-5. [Deploy using Kubernetes]()
+1. [Get an OAuth Token for livestreamer](#1-getting-an-oauth-token-for-twitch)
+2. [Build the images](#2-build-the-images)
+3. [Deploy locally](#3-running-it-locally)
+4. [Deploy using Docker](#4-running-in-a-container)
+5. [Deploy using Kubernetes](#5-running-in-kubernetes)
 
 ## 1. Getting an OAuth Token for Twitch
 
@@ -136,9 +135,7 @@ pubgredzone.
 
 ## 5. Running in Kubernetes
 
-* Create a Kubernetes Secret for your OAuth token.
-
-1. You will need to encode the data you want in Base64 for the Kubernetes Secret.
+1. Create a Kubernetes Secret for your OAuth token. You will need to encode the data you want in Base64 for the Kubernetes Secret.
 
 ```shell
 $ echo -n "YOUR_OAUTH_TOKEN" | base64
@@ -158,7 +155,16 @@ data:
 $ kubectl create -f token-secret.yaml
 ```
 
-* Deploy the OCR service then the main application.
+4. Modify the `pubgredzone-app.yaml` and `pubgredzone-ocr.yaml` yaml files to use your image.
+
+```yaml
+...
+    containers:
+    - name: pubgredzone-app
+      image: <docker_username>/pubgredzone-app
+```
+
+5. Deploy the OCR service then the main application.
 
 ```shell
 $ kubectl apply -f pubgredzone-ocr.yaml
