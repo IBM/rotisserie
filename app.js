@@ -140,7 +140,7 @@ function cropScreenshot(options) {
         });
       console.log("cropped screenshot of: " + options.streamName);
     } else {
-      reject(streamName + ": input file not found");
+      reject(new Error(options.streamName + ": input file not found"));
     }
   });
 }
@@ -209,6 +209,8 @@ function updateStreamsList(cropsDir) {
         .then(ocrCroppedShot)
         .then(function(streamobj) {
           array.push(streamobj);
+        }).catch((error) => {
+          console.log(error.message);
         });
     }
 

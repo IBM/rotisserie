@@ -26,5 +26,6 @@ module.exports = {
             "always"
         ],
         "guard-for-in": 0,
+        "prefer-promise-reject-errors": 2
     }
 };
