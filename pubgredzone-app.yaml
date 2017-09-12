@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pubgredzone-app
+  labels:
+    app: app
+spec:
+  type: NodePort
+  ports:
+  - port: 3000
+    name: http
+    nodePort: 30080
+  selector:
+    app: app
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: pubgredzone-app
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: pubgredzone-app
+        image: anthonyamanse/pubgredzone-app
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: OCR_HOST
+          value: pubgredzone-ocr:3001
+        - name: token
+          valueFrom:
+            secretKeyRef:
+              name: twitch-token
+              key: token
+          #USE SECRET

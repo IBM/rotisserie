@@ -1,15 +1,15 @@
 FROM node:8-alpine
 
-COPY . /
+COPY app.js /
+COPY package.json /
+COPY package-lock.json /
+COPY public /public
 RUN echo http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
     apk add --no-cache livestreamer ffmpeg imagemagick git py2-singledispatch && \
     npm install
 
 ARG OCR_HOST
 ENV OCR_HOST=$OCR_HOST
-
-ARG token
-ENV token=$token
 
 EXPOSE 3000
 

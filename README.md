@@ -13,13 +13,17 @@ in American football and applies it to the popular online battle royale game
 idea is to always be viewing the most popular PUBG twitch stream with the least
 amount of people alive in-game.
 
-## Installation
+## Included Component
 
-You can run your own instance of pubgredzone either for local development
-or just pure entertainment. Ubuntu and macOS are the currently supported
-platforms.
+- [Kubernetes Clusters](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov)
 
-### Prerequisite Software
+## Featured Technologies
+
+- [Container Orchestration](https://www.ibm.com/cloud-computing/bluemix/containers)
+- [Microservices](https://www.ibm.com/developerworks/community/blogs/5things/entry/5_things_to_know_about_microservices?lang=en)
+- [Node.js](https://nodejs.org/)
+
+# Prerequisite
 
 The following pieces of software are required to run pubgredzone locally:
 
@@ -45,17 +49,17 @@ depending on your os:
   $ pip install livestreamer
 ```
 
-### Installing pubgredzone
+Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/README.md) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
 
-* Clone the repo and install with npm:
+# Steps
 
-```shell
-  $ git clone git@github.com:eggshell/pubgredzone.git
-  $ cd pubgredzone
-  $ npm install .
-```
+1. [Get an OAuth Token for livestreamer](#1-getting-an-oauth-token-for-twitch)
+2. [Build the images](#2-build-the-images)
+3. [Deploy locally](#3-running-it-locally)
+4. [Deploy using Docker](#4-running-in-a-container)
+5. [Deploy using Kubernetes](#5-running-in-kubernetes)
 
-### Getting an OAuth Token
+## 1. Getting an OAuth Token for Twitch
 
 1. On a machine with a browser installed, run the following:
 
@@ -71,12 +75,32 @@ depending on your os:
    URL with `access_token=<TOKEN>`. This is your OAuth token, copy it down and
    proceed to the next section.
 
-### Running It Locally
+## 2. Build the Images
+
+* Clone the repo and install with npm:
+
+```shell
+ $ git clone https://github.com/IBM/pubgredzone.git
+ $ cd pubgredzone
+ $ npm install .
+```
+
+* Build and Push the Docker Image. You would need to push it if you want to deploy the application in Kubernetes.
+
+```shell
+$ docker build -t <docker_username>/pubgredzone-ocr -f deploy/images/ocr.Dockerfile
+$ docker build -t <docker_username>/pubgredzone-app -f deploy/images/app.Dockerfile
+$ docker push <docker_username>/pubgredzone-ocr
+$ docker push <docker_username>/pubgredzone-app
+```
+
+## 3. Running It Locally
 
 * Create an environment variable for your token.
 
 ```shell
   $ export token="YOUR_OAUTH_TOKEN"
+  $ export OCR_HOST=localhost:3001
 ```
 
 * Create an environment variable for the OCR_HOST. This can be set to localhost:3001
@@ -97,15 +121,9 @@ depending on your os:
 Now you can open a browser and navigate to `http://localhost:3000` to watch
 pubgredzone.
 
-## Running in a Container
+## 4. Running in a Container
 
 You can also run pubgredzone in a docker container.
-
-* Clone the repo:
-
-```shell
-  $ git clone git@github.com:eggshell/pubgredzone.git
-```
 
 * Get an OAuth token using the instructions above, and export it as an
   environment variable:
@@ -114,27 +132,65 @@ You can also run pubgredzone in a docker container.
   $ export token="YOUR_OAUTH_TOKEN"
 ```
 
-* The app container requires a value for the OCR_HOST. Set the OCR_HOST to match
-  the host and port of the OCR container.
-
-```shell
-  $ export OCR_HOST="IP:3001"
-```
-
-* Build the docker images:
-
-```shell
-  $ cd pubgredzone
-  $ docker build -f deploy/images/app.Dockerfile -t pubgredzone:app .
-  $ docker build -f deploy/images/ocr.Dockerfile -t pubgredzone:ocr .
-```
-
 * Start up the containers:
 
 ```shell
-  $ docker run -d -p 3001:3001 --name pubgredzone-ocr pubgredzone:ocr
-  $ docker run -d -e token=$token -e OCR_HOST=$OCR_HOST -p 3000:3000 --name pubgredzone-app pubgredzone:app
+  $ docker run -d --name pubgredzone-ocr <docker_username>/pubgredzone-ocr
+  $ docker run --name pubgredzone-app --link pubgredzone-ocr:pubgredzone-ocr -p 3000:3000 -e OCR_HOST=pubgredzone-ocr:3001 -e token=$token <docker_username>/pubgredzone-app
 ```
+
+Now you can open a browser and navigate to `http://localhost:3000` to watch
+pubgredzone.
+
+## 5. Running in Kubernetes
+
+1. Create a Kubernetes Secret for your OAuth token. You will need to encode the data you want in Base64 for the Kubernetes Secret.
+
+```shell
+$ echo -n "YOUR_OAUTH_TOKEN" | base64
+```
+
+2. Modify the token-secret.yaml file to use your token
+
+```yaml
+...
+data:
+  token: YOUR_OAUTH_TOKEN_IN_BASE64
+```
+
+3. Finally, create the Kubernetes Secret.
+
+```shell
+$ kubectl create -f token-secret.yaml
+```
+
+4. Modify the `pubgredzone-app.yaml` and `pubgredzone-ocr.yaml` yaml files to use your image.
+
+```yaml
+...
+    containers:
+    - name: pubgredzone-app
+      image: <docker_username>/pubgredzone-app
+```
+
+5. Deploy the OCR service then the main application.
+
+```shell
+$ kubectl apply -f pubgredzone-ocr.yaml
+$ kubectl apply -f pubgredzone-app.yaml
+```
+
+* To access your application. You would need the public IP address of your cluster. If you don't have a load balancer, you can use the Node Port.
+
+```shell
+# For clusters provisioned with Bluemix
+$ bx cs workers YOUR_CLUSTER_NAME
+
+# For Minikube
+$ minikube ip
+```
+
+* Now you can go to `http://IP_ADDRESS:30080`
 
 ## License
 
