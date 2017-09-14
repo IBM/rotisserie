@@ -1,0 +1,116 @@
+body {
+  /*padding-top: 50px;*/
+  background-color: #FFF;
+}
+.streamer-name {
+  text-align: center;
+  color: #000;
+  font-style: italic;
+  font-weight: lighter;
+}
+
+#slidecontainer {
+  width: 250px;
+}
+
+.slider {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+}
+
+.container-button {
+  padding-top: 10px;
+  text-align: center;
+}
+
+.btn {
+  -webkit-box-shadow: 0 10px 6px -6px #43A047;
+  -moz-box-shadow: 0 10px 6px -6px #43A047;
+  box-shadow: 0 10px 6px -6px #43A047;
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+}
+
+.about-section {
+  padding-top: 10px;
+  padding-left: 250px;
+  padding-right: 250px;
+  text-align: center;
+  color: #000;
+}
+
+.navbar {
+    -webkit-box-shadow: 0 8px 6px -6px #43A047;
+    -moz-box-shadow: 0 8px 6px -6px #43A047;
+    box-shadow: 0 8px 6px -6px #43A047;
+
+    /* the rest of your styling */
+}
+
+.navbar-inverse {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.navbar-inverse .navbar-brand {
+    color: #000;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: #000;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover {
+    color: #000;
+    background-color: #66BB6A;
+}
+
+/*.navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .active > a:focus,
+.navbar-inverse .navbar-nav > .active > a:hover {
+    color: #000;
+    background-color: #2196F3;
+}*/
+
+.twitch-container {
+  text-align: center;
+}
+
+.twitch-iframe {
+/*
+    box-shadow:
+    inset 0px 11px 8px -10px black,
+    inset 0px -11px 8px -10px black;*/
+    -webkit-box-shadow: 10px 10px 6px -6px #000;
+    -moz-box-shadow: 10px 10px 6px -6px #000;
+    box-shadow: 10px 10px 6px -6px #000;
+}

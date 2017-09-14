@@ -100,7 +100,6 @@ $ docker push <docker_username>/pubgredzone-app
 
 ```shell
   $ export token="YOUR_OAUTH_TOKEN"
-  $ export OCR_HOST=localhost:3001
 ```
 
 * Create an environment variable for the OCR_HOST. This can be set to localhost:3001
