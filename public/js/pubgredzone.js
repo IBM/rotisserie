@@ -40,20 +40,23 @@ slider.oninput = function() {
   $("#navbar").css("borderColor", "rgb(" +
       Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
 
-  $("#buttonView").css("background", 'rgb(' +
+  $("#buttonView").css("background", "rgb(" +
       Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
-  $("#buttonView").css("borderColor", 'rgb(' +
+  $("#buttonView").css("borderColor", "rgb(" +
       Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
-  $("#buttonFork").css("background", 'rgb(' +
+  $("#buttonFork").css("background", "rgb(" +
       Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
-  $("#buttonFork").css("borderColor", 'rgb(' +
+  $("#buttonFork").css("borderColor", "rgb(" +
       Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
   $("#buttonView").css("color", "rgb(" +
       Math.floor(a) + "," + Math.floor(b) + "," + Math.floor(c) + ")");
   $("#buttonFork").css("color", "rgb(" +
       Math.floor(a) + "," + Math.floor(b) + "," + Math.floor(c) + ")");
 
-  document.getElementById("navbar").style.boxShadow = "0 8px 6px -6px rgb(" + Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
-  document.getElementById("buttonView").style.boxShadow = "0 10px 6px -6px rgb(" + Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
-  document.getElementById("buttonFork").style.boxShadow = "0 10px 6px -6px rgb(" + Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
+  document.getElementById("navbar").style.boxShadow = "0 8px 6px -6px rgb(" +
+      Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
+  document.getElementById("buttonView").style.boxShadow = "0 10px 6px -6px rgb(" +
+      Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
+  document.getElementById("buttonFork").style.boxShadow = "0 10px 6px -6px rgb(" +
+      Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
 };
