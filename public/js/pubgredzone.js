@@ -55,8 +55,10 @@ slider.oninput = function() {
 
   document.getElementById("navbar").style.boxShadow = "0 8px 6px -6px rgb(" +
       Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
-  document.getElementById("buttonView").style.boxShadow = "0 10px 6px -6px rgb(" +
+  document.getElementById("buttonView").style.boxShadow =
+      "0 10px 6px -6px rgb(" +
       Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
-  document.getElementById("buttonFork").style.boxShadow = "0 10px 6px -6px rgb(" +
+  document.getElementById("buttonFork").style.boxShadow =
+      "0 10px 6px -6px rgb(" +
       Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
 };
