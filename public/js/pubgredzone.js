@@ -17,35 +17,43 @@ $(document).ready(function() {
   }
 });
 
-var slider = document.getElementById("myRange");
+let slider = document.getElementById("myRange");
 
 slider.oninput = function() {
-
   // body and button text color
-  var a = (255 * this.value) / 100;
-  var b = (255 * this.value) / 100;
-  var c = (255 * this.value) / 100;
+  let a = (255 * this.value) / 100;
+  let b = (255 * this.value) / 100;
+  let c = (255 * this.value) / 100;
   // navbar and button - background,border color
-  var a1 = (76 * this.value) / 100;
-  var b1 = (175 * this.value) / 100;
-  var c1 = (80 * this.value) / 100;
+  let a1 = (76 * this.value) / 100;
+  let b1 = (175 * this.value) / 100;
+  let c1 = (80 * this.value) / 100;
   // shadow color
-  var a2 = (67 * this.value) / 100
-  var b2 = (160 * this.value) / 100
-  var c2 = (71 * this.value) / 100
-  document.body.style.backgroundColor = 'rgb(' + Math.floor(a) + ',' + Math.floor(b) + ',' + Math.floor(c) + ')';
+  let a2 = (67 * this.value) / 100;
+  let b2 = (160 * this.value) / 100;
+  let c2 = (71 * this.value) / 100;
+  document.body.style.backgroundColor = "rgb(" +
+      Math.floor(a) + "," + Math.floor(b) + "," + Math.floor(c) + ")";
 
-  $('#navbar').css('background', 'rgb(' + Math.floor(a1) + ',' + Math.floor(b1) + ',' + Math.floor(c1) + ')');
-  $('#navbar').css('borderColor', 'rgb(' + Math.floor(a1) + ',' + Math.floor(b1) + ',' + Math.floor(c1) + ')');
+  $("#navbar").css("background", "rgb(" +
+      Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
+  $("#navbar").css("borderColor", "rgb(" +
+      Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
 
-  $('#buttonView').css('background', 'rgb(' + Math.floor(a1) + ',' + Math.floor(b1) + ',' + Math.floor(c1) + ')');
-  $('#buttonView').css('borderColor', 'rgb(' + Math.floor(a1) + ',' + Math.floor(b1) + ',' + Math.floor(c1) + ')');
-  $('#buttonFork').css('background', 'rgb(' + Math.floor(a1) + ',' + Math.floor(b1) + ',' + Math.floor(c1) + ')');
-  $('#buttonFork').css('borderColor', 'rgb(' + Math.floor(a1) + ',' + Math.floor(b1) + ',' + Math.floor(c1) + ')');
-  $('#buttonView').css('color', 'rgb(' + Math.floor(a) + ',' + Math.floor(b) + ',' + Math.floor(c) + ')');
-  $('#buttonFork').css('color', 'rgb(' + Math.floor(a) + ',' + Math.floor(b) + ',' + Math.floor(c) + ')');
+  $("#buttonView").css("background", 'rgb(' +
+      Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
+  $("#buttonView").css("borderColor", 'rgb(' +
+      Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
+  $("#buttonFork").css("background", 'rgb(' +
+      Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
+  $("#buttonFork").css("borderColor", 'rgb(' +
+      Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
+  $("#buttonView").css("color", "rgb(" +
+      Math.floor(a) + "," + Math.floor(b) + "," + Math.floor(c) + ")");
+  $("#buttonFork").css("color", "rgb(" +
+      Math.floor(a) + "," + Math.floor(b) + "," + Math.floor(c) + ")");
 
-  document.getElementById("navbar").style.boxShadow = '0 8px 6px -6px rgb(' + Math.floor(a2) + ',' + Math.floor(b2) + ',' + Math.floor(c2) + ')';
-  document.getElementById("buttonView").style.boxShadow = '0 10px 6px -6px rgb(' + Math.floor(a2) + ',' + Math.floor(b2) + ',' + Math.floor(c2) + ')';
-  document.getElementById("buttonFork").style.boxShadow = '0 10px 6px -6px rgb(' + Math.floor(a2) + ',' + Math.floor(b2) + ',' + Math.floor(c2) + ')';
-}
+  document.getElementById("navbar").style.boxShadow = "0 8px 6px -6px rgb(" + Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
+  document.getElementById("buttonView").style.boxShadow = "0 10px 6px -6px rgb(" + Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
+  document.getElementById("buttonFork").style.boxShadow = "0 10px 6px -6px rgb(" + Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
+};
