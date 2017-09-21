@@ -15,7 +15,7 @@ $(document).ready(function() {
       console.log((currentStream != top_result["stream_url"] ) )
       $("#streamer_name").text(top_result["stream_name"] + " - " + top_result["alive"]);
       $("#next_closest").text(second_result["stream_name"] + " - " + second_result["alive"]);
-      if (currentStream != top_result["stream_url"] ) {
+      if (currentStream["alive"] > 15 && currentStream != top_result["stream_url"] ) {
         $("#twitch_iframe").prop("src", top_result["stream_url"]);
       }
     });
