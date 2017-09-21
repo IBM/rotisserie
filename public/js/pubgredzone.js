@@ -6,12 +6,15 @@ $(document).ready(function() {
    * Updates webpage on a 15s interval if a new best stream is determined.
    */
   function updateIframe() {
-    $.getJSON("/current", function(data) {
+    $.getJSON("/all", function(data) {
       let currentStream = $("#twitch_iframe").prop("src");
+      top_result = data[0]
       console.log(currentStream);
-      if (currentStream != data["stream_url"] && 15 < data["alive"]) {
-        $("#twitch_iframe").prop("src", data["stream_url"]);
-        $("#streamer_name").text(data["stream_name"] + " - " + data["alive"]);
+      console.log(top_result);
+      console.log((currentStream != top_result["stream_url"] ) )
+      $("#streamer_name").text(top_result["stream_name"] + " - " + top_result["alive"]);
+      if (currentStream != top_result["stream_url"] ) {
+        $("#twitch_iframe").prop("src", top_result["stream_url"]);
       }
     });
   }
