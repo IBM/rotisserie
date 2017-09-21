@@ -9,7 +9,7 @@ $(document).ready(function() {
     $.getJSON("/current", function(data) {
       let currentStream = $("#twitch_iframe").prop("src");
       console.log(currentStream);
-      if (currentStream != data["stream_url"]) {
+      if (currentStream != data["stream_url"] && 15 < data["alive"]) {
         $("#twitch_iframe").prop("src", data["stream_url"]);
         $("#streamer_name").text(data["stream_name"] + " - " + data["alive"]);
       }
