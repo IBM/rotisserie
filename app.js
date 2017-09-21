@@ -134,6 +134,7 @@ function cropScreenshot(options) {
     if (fs.existsSync(options.thumbnailsDir + options.streamName + ".png")) {
       gm(options.thumbnailsDir + options.streamName + ".png")
         .crop(28, 20, 1190, 25)
+        .type(Grayscale)
         .write(options.cropsDir + options.streamName + ".png", function(err) {
           resolve(options);
           if (err) reject(err);
