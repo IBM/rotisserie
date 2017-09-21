@@ -8,11 +8,13 @@ $(document).ready(function() {
   function updateIframe() {
     $.getJSON("/all", function(data) {
       let currentStream = $("#twitch_iframe").prop("src");
-      top_result = data[0]
+      top_result = data[0];
+      second_result = data[1];
       console.log(currentStream);
       console.log(top_result);
       console.log((currentStream != top_result["stream_url"] ) )
       $("#streamer_name").text(top_result["stream_name"] + " - " + top_result["alive"]);
+      $("#next_closest").text(second_result["stream_name"] + " - " + second_result["alive"]);
       if (currentStream != top_result["stream_url"] ) {
         $("#twitch_iframe").prop("src", top_result["stream_url"]);
       }
