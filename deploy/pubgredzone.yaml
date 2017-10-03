@@ -120,6 +120,10 @@ spec:
         backend:
           serviceName: pubgredzone-app
           servicePort: 3000
+      - path: /all
+        backend:
+          serviceName: pubgredzone-app
+          servicePort: 3000
   - host: pubgred.zone
     http:
       paths:
@@ -131,3 +135,7 @@ spec:
         backend:
           serviceName: pubgredzone-static
           servicePort: 8082
+      - path: /all
+        backend:
+          serviceName: pubgredzone-app
+          servicePort: 3000
