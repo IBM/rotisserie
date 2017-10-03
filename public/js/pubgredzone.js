@@ -67,13 +67,21 @@ slider.oninput = function() {
       Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
   $("#buttonView").css("borderColor", "rgb(" +
       Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
+  $("#buttonView").css("color", "rgb(" +
+      Math.floor(a) + "," + Math.floor(b) + "," + Math.floor(c) + ")");
+
   $("#buttonFork").css("background", "rgb(" +
       Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
   $("#buttonFork").css("borderColor", "rgb(" +
       Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
-  $("#buttonView").css("color", "rgb(" +
-      Math.floor(a) + "," + Math.floor(b) + "," + Math.floor(c) + ")");
   $("#buttonFork").css("color", "rgb(" +
+      Math.floor(a) + "," + Math.floor(b) + "," + Math.floor(c) + ")");
+
+  $("#buttonPin").css("background", "rgb(" +
+      Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
+  $("#buttonPin").css("borderColor", "rgb(" +
+      Math.floor(a1) + "," + Math.floor(b1) + "," + Math.floor(c1) + ")");
+  $("#buttonPin").css("color", "rgb(" +
       Math.floor(a) + "," + Math.floor(b) + "," + Math.floor(c) + ")");
 
   document.getElementById("navbar").style.boxShadow = "0 8px 6px -6px rgb(" +
