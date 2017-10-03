@@ -6,6 +6,10 @@ $(document).ready(function() {
    * Updates webpage on a 15s interval if a new best stream is determined.
    */
   function updateIframe() {
+    var pin =  $("#buttonPin").attr("value");
+    if (pin === "on") {
+	  return;
+    }
     $.getJSON("/all", function(data) {
       let currentStream = $("#twitch_iframe").prop("src");
       top_result = data[0];
@@ -21,6 +25,20 @@ $(document).ready(function() {
     });
   }
 });
+
+$("#buttonPin").click(
+    function() {
+	var $this = $(this);
+	var pinned = $this.attr("value");
+	if (pinned === "off") {
+	  $this.attr("value", "on");
+	  $this.text("Unpin Stream");
+	} else {
+	  $this.attr("value", "off");
+	  $this.text("Pin Stream")
+	}
+    }
+);
 
 let slider = document.getElementById("myRange");
 
