@@ -194,3 +194,17 @@ $ minikube ip
 ## License
 
 pubgredzone is currently licensed under the [MIT LICENSE](LICENSE).
+
+## Production Detail
+
+The production version of pubgredzone has slightly different operational procedures. The production kubernetes manifest is located in the deploy directory. It is typically interacted with via the provided Makefile. Major differences between the production pubgredzone and the one used in the developer journey are use of ingress controllers in kuberenetes and adding SSL.
+
+To upgrade the site:
+
+
+```
+make roll
+```
+
+Note: this depends on you deploying with a unique sha. See the 'make-rev' rule in the Makefile. In most cases ``git pull; make roll`` should work. In cases where a roll failed or the app failed for reasons not connected to the code, a dummy commit might need to be added before re-rolling. Please only roll from master.
+
