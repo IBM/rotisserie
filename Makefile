@@ -28,3 +28,5 @@ delete-deployments:
 	kubectl delete deployment pubgredzone-ocr
 
 redeploy: delete-deployments deploy
+
+roll: set-rev images tag-images upload-images deploy
