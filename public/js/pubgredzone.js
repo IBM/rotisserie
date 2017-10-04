@@ -6,38 +6,42 @@ $(document).ready(function() {
    * Updates webpage on a 15s interval if a new best stream is determined.
    */
   function updateIframe() {
-    var pin =  $("#buttonPin").attr("value");
+    let pin = $("#buttonPin").attr("value");
     if (pin === "on") {
-	  return;
+      return;
     }
     $.getJSON("/all", function(data) {
       let currentStream = $("#twitch_iframe").prop("src");
-      top_result = data[0];
-      second_result = data[1];
+      let topResult = data[0];
+      let secondResult = data[1];
       console.log(currentStream);
-      console.log(top_result);
-      console.log((currentStream != top_result["stream_url"] ) )
-      $("#streamer_name").text(top_result["stream_name"] + " - " + top_result["alive"]);
-      $("#next_closest").text(second_result["stream_name"] + " - " + second_result["alive"]);
-      if (currentStream != top_result["stream_url"] ) {
-        $("#twitch_iframe").prop("src", top_result["stream_url"]);
+      console.log(topResult);
+      console.log((currentStream != topResult["stream_url"]));
+
+      $("#streamer_name").text(topResult["stream_name"]
+        + " - " + topResult["alive"]);
+      $("#next_closest").text(secondResult["stream_name"]
+        + " - " + secondResult["alive"]);
+
+      if (currentStream != topResult["stream_url"] ) {
+        $("#twitch_iframe").prop("src", topResult["stream_url"]);
       }
     });
   }
 });
 
 $("#buttonPin").click(
-    function() {
-	var $this = $(this);
-	var pinned = $this.attr("value");
-	if (pinned === "off") {
-	  $this.attr("value", "on");
-	  $this.text("Unpin Stream");
-	} else {
-	  $this.attr("value", "off");
-	  $this.text("Pin Stream")
-	}
+  function() {
+    let $this = $(this);
+    let pinned = $this.attr("value");
+    if (pinned === "off") {
+      $this.attr("value", "on");
+      $this.text("Unpin Stream");
+    } else {
+      $this.attr("value", "off");
+      $this.text("Pin Stream");
     }
+  }
 );
 
 let slider = document.getElementById("myRange");
