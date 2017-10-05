@@ -32,7 +32,7 @@ $(document).ready(function() {
 
 $("#buttonPin").click(
   function() {
-    let $this = $(this);
+    let $this = $("#buttonPin");
     let pinned = $this.attr("value");
     if (pinned === "off") {
       $this.attr("value", "on");
@@ -94,6 +94,9 @@ slider.oninput = function() {
       "0 10px 6px -6px rgb(" +
       Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
   document.getElementById("buttonFork").style.boxShadow =
+      "0 10px 6px -6px rgb(" +
+      Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
+  document.getElementById("buttonPin").style.boxShadow =
       "0 10px 6px -6px rgb(" +
       Math.floor(a2) + "," + Math.floor(b2) + "," + Math.floor(c2) + ")";
 };

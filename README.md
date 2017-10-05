@@ -88,10 +88,10 @@ Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/ge
 * Build and Push the Docker Image. You would need to push it if you want to deploy the application in Kubernetes.
 
 ```shell
-$ docker build -t <docker_username>/rotisserie-ocr -f deploy/images/ocr.Dockerfile
-$ docker build -t <docker_username>/rotisserie-app -f deploy/images/app.Dockerfile
-$ docker push <docker_username>/rotisserie-ocr
-$ docker push <docker_username>/rotisserie-app
+$ docker build -t <docker_username>/pubgredzone-ocr -f deploy/images/ocr.Dockerfile .
+$ docker build -t <docker_username>/pubgredzone-app -f deploy/images/app.Dockerfile .
+$ docker push <docker_username>/pubgredzone-ocr
+$ docker push <docker_username>/pubgredzone-app
 ```
 
 ## 3. Running It Locally
