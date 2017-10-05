@@ -88,8 +88,8 @@ Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/ge
 * Build and Push the Docker Image. You would need to push it if you want to deploy the application in Kubernetes.
 
 ```shell
-$ docker build -t <docker_username>/pubgredzone-ocr -f deploy/images/ocr.Dockerfile
-$ docker build -t <docker_username>/pubgredzone-app -f deploy/images/app.Dockerfile
+$ docker build -t <docker_username>/pubgredzone-ocr -f deploy/images/ocr.Dockerfile .
+$ docker build -t <docker_username>/pubgredzone-app -f deploy/images/app.Dockerfile .
 $ docker push <docker_username>/pubgredzone-ocr
 $ docker push <docker_username>/pubgredzone-app
 ```
@@ -207,4 +207,3 @@ make roll
 ```
 
 Note: this depends on you deploying with a unique sha. See the 'make-rev' rule in the Makefile. In most cases ``git pull; make roll`` should work. In cases where a roll failed or the app failed for reasons not connected to the code, a dummy commit might need to be added before re-rolling. Please only roll from master.
-
