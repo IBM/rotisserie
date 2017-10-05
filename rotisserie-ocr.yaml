@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: pubgredzone-ocr
+  name: rotisserie-ocr
   labels:
     app: ocr
 spec:
@@ -14,7 +14,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: pubgredzone-ocr
+  name: rotisserie-ocr
 spec:
   replicas: 1
   template:
@@ -23,8 +23,8 @@ spec:
         app: ocr
     spec:
       containers:
-      - name: pubgredzone-ocr
-        image: anthonyamanse/pubgredzone-ocr
+      - name: rotisserie-ocr
+        image: anthonyamanse/rotisserie-ocr
         imagePullPolicy: Always
         ports:
         - containerPort: 3001

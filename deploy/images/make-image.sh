@@ -12,7 +12,7 @@ src_dir=$(realpath $images_dir/../..)
 build_dir=$(mktemp -d)
 trap "rm -rf $build_dir" EXIT
 
-cp -rp $src_dir $build_dir/pubgredzone
-cp $dockerfile $build_dir/pubgredzone/Dockerfile
+cp -rp $src_dir $build_dir/rotisserie
+cp $dockerfile $build_dir/rotisserie/Dockerfile
 
-sudo docker build $build_dir/pubgredzone -t $image_name
+sudo docker build $build_dir/rotisserie -t $image_name
