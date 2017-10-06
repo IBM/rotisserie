@@ -105,7 +105,7 @@ function takeScreenshot(options) {
       console.log("taking screenshot of stream: " + options.streamName);
       new FFMpeg(options.clipsDir + options.streamName + ".mp4")
         .takeScreenshots({
-          count: 1,
+          timestamps: [0],
           folder: options.thumbnailsDir,
           filename: options.streamName + ".png",
         })
