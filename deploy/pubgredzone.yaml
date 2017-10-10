@@ -4,7 +4,7 @@ metadata:
   name: pubgredzone-static
 spec:
   ports:
-  - port: 8082
+  - port: 80
     protocol: TCP
     name: pubgredzone-static
   selector:
@@ -51,9 +51,9 @@ spec:
         imagePullPolicy: Always
         env:
         - name: NGINX_LISTEN
-          value: "*:8082"
+          value: "*:80"
         ports:
-        - containerPort: 8082
+        - containerPort: 80
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -75,7 +75,7 @@ spec:
                 name: pubgredzone
                 key: api-key
           - name: OCR_HOST
-            value: pubgredzone.ibmesports.com
+            value: pwp-pubgredzone2.us-south.containers.mybluemix.net
           ports:
             - containerPort: 3000
 ---
@@ -100,31 +100,8 @@ kind: Ingress
 metadata:
   name: pubgredzone-ingress
 spec:
-  tls:
-    - hosts: 
-      - pubgred.zone
-      secretName: pubgredzone
   rules:
-  - host: pubgredzone.ibmesports.com
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: pubgredzone-static
-          servicePort: 8082
-      - path: /process_pubg
-        backend:
-          serviceName: pubgredzone-ocr
-          servicePort: 3001
-      - path: /current
-        backend:
-          serviceName: pubgredzone-app
-          servicePort: 3000
-      - path: /all
-        backend:
-          serviceName: pubgredzone-app
-          servicePort: 3000
-  - host: pubgred.zone
+  - host: pwp-pubgredzone2.us-south.containers.mybluemix.net
     http:
       paths:
       - path: /current
@@ -134,7 +111,7 @@ spec:
       - path: /
         backend:
           serviceName: pubgredzone-static
-          servicePort: 8082
+          servicePort: 80
       - path: /all
         backend:
           serviceName: pubgredzone-app
