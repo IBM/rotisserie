@@ -139,3 +139,18 @@ spec:
         backend:
           serviceName: pubgredzone-app
           servicePort: 3000
+  - host: rotisserie.tv
+    http:
+      paths:
+      - path: /current
+        backend:
+          serviceName: pubgredzone-app
+          servicePort: 3000
+      - path: /
+        backend:
+          serviceName: pubgredzone-static
+          servicePort: 8082
+      - path: /all
+        backend:
+          serviceName: pubgredzone-app
+          servicePort: 3000
