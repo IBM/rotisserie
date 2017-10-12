@@ -24,7 +24,6 @@ let currentStream = {
   "stream_url": "https://example.com",
 };
 let allStreams = [currentStream];
-
 /**
  * Ensures given filesystem directory if it does not exist.
  * @param {string} dirPath - Relative or absolute path to
@@ -54,7 +53,7 @@ function ensureDir(dirPath) {
  */
 function listStreams(twitch, callback) {
   let parameters = {"game": "PLAYERUNKNOWN\'S BATTLEGROUNDS",
-    "language": "en", "length": 100};
+    "language": "en", "limit": 25};
 
   twitch.streams.live(parameters, function(err, body) {
     if (err) console.log(err);
@@ -106,13 +105,22 @@ function takeScreenshot(options) {
       console.log("taking screenshot of stream: " + options.streamName);
       new FFMpeg(options.clipsDir + options.streamName + ".mp4")
         .takeScreenshots({
-          count: 1,
+          timestamps: [0],
           folder: options.thumbnailsDir,
           filename: options.streamName + ".png",
         })
         .on("end", function() {
           resolve(options);
+        })
+        .on("error", function(err) {
+          fs.unlinkSync(options.clipsDir + options.streamName + ".mp4");
+          console.log("Deleted " + options.clipsDir
+                        + options.streamName + ".mp4");
+          reject(new Error("An error occurred: " + err.message));
         });
+    } else {
+      reject(new Error("File " + options.clipsDir
+        + options.streamName + ".mp4 not found."));
     }
   });
 }
@@ -192,9 +200,9 @@ function updateStreamsList(cropsDir) {
   // get list of twitch streams and record each one
   listStreams(twitch, function(response) {
     let streamsList = response;
+    console.log(streamsList.length);
     let array = [];
     let newAllStreams = [];
-
     for (let stream in streamsList) {
       let streamName = streamsList[stream].channel.display_name;
       const data = {
@@ -209,12 +217,12 @@ function updateStreamsList(cropsDir) {
         .then(cropScreenshot)
         .then(ocrCroppedShot)
         .then(function(streamobj) {
+          console.log(streamobj.name + " = " + streamobj.alive + " alive.");
           array.push(streamobj);
         }).catch((error) => {
           console.log(error.message);
         });
     }
-
     setTimeout(function() {
       array.sort(function(a, b) {
         return a.alive - b.alive;
@@ -230,7 +238,7 @@ function updateStreamsList(cropsDir) {
       } else {
         console.log("Empty array, not switching");
       }
-    }, 14000);
+    }, 25000);
   });
 }
 
@@ -268,10 +276,10 @@ function main() {
   // init website with lowest stream.
   updateStreamsList(cropsDir);
 
-  // continue searching for lowest stream every 15 seconds.
+  // continue searching for lowest stream every 30 seconds.
   setInterval(function() {
     updateStreamsList(cropsDir);
-  }, 15000);
+  }, 30000);
 
   // serve index.html
   app.get("/", function(req, res) {
