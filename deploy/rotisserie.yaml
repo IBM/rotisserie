@@ -139,3 +139,18 @@ spec:
         backend:
           serviceName: rotisserie-app
           servicePort: 3000
+  - host: rotisserie.tv
+    http:
+      paths:
+      - path: /current
+        backend:
+          serviceName: rotisserie-app
+          servicePort: 3000
+      - path: /
+        backend:
+          serviceName: rotisserie-static
+          servicePort: 8082
+      - path: /all
+        backend:
+          serviceName: rotisserie-app
+          servicePort: 3000
