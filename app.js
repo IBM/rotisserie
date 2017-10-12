@@ -149,7 +149,7 @@ function cropScreenshot(options) {
 
 /**
  * OCR the data (via web request)
- * Uses the pubgredzone-ocr microservice
+ * Uses the rotisserie-ocr microservice
  * @param {object} options - object of other params
  * @return {promise} - a promise that is resolved if the a screenshot is ocr'd
  * successfully.

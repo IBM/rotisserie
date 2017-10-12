@@ -1,13 +1,13 @@
-# pubgredzone
+# rotisserie
 
 [![npm version](https://badge.fury.io/js/pubgredzone.svg)](https://badge.fury.io/js/pubgredzone)
-[![Build Status](https://api.travis-ci.org/IBM/pubgredzone.svg?branch=master)](https://travis-ci.org/IBM/pubgredzone)
-[![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/eggshell/pubgredzone/)
+[![Build Status](https://api.travis-ci.org/IBM/rotisserie.svg?branch=master)](https://travis-ci.org/IBM/rotisserie)
+[![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/eggshell/rotisserie/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 [**LIVE NOW**](http://pubgred.zone)
 
-pubgredzone takes the concept of the [red zone](https://en.wikipedia.org/wiki/Red_zone_(gridiron_football))
+rotisserie takes the concept of the [red zone](https://en.wikipedia.org/wiki/Red_zone_(gridiron_football))
 in American football and applies it to the popular online battle royale game
 [PLAYERUNKNOWN'S BATTLEGROUNDS](https://www.playbattlegrounds.com/main.pu). The
 idea is to always be viewing the most popular PUBG twitch stream with the least
@@ -25,7 +25,7 @@ amount of people alive in-game.
 
 # Prerequisite
 
-The following pieces of software are required to run pubgredzone locally:
+The following pieces of software are required to run rotisserie locally:
 
 * [tesseract-ocr](https://github.com/tesseract-ocr/tesseract)
 * [ffmpeg](https://ffmpeg.org/)
@@ -80,18 +80,18 @@ Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/ge
 * Clone the repo and install with npm:
 
 ```shell
- $ git clone https://github.com/IBM/pubgredzone.git
- $ cd pubgredzone
+ $ git clone https://github.com/IBM/rotisserie.git
+ $ cd rotisserie
  $ npm install .
 ```
 
 * Build and Push the Docker Image. You would need to push it if you want to deploy the application in Kubernetes.
 
 ```shell
-$ docker build -t <docker_username>/pubgredzone-ocr -f deploy/images/ocr.Dockerfile
-$ docker build -t <docker_username>/pubgredzone-app -f deploy/images/app.Dockerfile
-$ docker push <docker_username>/pubgredzone-ocr
-$ docker push <docker_username>/pubgredzone-app
+$ docker build -t <docker_username>/rotisserie-ocr -f deploy/images/ocr.Dockerfile
+$ docker build -t <docker_username>/rotisserie-app -f deploy/images/app.Dockerfile
+$ docker push <docker_username>/rotisserie-ocr
+$ docker push <docker_username>/rotisserie-app
 ```
 
 ## 3. Running It Locally
@@ -109,7 +109,7 @@ $ docker push <docker_username>/pubgredzone-app
   $ export OCR_HOST="localhost:3001"
 ```
 
-* Navigate to the `pubgredzone` dir if you aren't there already, and start
+* Navigate to the `rotisserie` dir if you aren't there already, and start
   the app:
 
 ```shell
@@ -118,11 +118,11 @@ $ docker push <docker_username>/pubgredzone-app
 ```
 
 Now you can open a browser and navigate to `http://localhost:3000` to watch
-pubgredzone.
+rotisserie.
 
 ## 4. Running in a Container
 
-You can also run pubgredzone in a docker container.
+You can also run rotisserie in a docker container.
 
 * Get an OAuth token using the instructions above, and export it as an
   environment variable:
@@ -134,14 +134,16 @@ You can also run pubgredzone in a docker container.
 * Start up the containers:
 
 ```shell
-  $ docker run -d --name pubgredzone-ocr <docker_username>/pubgredzone-ocr
-  $ docker run --name pubgredzone-app --link pubgredzone-ocr:pubgredzone-ocr -p 3000:3000 -e OCR_HOST=pubgredzone-ocr:3001 -e token=$token <docker_username>/pubgredzone-app
+  $ docker run -d --name rotisserie-ocr <docker_username>/rotisserie-ocr
+  $ docker run --name rotisserie-app --link rotisserie-ocr:rotisserie-ocr -p 3000:3000 -e OCR_HOST=rotisserie-ocr:3001 -e token=$token <docker_username>/rotisserie-app
 ```
 
 Now you can open a browser and navigate to `http://localhost:3000` to watch
-pubgredzone.
+rotisserie.
 
 ## 5. Running in Kubernetes
+
+**note**: Ensure your `$OCR_HOST` environment variable is set to the `cluster_public_ip:3001`.
 
 1. Create a Kubernetes Secret for your OAuth token. You will need to encode the data you want in Base64 for the Kubernetes Secret.
 
@@ -163,20 +165,20 @@ data:
 $ kubectl create -f token-secret.yaml
 ```
 
-4. Modify the `pubgredzone-app.yaml` and `pubgredzone-ocr.yaml` yaml files to use your image.
+4. Modify the `rotisserie-app.yaml` and `rotisserie-ocr.yaml` yaml files to use your image.
 
 ```yaml
 ...
     containers:
-    - name: pubgredzone-app
-      image: <docker_username>/pubgredzone-app
+    - name: rotisserie-app
+      image: <docker_username>/rotisserie-app
 ```
 
 5. Deploy the OCR service then the main application.
 
 ```shell
-$ kubectl apply -f pubgredzone-ocr.yaml
-$ kubectl apply -f pubgredzone-app.yaml
+$ kubectl apply -f rotisserie-ocr.yaml
+$ kubectl apply -f rotisserie-app.yaml
 ```
 
 * To access your application. You would need the public IP address of your cluster. If you don't have a load balancer, you can use the Node Port.
@@ -191,13 +193,9 @@ $ minikube ip
 
 * Now you can go to `http://IP_ADDRESS:30080`
 
-## License
+### Production Detail
 
-pubgredzone is currently licensed under the [MIT LICENSE](LICENSE).
-
-## Production Detail
-
-The production version of pubgredzone has slightly different operational procedures. The production kubernetes manifest is located in the deploy directory. It is typically interacted with via the provided Makefile. Major differences between the production pubgredzone and the one used in the developer journey are use of ingress controllers in kuberenetes and adding SSL.
+The production version of rotisserie has slightly different operational procedures. The production kubernetes manifest is located in the deploy directory. It is typically interacted with via the provided Makefile. Major differences between the production rotisserie and the one used in the developer journey are use of ingress controllers in kuberenetes and adding SSL.
 
 To upgrade the site:
 
@@ -208,3 +206,7 @@ make roll
 
 Note: this depends on you deploying with a unique sha. See the 'make-rev' rule in the Makefile. In most cases ``git pull; make roll`` should work. In cases where a roll failed or the app failed for reasons not connected to the code, a dummy commit might need to be added before re-rolling. Please only roll from master.
 
+
+## License
+
+rotisserie is currently licensed under the [MIT LICENSE](LICENSE).

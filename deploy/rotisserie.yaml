@@ -1,53 +1,53 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: pubgredzone-static
+  name: rotisserie-static
 spec:
   ports:
   - port: 8082
     protocol: TCP
-    name: pubgredzone-static
+    name: rotisserie-static
   selector:
-    app: pubgredzone-static
+    app: rotisserie-static
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: pubgredzone-ocr
+  name: rotisserie-ocr
 spec:
   ports:
   - port: 3001
     protocol: TCP
-    name: pubgredzone-ocr
+    name: rotisserie-ocr
   selector:
-    app: pubgredzone-ocr
+    app: rotisserie-ocr
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: pubgredzone-app
+  name: rotisserie-app
 spec:
   ports:
   - port: 3000
     protocol: TCP
-    name: pubgredzone-app
+    name: rotisserie-app
   selector:
-    app: pubgredzone-app
+    app: rotisserie-app
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: pubgredzone-static
+  name: rotisserie-static
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: pubgredzone-static
+        app: rotisserie-static
     spec:
       containers:
-      - name: pubgredzone-static
-        image: container-registry.dev.ibmesports.com/pubgredzone-static:$IMAGE_TAG
+      - name: rotisserie-static
+        image: container-registry.dev.ibmesports.com/rotisserie-static:$IMAGE_TAG
         imagePullPolicy: Always
         env:
         - name: NGINX_LISTEN
@@ -58,84 +58,84 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: pubgredzone-app
+  name: rotisserie-app
 spec:
   template:
     metadata:
       labels:
-        app: pubgredzone-app
+        app: rotisserie-app
     spec:
       containers:
-        - name: pubgredzone-app
-          image: container-registry.dev.ibmesports.com/pubgredzone-app:$IMAGE_TAG
+        - name: rotisserie-app
+          image: container-registry.dev.ibmesports.com/rotisserie-app:$IMAGE_TAG
           env:
           - name: token
             valueFrom:
               secretKeyRef:
-                name: pubgredzone
+                name: rotisserie
                 key: api-key
           - name: OCR_HOST
-            value: pubgredzone.ibmesports.com
+            value: rotisserie.ibmesports.com
           ports:
             - containerPort: 3000
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: pubgredzone-ocr
+  name: rotisserie-ocr
 spec:
   template:
     metadata:
       labels:
-        app: pubgredzone-ocr
+        app: rotisserie-ocr
     spec:
       containers:
-        - name: pubgredzone-ocr
-          image: container-registry.dev.ibmesports.com/pubgredzone-ocr:$IMAGE_TAG
+        - name: rotisserie-ocr
+          image: container-registry.dev.ibmesports.com/rotisserie-ocr:$IMAGE_TAG
           ports:
             - containerPort: 3001
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: pubgredzone-ingress
+  name: rotisserie-ingress
 spec:
   tls:
-    - hosts: 
+    - hosts:
       - pubgred.zone
-      secretName: pubgredzone
+      secretName: rotisserie
   rules:
-  - host: pubgredzone.ibmesports.com
+  - host: rotisserie.ibmesports.com
     http:
       paths:
       - path: /
         backend:
-          serviceName: pubgredzone-static
+          serviceName: rotisserie-static
           servicePort: 8082
       - path: /process_pubg
         backend:
-          serviceName: pubgredzone-ocr
+          serviceName: rotisserie-ocr
           servicePort: 3001
       - path: /current
         backend:
-          serviceName: pubgredzone-app
+          serviceName: rotisserie-app
           servicePort: 3000
       - path: /all
         backend:
-          serviceName: pubgredzone-app
+          serviceName: rotisserie-app
           servicePort: 3000
   - host: pubgred.zone
     http:
       paths:
       - path: /current
         backend:
-          serviceName: pubgredzone-app
+          serviceName: rotisserie-app
           servicePort: 3000
       - path: /
         backend:
-          serviceName: pubgredzone-static
+          serviceName: rotisserie-static
           servicePort: 8082
       - path: /all
         backend:
-          serviceName: pubgredzone-app
+          serviceName: rotisserie-app
           servicePort: 3000
