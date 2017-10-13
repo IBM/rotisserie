@@ -88,10 +88,10 @@ Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/ge
 * Build and Push the Docker Image. You would need to push it if you want to deploy the application in Kubernetes.
 
 ```shell
-$ docker build -t <docker_username>/pubgredzone-ocr -f deploy/images/ocr.Dockerfile .
-$ docker build -t <docker_username>/pubgredzone-app -f deploy/images/app.Dockerfile .
-$ docker push <docker_username>/pubgredzone-ocr
-$ docker push <docker_username>/pubgredzone-app
+$ docker build -t <docker_username>/rotisserie-ocr -f deploy/images/ocr.Dockerfile .
+$ docker build -t <docker_username>/rotisserie-app -f deploy/images/app.Dockerfile .
+$ docker push <docker_username>/rotisserie-ocr
+$ docker push <docker_username>/rotisserie-app
 ```
 
 ## 3. Running It Locally
@@ -134,8 +134,8 @@ You can also run rotisserie in a docker container.
 * Start up the containers:
 
 ```shell
-  $ docker run -d --name rotisserie-ocr <docker_username>/rotisserie-ocr
-  $ docker run --name rotisserie-app --link rotisserie-ocr:rotisserie-ocr -p 3000:3000 -e OCR_HOST=rotisserie-ocr:3001 -e token=$token <docker_username>/rotisserie-app
+  $ docker run -d -p 3001:3001 --name rotisserie-ocr <docker_username>/rotisserie-ocr
+  $ docker run -d --name rotisserie-app --link rotisserie-ocr:rotisserie-ocr -p 3000:3000 -e OCR_HOST=rotisserie-ocr:3001 -e token=$token <docker_username>/rotisserie-app
 ```
 
 Now you can open a browser and navigate to `http://localhost:3000` to watch
