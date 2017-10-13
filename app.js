@@ -69,13 +69,13 @@ function listStreams(callback) {
     if (whitelist !== null && whitelist !== undefined) {
       whitelist = whitelist.split(" ");
       allAgesStreams = allAgesStreams.filter(function(d) {
-	return whitelist.includes(d.channel.name);
+        return whitelist.includes(d.channel.name);
       });
     }
     if (blacklist !== null && blacklist !== undefined) {
       blacklist = blacklist.split(" ");
       allAgesStreams = allAgesStreams.filter(function(d) {
-	return !blacklist.includes(d.channel.name);
+        return !blacklist.includes(d.channel.name);
       });
     }
     usernameList = allAgesStreams.map(function(d) {
