@@ -7,7 +7,6 @@ const path = require("path");
 // external dependencies
 const express = require("express");
 const request = require("request");
-const twitch = require("twitch-api-v5");
 
 const FFMpeg = require("fluent-ffmpeg");
 const gm = require("gm").subClass({imageMagick: true});
@@ -48,21 +47,31 @@ function ensureDir(dirPath) {
  * Gets list of PUBG streams from Twitch API v5.
  * @callback {object} body - JSON object from Twitch API call. Contains list
  * of English language PUBG streams and their associated metadata.
- * @param {string} twitch - Authenticated Twitch client object.
  * @param {requestCallback} callback - The callback that handles the response.
  */
-function listStreams(twitch, callback) {
-  let parameters = {"game": "PLAYERUNKNOWN\'S BATTLEGROUNDS",
-    "language": "en", "limit": 25};
+function listStreams(callback) {
+  let clientID = process.env.clientID;
+  let gameURL = "https://api.twitch.tv/kraken/streams?game=PLAYERUNKNOWN'S+BATTLEGROUNDS&language=en&stream_type=live&limit=20";
+  let options = {
+    url: gameURL,
+    headers: {
+      "Client-ID": clientID,
+    },
+  };
 
-  twitch.streams.live(parameters, function(err, body) {
-    if (err) console.log(err);
-    else {
-      allAgesStreams = body.streams.filter(function(stream) {
-        return stream.channel.mature == false;
-      });
-      return callback(allAgesStreams);
-    }
+  request(options, function(error, response, body) {
+    bodyJSON = JSON.parse(body);
+    allAgesStreams = bodyJSON.streams.filter(function(d) {
+      return d.channel.mature === false;
+    });
+    usernameList = allAgesStreams.map(function(d) {
+      return d.channel["display_name"];
+    });
+    console.log(usernameList);
+    return callback(usernameList);
+
+    if (err) console.log("error:", error);
+    console.log("statusCode:", response.statusCode);
   });
 }
 
@@ -198,13 +207,13 @@ function ocrCroppedShot(options) {
  */
 function updateStreamsList(cropsDir) {
   // get list of twitch streams and record each one
-  listStreams(twitch, function(response) {
+  listStreams(function(response) {
     let streamsList = response;
     console.log(streamsList.length);
     let array = [];
     let newAllStreams = [];
     for (let stream in streamsList) {
-      let streamName = streamsList[stream].channel.display_name;
+      let streamName = streamsList[stream];
       const data = {
         streamName: streamName,
         clipsDir: "./streams/clips/",
@@ -265,9 +274,6 @@ function main() {
   const clipsDir = "./streams/clips/";
   const thumbnailsDir = "./streams/thumbnails/";
   const cropsDir = "./streams/crops/";
-
-  // auth with Twitch
-  twitch.clientID = process.env.token;
 
   ensureDir(clipsDir);
   ensureDir(thumbnailsDir);
