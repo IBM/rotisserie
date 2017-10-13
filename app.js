@@ -61,14 +61,15 @@ function listStreams(callback) {
 
   request(options, function(error, response, body) {
     if (body === undefined || body === null) {
-      console.log("No response from Twitch.")
-      if (error)
-	console.log("  " + error)
+      console.log("No response from Twitch.");
+      if (error) {
+        console.log("  " + error);
+      }
       return Array([]);
     }
     if (error) console.log("error:", error);
     console.log("statusCode:", response.statusCode);
-    
+
     bodyJSON = JSON.parse(body);
     allAgesStreams = bodyJSON.streams.filter(function(d) {
       return d.channel.mature === false;
@@ -78,7 +79,6 @@ function listStreams(callback) {
     });
     console.log(usernameList);
     return callback(usernameList);
-
   });
 }
 
