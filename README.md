@@ -206,6 +206,9 @@ make roll
 
 Note: this depends on you deploying with a unique sha. See the 'make-rev' rule in the Makefile. In most cases ``git pull; make roll`` should work. In cases where a roll failed or the app failed for reasons not connected to the code, a dummy commit might need to be added before re-rolling. Please only roll from master.
 
+## Whitelisting and Blacklisting streamers
+To whitelist simply set an environment variable called `ROTISSERIE_WHITELIST` to a string with space separated usernames. Same with blacklisting, but with the environment variable `ROTISSERIE_BLACKLIST`.
+
 
 ## License
 

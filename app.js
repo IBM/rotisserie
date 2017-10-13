@@ -51,6 +51,8 @@ function ensureDir(dirPath) {
  */
 function listStreams(callback) {
   let clientID = process.env.clientID;
+  let whitelist = process.env.ROTISSERIE_WHITELIST;
+  let blacklist = process.env.ROTISSERIE_BLACKLIST;
   let gameURL = "https://api.twitch.tv/kraken/streams?game=PLAYERUNKNOWN'S+BATTLEGROUNDS&language=en&stream_type=live&limit=20";
   let options = {
     url: gameURL,
@@ -64,6 +66,18 @@ function listStreams(callback) {
     allAgesStreams = bodyJSON.streams.filter(function(d) {
       return d.channel.mature === false;
     });
+    if (whitelist !== null && whitelist !== undefined) {
+      whitelist = whitelist.split(" ");
+      allAgesStreams = allAgesStreams.filter(function(d) {
+	return whitelist.includes(d.channel.name);
+      });
+    }
+    if (blacklist !== null && blacklist !== undefined) {
+      blacklist = blacklist.split(" ");
+      allAgesStreams = allAgesStreams.filter(function(d) {
+	return !blacklist.includes(d.channel.name);
+      });
+    }
     usernameList = allAgesStreams.map(function(d) {
       return d.channel["display_name"];
     });
