@@ -74,8 +74,13 @@ spec:
               secretKeyRef:
                 name: rotisserie
                 key: api-key
+          - name: clientID
+            valueFrom:
+              secretKeyRef:
+                name: rotisserie
+                key: clientID
           - name: OCR_HOST
-            value: rotisserie.ibmesports.com
+            value: rotisserie.tv
           ports:
             - containerPort: 3000
 ---
@@ -100,45 +105,7 @@ kind: Ingress
 metadata:
   name: rotisserie-ingress
 spec:
-  tls:
-    - hosts:
-      - pubgred.zone
-      secretName: rotisserie
   rules:
-  - host: rotisserie.ibmesports.com
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: rotisserie-static
-          servicePort: 8082
-      - path: /process_pubg
-        backend:
-          serviceName: rotisserie-ocr
-          servicePort: 3001
-      - path: /current
-        backend:
-          serviceName: rotisserie-app
-          servicePort: 3000
-      - path: /all
-        backend:
-          serviceName: rotisserie-app
-          servicePort: 3000
-  - host: pubgred.zone
-    http:
-      paths:
-      - path: /current
-        backend:
-          serviceName: rotisserie-app
-          servicePort: 3000
-      - path: /
-        backend:
-          serviceName: rotisserie-static
-          servicePort: 8082
-      - path: /all
-        backend:
-          serviceName: rotisserie-app
-          servicePort: 3000
   - host: rotisserie.tv
     http:
       paths:
@@ -154,3 +121,7 @@ spec:
         backend:
           serviceName: rotisserie-app
           servicePort: 3000
+      - path: /process_pubg
+        backend:
+          serviceName: rotisserie-ocr
+          servicePort: 3001
