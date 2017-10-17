@@ -5,7 +5,7 @@
 [![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/eggshell/rotisserie/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[**LIVE NOW**](http://pubgred.zone)
+[**LIVE NOW**](http://rotisserie.tv)
 
 rotisserie takes the concept of the [red zone](https://en.wikipedia.org/wiki/Red_zone_(gridiron_football))
 in American football and applies it to the popular online battle royale game
