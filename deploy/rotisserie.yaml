@@ -104,7 +104,13 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: rotisserie-ingress
+  annotations:
+    kubernetes.io/tls-acme: "true"
 spec:
+  tls:
+  - secretName: rotisserie-tls
+    hosts:
+    - rotisserie.tv
   rules:
   - host: rotisserie.tv
     http:
@@ -121,3 +127,36 @@ spec:
         backend:
           serviceName: rotisserie-app
           servicePort: 3000
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kube-lego
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kube-lego
+    spec:
+      containers:
+      - name: kube-lego
+        image: jetstack/kube-lego:0.1.5
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3002
+        env:
+        - name: LEGO_EMAIL
+          valueFrom:
+            configMapKeyRef:
+              name: kube-lego
+              key: lego.email
+        - name: LEGO_URL
+          valueFrom:
+            configMapKeyRef:
+              name: kube-lego
+              key: lego.url
+        - name: LEGO_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
