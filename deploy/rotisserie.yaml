@@ -121,7 +121,3 @@ spec:
         backend:
           serviceName: rotisserie-app
           servicePort: 3000
-      - path: /process_pubg
-        backend:
-          serviceName: rotisserie-ocr
-          servicePort: 3001

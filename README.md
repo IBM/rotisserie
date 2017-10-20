@@ -102,11 +102,14 @@ $ docker push <docker_username>/rotisserie-app
   $ export token="YOUR_OAUTH_TOKEN"
 ```
 
-* Create an environment variable for the OCR_HOST. This can be set to localhost:3001
-  or the IP address + port of a remote OCR host.
+
+
+* Create an environment variable for the ROTISSERIE_OCR_SERVICE_HOST and ROTISSERIE_OCR_SERVICE_PORT. This can be set to ``localhost`` and ``3001``
+  or the IP address and port of a remote OCR host. Mimic the environment variables exported by kubernetes.
 
 ```shell
-  $ export OCR_HOST="localhost:3001"
+  $ export ROTISSERIE_OCR_SERVICE_HOST="localhost"
+  $ export ROTISSERIE_OCR_SERVICE_PORT="3001"
 ```
 
 * Navigate to the `rotisserie` dir if you aren't there already, and start
@@ -135,7 +138,7 @@ You can also run rotisserie in a docker container.
 
 ```shell
   $ docker run -d -p 3001:3001 --name rotisserie-ocr <docker_username>/rotisserie-ocr
-  $ docker run -d --name rotisserie-app --link rotisserie-ocr:rotisserie-ocr -p 3000:3000 -e OCR_HOST=rotisserie-ocr:3001 -e token=$token <docker_username>/rotisserie-app
+  $ docker run -d --name rotisserie-app --link rotisserie-ocr:rotisserie-ocr -p 3000:3000 -e ROTISSERIE_OCR_SERVICE_HOST=rotisserie-ocr -e ROTISSERIE_OCR_SERVICE_PORT=3001 -e token=$token <docker_username>/rotisserie-app
 ```
 
 Now you can open a browser and navigate to `http://localhost:3000` to watch

@@ -200,8 +200,12 @@ function ocrCroppedShot(options) {
                                  + options.streamName + ".png"),
     };
 
+    // k8s injects the following variables
+    // ROTISSERIE_OCR_SERVICE_HOST=10.10.10.65
+    // ROTISSERIE_OCR_SERVICE_PORT=3001
+
     let requestOptions = {
-      url: "http://" + process.env.OCR_HOST + "/process_pubg",
+      url: "http://" + process.env.ROTISSERIE_OCR_SERVICE_HOST + ":" + process.env.ROTISSERIE_OCR_SERVICE_PORT + "/process_pubg",
       formData: formData,
     };
 
