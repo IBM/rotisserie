@@ -54,10 +54,11 @@ Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/ge
 # Steps
 
 1. [Get an OAuth Token for livestreamer](#1-getting-an-oauth-token-for-twitch)
-2. [Build the images](#2-build-the-images)
-3. [Deploy locally](#3-running-it-locally)
-4. [Deploy using Docker](#4-running-in-a-container)
-5. [Deploy using Kubernetes](#5-running-in-kubernetes)
+2. [Setting up Environment Variables](#2-setting-up-environment-variables)
+3. [Build the images](#3-build-the-images)
+4. [Deploy locally](#4-running-it-locally)
+5. [Deploy using Docker](#5-running-in-a-container)
+6. [Deploy using Kubernetes](#6-running-in-kubernetes)
 
 ## 1. Getting an OAuth Token for Twitch
 
@@ -75,41 +76,58 @@ Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/ge
    URL with `access_token=<TOKEN>`. This is your OAuth token, copy it down and
    proceed to the next section.
 
-## 2. Build the Images
+## 2. Setting up Environment Variables
 
-* Clone the repo and install with npm:
-
-```shell
- $ git clone https://github.com/IBM/rotisserie.git
- $ cd rotisserie
- $ npm install .
-```
-
-* Build and Push the Docker Image. You would need to push it if you want to deploy the application in Kubernetes.
+* Create an environment variable for your docker username.
 
 ```shell
-$ docker build -t <docker_username>/rotisserie-ocr -f deploy/images/ocr.Dockerfile .
-$ docker build -t <docker_username>/rotisserie-app -f deploy/images/app.Dockerfile .
-$ docker push <docker_username>/rotisserie-ocr
-$ docker push <docker_username>/rotisserie-app
+  $ export docker_username="YOUR_DOCKER_USERNAME"
 ```
 
-## 3. Running It Locally
-
-* Create an environment variable for your token.
+* Create an enviornment variable for your token.
 
 ```shell
   $ export token="YOUR_OAUTH_TOKEN"
 ```
 
+* Create an environment variable for your clientID.
 
+```shell
+  $ export clientID="YOUR_CLIENT_ID"
+```
 
 * Create an environment variable for the ROTISSERIE_OCR_SERVICE_HOST and ROTISSERIE_OCR_SERVICE_PORT. This can be set to ``localhost`` and ``3001``
-  or the IP address and port of a remote OCR host. Mimic the environment variables exported by kubernetes.
+  if running locally, or the IP address and port of a remote OCR host if running in containers. Mimic the environment variables exported by kubernetes.
 
 ```shell
   $ export ROTISSERIE_OCR_SERVICE_HOST="localhost"
   $ export ROTISSERIE_OCR_SERVICE_PORT="3001"
+```
+
+## 3. Build the Images
+
+* Clone the repo.
+
+```shell
+ $ git clone https://github.com/IBM/rotisserie.git
+ $ cd rotisserie
+```
+
+* Build and Push the Docker Image. You would need to push it if you want to deploy the application in Kubernetes.
+
+```shell
+$ docker build -t $docker_username/rotisserie-ocr -f deploy/images/ocr.Dockerfile .
+$ docker build -t $docker_username/rotisserie-app -f deploy/images/app.Dockerfile .
+$ docker push $docker_username/rotisserie-ocr
+$ docker push $docker_username/rotisserie-app
+```
+
+## 4. Running It Locally
+
+* Install with npm.
+
+```shell
+  $ npm install .
 ```
 
 * Navigate to the `rotisserie` dir if you aren't there already, and start
@@ -123,28 +141,21 @@ $ docker push <docker_username>/rotisserie-app
 Now you can open a browser and navigate to `http://localhost:3000` to watch
 rotisserie.
 
-## 4. Running in a Container
+## 5. Running in a Container
 
 You can also run rotisserie in a docker container.
-
-* Get an OAuth token using the instructions above, and export it as an
-  environment variable:
-
-```shell
-  $ export token="YOUR_OAUTH_TOKEN"
-```
 
 * Start up the containers:
 
 ```shell
-  $ docker run -d -p 3001:3001 --name rotisserie-ocr <docker_username>/rotisserie-ocr
-  $ docker run -d --name rotisserie-app --link rotisserie-ocr:rotisserie-ocr -p 3000:3000 -e ROTISSERIE_OCR_SERVICE_HOST=rotisserie-ocr -e ROTISSERIE_OCR_SERVICE_PORT=3001 -e token=$token <docker_username>/rotisserie-app
+  $ docker run -d -p 3001:3001 --name rotisserie-ocr $docker_username/rotisserie-ocr
+  $ docker run -d -p 3000:3000 --name rotisserie-app -e ROTISSERIE_OCR_SERVICE_HOST=$ROTISSERIE_OCR_SERVICE_HOST -e ROTISSERIE_OCR_SERVICE_PORT=$ROTISSERIE_OCR_SERVICE_PORT -e token=$token -e clientID=$clientID $docker_username/rotisserie-app
 ```
 
 Now you can open a browser and navigate to `http://localhost:3000` to watch
 rotisserie.
 
-## 5. Running in Kubernetes
+## 6. Running in Kubernetes
 
 **note**: Ensure your `$OCR_HOST` environment variable is set to the `cluster_public_ip:3001`.
 
