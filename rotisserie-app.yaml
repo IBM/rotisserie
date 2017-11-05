@@ -36,6 +36,11 @@ spec:
         - name: token
           valueFrom:
             secretKeyRef:
-              name: twitch-token
+              name: twitch-auth
               key: token
+        - name: clientID
+          valueFrom:
+            secretKeyRef:
+              name: twitch-auth
+              key: clientID
           #USE SECRET

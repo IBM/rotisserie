@@ -72,12 +72,12 @@ spec:
           - name: token
             valueFrom:
               secretKeyRef:
-                name: rotisserie
-                key: api-key
+                name: twitch-auth
+                key: token
           - name: clientID
             valueFrom:
               secretKeyRef:
-                name: rotisserie
+                name: twitch-auth
                 key: clientID
           - name: OCR_HOST
             value: rotisserie.tv
