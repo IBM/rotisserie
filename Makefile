@@ -10,14 +10,14 @@ images: set-rev
 	./deploy/images/make-image.sh deploy/images/static-server.Dockerfile "rotisserie-static:$$(cat $(REV_FILE))"
 
 tag-images: set-rev
-	sudo docker tag "rotisserie-app:$$(cat $(REV_FILE))" "container-registry.dev.ibmesports.com/rotisserie-app:$$(cat $(REV_FILE))"
-	sudo docker tag "rotisserie-ocr:$$(cat $(REV_FILE))" "container-registry.dev.ibmesports.com/rotisserie-ocr:$$(cat $(REV_FILE))"
-	sudo docker tag "rotisserie-static:$$(cat $(REV_FILE))" "container-registry.dev.ibmesports.com/rotisserie-static:$$(cat $(REV_FILE))"
+	sudo docker tag "rotisserie-app:$$(cat $(REV_FILE))" "$$docker_username/rotisserie-app:$$(cat $(REV_FILE))"
+	sudo docker tag "rotisserie-ocr:$$(cat $(REV_FILE))" "$$docker_username/rotisserie-ocr:$$(cat $(REV_FILE))"
+	sudo docker tag "rotisserie-static:$$(cat $(REV_FILE))" "$$docker_username/rotisserie-static:$$(cat $(REV_FILE))"
 
 upload-images: set-rev
-	sudo docker push "container-registry.dev.ibmesports.com/rotisserie-app:$$(cat $(REV_FILE))"
-	sudo docker push "container-registry.dev.ibmesports.com/rotisserie-ocr:$$(cat $(REV_FILE))"
-	sudo docker push "container-registry.dev.ibmesports.com/rotisserie-static:$$(cat $(REV_FILE))"
+	sudo docker push "$$docker_username/rotisserie-app:$$(cat $(REV_FILE))"
+	sudo docker push "$$docker_username/rotisserie-ocr:$$(cat $(REV_FILE))"
+	sudo docker push "$$docker_username/rotisserie-static:$$(cat $(REV_FILE))"
 
 .PHONY: deploy
 deploy: set-rev
