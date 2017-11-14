@@ -60,11 +60,9 @@ app.post("/process_pubg", upload.single("image"), function(req, res, next) {
     } else {
       let number = parseFloat(text.trim());
       // Return any garbage as 100 (dead, out of game, etc)
-      if (isNaN(number)) {
-        number = 100;
-      }
       // Return <0 as 100. 0 isn't possible and it is usually a 100
-      if (number <= 0) {
+      // Return 1 as 100. 1 is endgame.
+      if (isNaN(number) || number <= 0 || number == 1) {
         number = 100;
       }
       let result = {
