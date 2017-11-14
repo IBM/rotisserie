@@ -264,11 +264,14 @@ function updateStreamsList(cropsDir) {
       if (array.length > 0) {
         console.log(array);
         console.log("lowest stream: " + array[0].name);
-        currentStream = streamToObject(array[0]);
-        for (let idx in array) {
-          newAllStreams.push(streamToObject(array[idx]));
+        // don't switch inside 10 players; don't stay on stream post-game
+        if (array[0].alive > 10 || array[0].alive == "1") {
+          currentStream = streamToObject(array[0]);
+          for (let idx in array) {
+            newAllStreams.push(streamToObject(array[idx]));
+          }
+          allStreams = newAllStreams;
         }
-        allStreams = newAllStreams;
       } else {
         console.log("Empty array, not switching");
       }
