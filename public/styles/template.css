@@ -69,6 +69,25 @@ body {
   color: #000;
 }
 
+.related-links {
+  padding-top: 10px;
+  padding-left: 250px;
+  padding-right: 250px;
+  margin:0 auto;
+  text-align: center;
+  color: #000;
+}
+
+.bulleted-list {
+  width: 200px;
+  margin:0 auto;
+  text-align:left;
+}
+
+.link {
+  color: #000;
+}
+
 .navbar {
     -webkit-box-shadow: 0 8px 6px -6px #43A047;
     -moz-box-shadow: 0 8px 6px -6px #43A047;
