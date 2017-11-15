@@ -37,15 +37,6 @@ Since we are using secrets, the images are built without sensitive information. 
                 key: clientID
 ```
 
-To simplify deployment we are using environment variables for a few values. APP_HOSTNAME is used throughout the deployment to specify the URL for the application. In our production environment the value is set to rotisserie.tv. Since the OCR_HOST is running behind the same URL we set the value to equal the hostname.
-
-```bash
-          - name: OCR_HOST
-            value: $APP_HOSTNAME
-          ports:
-            - containerPort: 3000
-```
-
 We setup a ClusterIP service for the pod since we aren't worried about getting to it from the outside. A Load Balancer is configured to allow traffic in from the internet. More information is provided on the Load Balancer in the Kube-Lego section.
 
 ```bash
