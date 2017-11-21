@@ -23,6 +23,9 @@ upload-images: set-rev
 deploy: set-rev
 	IMAGE_TAG=$$(cat $(REV_FILE)) envsubst < deploy/rotisserie.yaml | kubectl apply -f -
 
+kube-lego: set-rev
+	IMAGE_TAG=$$(cat $(REV_FILE)) envsubst < deploy/kube-lego.yaml | kubectl apply -f -
+
 delete-deployments:
 	kubectl delete deployment rotisserie-app
 	kubectl delete deployment rotisserie-ocr
@@ -30,3 +33,11 @@ delete-deployments:
 redeploy: delete-deployments deploy
 
 roll: set-rev images tag-images upload-images deploy
+
+full-roll: set-rev images tag-images upload-images deploy kube-lego
+
+purge:
+	kubectl delete -f deploy/rotisserie.yaml
+	kubectl delete -f deploy/kube-lego
+	kubectl delete -f twitch-auth-secrets.yaml
+	kubectl delete -f letsencrypt.yaml
