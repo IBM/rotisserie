@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/pubgredzone.svg)](https://badge.fury.io/js/pubgredzone)
 [![Build Status](https://api.travis-ci.org/IBM/rotisserie.svg?branch=master)](https://travis-ci.org/IBM/rotisserie)
 [![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/eggshell/rotisserie/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 [**LIVE NOW**](http://rotisserie.tv)
 
@@ -226,4 +226,4 @@ To whitelist simply set an environment variable called `ROTISSERIE_WHITELIST` to
 
 ## License
 
-rotisserie is currently licensed under the [MIT LICENSE](LICENSE).
+rotisserie is currently licensed under the [Apache 2.0 License](LICENSE).
