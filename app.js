@@ -171,7 +171,7 @@ function cropScreenshot(options) {
     console.log("cropping screenshot of stream: " + options.streamName);
     if (fs.existsSync(options.thumbnailsDir + options.streamName + ".png")) {
       gm(options.thumbnailsDir + options.streamName + ".png")
-        .crop(28, 20, 1190, 25)
+        .crop(22, 22, 1190, 20)
         .type("Grayscale")
         .write(options.cropsDir + options.streamName + ".png", function(err) {
           resolve(options);
