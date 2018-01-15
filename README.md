@@ -84,13 +84,15 @@ Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/ge
   $ export docker_username="YOUR_DOCKER_USERNAME"
 ```
 
-* Create an enviornment variable for your token.
+* Create an enviornment variable for your token you retrieved in the previous step.
 
 ```shell
   $ export token="YOUR_OAUTH_TOKEN"
 ```
 
 * Create an environment variable for your clientID.
+
+*You must create an app in your Twitch account using the developer mode (https://dev.twitch.tv/) to retrieve the clientID*
 
 ```shell
   $ export clientID="YOUR_CLIENT_ID"
