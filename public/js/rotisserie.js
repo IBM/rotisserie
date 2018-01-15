@@ -23,7 +23,7 @@ $(document).ready(function() {
       $("#next_closest").text(secondResult["stream_name"]
         + " - " + secondResult["alive"]);
 
-      if (currentStream != topResult["stream_url"] ) {
+      if (currentStream != topResult["stream_url"] && !(topResult >= 10)) {
         $("#twitch_iframe").prop("src", topResult["stream_url"]);
       }
     });
