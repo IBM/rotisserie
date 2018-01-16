@@ -156,6 +156,86 @@ function takeScreenshot(options) {
 }
 
 /**
+ * Return the cartesian distance between to coordinates
+ * @param {number} x1 - the x coordinate of the first point
+ * @param {number} y1 - the y coordinate of the first point
+ * @param {number} x2 - the x coordinate of the second point
+ * @param {number} y2 - the y coordinate of the second point
+ * @return {number} - the distance between the two points in cartesian space
+ */
+function distance(x1, y1, x2, y2) {
+  return Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
+}
+
+/**
+ * Return JSON object about screenshot
+ * @param {object} options - object of other params
+ * @param {string} streamName - name of stream's clip to screenshot.
+ * @param {string} clipsDir - Relative path to directory containing short
+ * recorded clips of each stream in streamsList.
+ * @param {string} thumbnailsDir - Relative path to directory containing
+ * screenshots of each clip recorded in recordStreams.
+ * @return {promise} - a promise that resolves if a screenshot is taken.
+ */
+function watsonOcr(options) {
+  let formData = {
+    images_file: fs.createReadStream(__dirname + options.thumbnailsDir + options.streamName + ".png"),
+  };
+  let requestOptions = {
+    url: "https://gateway-a.watsonplatform.net/visual-recognition/api/v3/recognize_text?api_key=" +
+         process.env.ROTISSERIE_WATSON_VR_API_KEY + "&version=2016-05-20",
+    formData: formData,
+  };
+  return new Promise((resolve, reject) => {
+    request.post(requestOptions, function(err, httpResponse, body) {
+      if (err) {
+        console.error("upload failed: " + err);
+        reject(new Error("upload failed: " + err));
+      } else {
+	let resolutionObject = { name: options.streamName,
+				 alive: 100};
+        let parsed = JSON.parse(body);
+	words = parsed.images[0].words
+	// get the location of the word alive
+	let aliveLocation = words.filter(function (word) { return word.word == "alive"});
+	// can't find alive, assume that it is in loading screen or something
+	// assign it 100. This also eliminates non-english streams.
+	if (aliveLocation.length == 0) {
+	  resolve(resolutionObject)
+	}
+	else {
+	  aliveLocation = aliveLocation[0].location;
+	}
+	// grab all of the integers from the word list
+	let numbersFromScrape = words.filter(function (word) { return !isNaN(word.word) && Number.isInteger(parseInt(word.word)) });
+	// find the integer distance from the word alive
+	let distFromAlive = numbersFromScrape.map(function (number) {return { num: number.word,
+									      distance: distance(aliveLocation.left, aliveLocation.top,
+												 number.location.left, number.location.top)}});
+	// couldn't find a number, abort
+	if (distFromAlive.length == 0) {
+	  resolve(resolutionObject)
+	}
+	// sort the array of objects in ascending order based on distance from alive
+	// grab only the closest since that will be the one that says you are alive
+	let aliveCount = parseInt(distFromAlive.sort(function (a, b) { return a.distance - b.distance })[0])
+	let numAlive = aliveCount.num
+
+	// Check to see if the number is with 100 pixels of the word Alive
+	// also check to see if the number alive is between 100 and 0
+	// if either check fails, assign 100 to the numAlive since we can't be sure
+	if (isNaN(aliveCount.distance) || aliveCount.distance > 100 ||
+	    numAlive > 100 || numAlive < 1) {
+	  numAlive = 100
+	}
+	resolutionObject.alive = numAlive;
+        resolve(resolutionObject);
+      }
+    });
+  });
+}
+
+/**
  * Crops all screenshots taken in takeScreenshot to just the area containing
  * the number of players alive in-game.
  * @param {object} options - object of other params
@@ -248,8 +328,9 @@ function updateStreamsList(cropsDir) {
 
       recordStream(data)
         .then(takeScreenshot)
-        .then(cropScreenshot)
-        .then(ocrCroppedShot)
+        // .then(cropScreenshot)
+        // .then(ocrCroppedShot)
+        .then(watsonOcr)
         .then(function(streamobj) {
           console.log(streamobj.name + " = " + streamobj.alive + " alive.");
           array.push(streamobj);
