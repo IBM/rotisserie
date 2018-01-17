@@ -72,12 +72,12 @@ spec:
           - name: token
             valueFrom:
               secretKeyRef:
-                name: twitch-auth
+                name: rotisserie-secrets
                 key: token
           - name: clientID
             valueFrom:
               secretKeyRef:
-                name: twitch-auth
+                name: rotisserie-secrets
                 key: clientID
           ports:
             - containerPort: 3000
