@@ -1,7 +1,0 @@
-{
-"version": 3,
-"mappings": "AAEA,OAAQ;EACN,UAAU,ECHJ,OAAO",
-"sources": ["../scss/main.scss","../scss/_variables.scss"],
-"names": [],
-"file": "style.css"
-}
