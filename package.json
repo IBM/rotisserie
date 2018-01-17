@@ -4,6 +4,8 @@
   "description": "webapp for viewing the most exciting PlayerUnknown's BattleGrounds streams on Twitch",
   "main": "index.js",
   "scripts": {
+    "build-css": "node-sass --include-path scss public/styles/scss/main.scss public/styles/css/main.css",
+    "watch-css": "sass --watch public/styles/scss/main.scss:public/styles/css/main.css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Cullen Taylor",

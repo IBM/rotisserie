@@ -6,8 +6,9 @@
     <script src="js/jquery-3.2.1.min.js"> </script>
     <script src="js/popper.min.js"> </script>
     <script src="js/bootstrap.min.js"> </script>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles/template.css">
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="styles/css/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108255910-1"></script>
     <script>
@@ -18,73 +19,65 @@
     </script>
   </head>
   <body>
-    <nav class="navbar navbar-inverse navbar-static-top" id="navbar">
-      <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">Rotisserie: An application that shows the PUBG streamer closest to victory</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-            <li><a href="#related">Related</a></li>
-          </ul>
-        </div>
+    <!-- navbar -->
+    <nav class="navbar" role="navigation">
+      <div class="navbar__title">
+          <h1>Rotisserie</h1>
       </div>
+        <ul class="navbar__nav">
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#related">Related</a></li>
+        </ul>
     </nav>
 
-    <div class="container">
-      <div class="streamer-name">
-        <h4 id="streamer_name">TSM_VISS</h4>
+    <!-- video section -->
+    <section class="section__video">
+      <div class="container__twitch" id="container__twitch">
+        <iframe class="container__twitch-iframe" src="https://player.twitch.tv/?channel=TSM_Viss/hls" height="720" width="1280" frameborder="0" scrolling="no" allowfullscreen="true" id="twitch_iframe"></iframe></script>
       </div>
-    </div>
-    <div class="twitch-container" id="twitch_container">
-      <iframe class="twitch-iframe" src="https://player.twitch.tv/?channel=TSM_Viss" height="720" width="1280" frameborder="0" scrolling="no" allowfullscreen="true" id="twitch_iframe"></iframe></script>
-    </div>
-    <div class="about-section">
-      <h4  >Next Closest: </h4> <h4 id="next_closest">TSM_VISS</h4>
-    </div>
-
-    <div class="container-button">
-      <p>
-       <button id="buttonPin" type="button" class="btn btn-lg btn-info" value="off">Pin Stream</button>
-       <button id="buttonView" type="button" class="btn btn-lg btn-info" onclick="location.href='https://github.com/IBM/rotisserie'">View the Code</button>
-       <button id="buttonFork" type="button" class="btn btn-lg btn-info" onclick="location.href='https://github.com/IBM/rotisserie/fork'">Fork on Github</button>
-     </p>
-    </div>
-    <div class="container" id="slidecontainer">
-      <input type="range" min="0" max="100" value="100" class="slider" id="myRange">
-    </div>
-
-    <div class="about-section">
-      <h2 id="about" >About</h2>
-      <p style="text-align: justify;">Rotisserie is a web application created by IBM developer advocates.
-        It features an always-exciting video stream of the extremely popular computer game Player Unknown's Battlegrounds.
-        Rotisserie is written in Node.js. The current state of the application is limited to Twitch live streams.
-        It gets a list of live streams from Twitch then uses computer vision to determine the number of people alive.
-        This page will show you the stream that has the least number of players alive in their match.
-        The application will watch streams in the background and determine which has the least number of players alive.
-        This webpage will check periodically if it matches the best stream determined by the application and will seamlessly switch to that.</p>
-    </div>
-
-    <div class="contact-section">
-      <h2 id="contact">Contact</h2>
-      <div class="bulleted-list">
-        <ul type="square">
-          <li><a href="https://github.com/IBM/rotisserie/issues" class="link">Github Rotisserie Issues</a></li>
-        </ul>
+      <div class="container__streamer">
+        <div class="container__streamer-about">
+          <h4 id="streamer_name">TSM_VISS</h4>
+        </div>
+        <div class="container__streamer-closest">
+          <h4>Next Closest: </h4> <h4 id="next_closest">TSM_VISS</h4>
+        </div>
       </div>
-    </div>
-
-    <div class="related-links">
-      <h2 id="related">Related Links</h2>
-      <div class="bulleted-list">
-        <ul type="square">
-          <li><a href="https://developer.ibm.com/code/patterns/implement-computer-vision-playerunknowns-battlegrounds-live-streams/" class="link">IBM Code Pattern</a></li>
-        </ul>
+      <!-- button and slider set -->
+      <div class="container__button">
+          <button type="button" id="buttonPin" value="off">Pin Stream</button>
+          <button type="button"><a href="https://github.com/IBM/rotisserie">View the Code</a></button>
+          <button type="button"><a href="https://github.com/IBM/rotisserie/fork">Fork on Github</a></button>
       </div>
-    </div>
+      <div class="container__slider" id="slidecontainer">
+          <input type="range" min="0" max="100" value="100" class="slider" id="myRange">
+        </div>
+    </section>
 
+     <!-- about section -->
+    <section class="section__about" id="about">
+        <h2>About</h2>
+        <p>Rotisserie is a web application created by IBM developer advocates.
+          It features an always-exciting video stream of the extremely popular computer game Player Unknown's Battlegrounds.
+          Rotisserie is written in Node.js. The current state of the application is limited to Twitch live streams.
+          It gets a list of live streams from Twitch then uses computer vision to determine the number of people alive.
+          This page will show you the stream that has the least number of players alive in their match.
+          The application will watch streams in the background and determine which has the least number of players alive.
+          This webpage will check periodically if it matches the best stream determined by the application and will seamlessly switch to that.</p>
+    </section>
+
+    <!-- contact/related links section -->
+    <section class="section__contact">
+        <div class="container__contact" id="contact">
+          <h2>Contact us</h2>
+          <p>We welcome all feedback and contributions. If you’re interested in contributing or contacting us, check out <a href="https://github.com/IBM/rotisserie/issues">Github Rotisserie Issues</a></p>
+        </div>
+        <div class="container__related" id="related">
+            <h2>Related links</h2>
+            <p>If you would like more information on how this application was build or architected, check out <a href="https://developer.ibm.com/code/patterns/implement-computer-vision-playerunknowns-battlegrounds-live-streams/">IBM Code Pattern</a></p>
+          </div>
+    </section>
      <script src="js/rotisserie.js"> </script>
   </body>
 </html>
