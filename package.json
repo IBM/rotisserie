@@ -4,7 +4,10 @@
   "description": "webapp for viewing the most exciting PlayerUnknown's BattleGrounds streams on Twitch",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npm-run-all -s sass:build -p babel sass:watch",
+    "sass:build": "node-sass --include-path scss src/scss/main.scss public/css/main.css",
+    "sass:watch": "sass --watch src/scss/main.scss:public/css/main.css",
+    "babel": "babel ./src/js/ -d ./public/js/ -w"
   },
   "author": "Cullen Taylor",
   "license": "MIT",
@@ -24,5 +27,10 @@
     "request": "^2.83.0",
     "workerpool": "^2.2.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "node-sass": "^4.7.2",
+    "npm-run-all": "^2.2.2"
+  }
 }

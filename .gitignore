@@ -2,6 +2,7 @@ streams/
 
 # Nodejs
 node_modules
+.sass-cache
 
 # Ignore macOS files
 *.DS_Store
