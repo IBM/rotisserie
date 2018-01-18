@@ -54,4 +54,6 @@ gulp.task("watch", () => {
   });
 });
 
+gulp.task("build", ["js", "sass"]);
+
 gulp.task("default", ["js", "sass", "watch", "browser-sync"]);
