@@ -96,35 +96,37 @@ document.getElementById("myRange").addEventListener("input", (evt) => {
   let b1 = (170 * sliderValue) / 100;
   let c1 = (94 * sliderValue) / 100;
 
-  const background = `rgb(${Math.floor(a1)},
+  const white = `rgb(${Math.floor(a1)},
     ${Math.floor(b1)}, ${Math.floor(c1)})`;
-  const bodyColor = `rgb(${Math.floor(a)}, ${Math.floor(b)}, ${Math.floor(c)})`;
+  // original color is green
+  const green = `rgb(${Math.floor(a)}, ${Math.floor(b)}, ${Math.floor(c)})`;
 
   const navbar = document.getElementById("navbar");
+  const navbarLinks = navbar.getElementsByTagName("a");
   const about = document.getElementById("about");
   const streamerInformation = document.getElementById("container__streamer");
   const contact = document.getElementById("contact");
-  const buttons = document.getElementsByTagName("button");
-  const links = document.getElementsByTagName("a");
-  const smallText = document.getElementsByTagName("h4");
+  const buttons = document.getElementById("container__button");
+  const buttonItems = buttons.getElementsByTagName("button");
+  buttonItems[1].getElementsByTagName("a")[0].style.color = green;
+  buttonItems[2].getElementsByTagName("a")[0].style.color = green;
   const contactUs = document.getElementById("contactUs");
+  const contactLinks = contact.getElementsByTagName("a");
 
-  document.body.style.backgroundColor = bodyColor;
-  navbar.style.backgroundColor = background;
-  navbar.style.border = background;
-  navbar.style.color = bodyColor;
-  about.style.backgroundColor = background;
-  about.style.border = background;
-  about.style.color = bodyColor;
-  streamerInformation.style.color = background;
-  contact.style.backgroundColor = bodyColor;
-  contact.style.border = bodyColor;
-  contact.style.color = background;
-  contactUs.style.borderRight = bodyColor;
+  document.body.style.backgroundColor = green;
+  navbar.style.backgroundColor = white;
+  navbar.style.border = white;
+  navbar.style.color = green;
+  about.style.backgroundColor = white;
+  about.style.border = white;
+  about.style.color = green;
+  streamerInformation.style.color = white;
+  contact.style.color = white;
+  contactUs.style.borderRight = `2px solid ${white}`;
 
-  changeButtonColor(buttons, background, bodyColor);
-  changeTextColor(buttons, bodyColor);
-  changeTextColor(links, bodyColor);
-  changeTextColor(smallText, bodyColor);
+  changeButtonColor(buttonItems, white, green);
+  changeTextColor(buttonItems, green);
+  changeTextColor(contactLinks, white);
+  changeTextColor(navbarLinks, green);
 });
 
