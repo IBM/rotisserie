@@ -139,6 +139,7 @@ document.getElementById("myRange").addEventListener("input", (evt) => {
 
   changeTextColor(contactLinks, white);
   changeTextColor(navbarLinks, green);
-  changeButtonColor(a, b, c, "rgb(255, 255, 255)", "rgb(0, 170, 94)", white, buttonItems);
+  changeButtonColor(a, b, c, "rgb(255, 255, 255)",
+    "rgb(0, 170, 94)", white, buttonItems);
 });
 
