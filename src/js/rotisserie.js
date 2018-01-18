@@ -62,21 +62,36 @@ document.getElementById("buttonPin").addEventListener("click", () => {
 });
 
 /**
- * Apply background and border color to buttons
- * @param {array} element - html element
- *  @param {string} backgroundColor - color to change background to
- * @param {string} borderColor - color to change border to
+ * Apply colors to buttons
+ * @param {int} a - value of a
+ * @param {int} b - value of b
+ * @param {int} c - value of c
+ * @param {string} white - rgb for white
+ * @param {string} green - rgb for green
+ *  @param {string} abcColor - rgb for a,b,c
+ * @param {array} buttonItems - array of buttons
  */
-function changeButtonColor(element, backgroundColor, borderColor) {
-  for (let i = 0; i < element.length; i++) {
-    element[i].style.backgroundColor = backgroundColor;
-    element[i].style.border = borderColor;
+function changeButtonColor(a, b, c, white, green, abcColor, buttonItems) {
+  if (a !== 255 && b !== 255 && c !== 255) {
+    buttonItems[0].style.backgroundColor = green;
+    buttonItems[0].style.color = abcColor;
+    buttonItems[1].style.backgroundColor = green;
+    buttonItems[2].style.backgroundColor = green;
+    buttonItems[1].getElementsByTagName("a")[0].style.color = abcColor;
+    buttonItems[2].getElementsByTagName("a")[0].style.color = abcColor;
+  } else {
+    buttonItems[0].style.backgroundColor = white;
+    buttonItems[0].style.color = green;
+    buttonItems[1].style.backgroundColor = white;
+    buttonItems[2].style.backgroundColor = white;
+    buttonItems[1].getElementsByTagName("a")[0].style.color = green;
+    buttonItems[2].getElementsByTagName("a")[0].style.color = green;
   }
 }
 
 /**
  * Apply text color
- * @param {array} element - html element
+ * @param {string} element - html element
  *  @param {string} color - color to change to
  */
 function changeTextColor(element, color) {
@@ -104,12 +119,11 @@ document.getElementById("myRange").addEventListener("input", (evt) => {
   const navbar = document.getElementById("navbar");
   const navbarLinks = navbar.getElementsByTagName("a");
   const about = document.getElementById("about");
-  const streamerInformation = document.getElementById("container__streamer");
   const contact = document.getElementById("contact");
   const buttons = document.getElementById("container__button");
   const buttonItems = buttons.getElementsByTagName("button");
-  buttonItems[1].getElementsByTagName("a")[0].style.color = green;
-  buttonItems[2].getElementsByTagName("a")[0].style.color = green;
+  // buttonItems[1].getElementsByTagName("a")[0].style.color = green;
+  // buttonItems[2].getElementsByTagName("a")[0].style.color = green;
   const contactUs = document.getElementById("contactUs");
   const contactLinks = contact.getElementsByTagName("a");
 
@@ -120,13 +134,11 @@ document.getElementById("myRange").addEventListener("input", (evt) => {
   about.style.backgroundColor = white;
   about.style.border = white;
   about.style.color = green;
-  streamerInformation.style.color = white;
   contact.style.color = white;
   contactUs.style.borderRight = `2px solid ${white}`;
 
-  changeButtonColor(buttonItems, white, green);
-  changeTextColor(buttonItems, green);
   changeTextColor(contactLinks, white);
   changeTextColor(navbarLinks, green);
+  changeButtonColor(a, b, c, "rgb(255, 255, 255)", "rgb(0, 170, 94)", white, buttonItems);
 });
 

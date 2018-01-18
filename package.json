@@ -2,10 +2,12 @@
   "name": "rotisserie",
   "version": "0.0.1",
   "description": "webapp for viewing the most exciting PlayerUnknown's BattleGrounds streams on Twitch",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
-    "gulp": "gulp",
-    "build": "gulp build"
+    "dev": "npm-run-all -s sass:build -p babel sass:watch",
+    "sass:build": "node-sass --include-path scss src/scss/main.scss public/css/main.css",
+    "sass:watch": "sass --watch src/scss/main.scss:public/css/main.css",
+    "babel": "babel ./src/js/ -d ./public/js/ -w"
   },
   "author": "Cullen Taylor",
   "license": "MIT",
@@ -28,14 +30,7 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "babelify": "^7.2.0",
-    "browser-sync": "^2.11.2",
-    "browserify": "^13.0.0",
-    "gulp": "^3.9.1",
-    "gulp-autoprefixer": "^3.1.0",
-    "gulp-sass": "^3.1.0",
-    "gulp-sourcemaps": "^1.6.0",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "node-sass": "^3.8.0",
+    "npm-run-all": "^2.2.2"
   }
 }
