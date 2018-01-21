@@ -1,10 +1,6 @@
 SHELL := /bin/bash
 REV_FILE=.make-rev-check
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ad839fb... Added workflow information to Makefile
 ## Workflow
 ## export docker_username=''
 ## export APP_HOSTNAME=''
@@ -27,11 +23,6 @@ REV_FILE=.make-rev-check
 ## Cleanup after testing:
 ##	 make purge
 
-<<<<<<< HEAD
-=======
->>>>>>> e2feef3... Added Makefile options and updated secrets file
-=======
->>>>>>> ad839fb... Added workflow information to Makefile
 ## IMAGES ##
 
 # Sets the revision and stores it in .make-rev-check.
@@ -57,23 +48,12 @@ upload-images: set-rev
 	docker push "$$docker_username/rotisserie-app:$$(cat $(REV_FILE))"
 	docker push "$$docker_username/rotisserie-ocr:$$(cat $(REV_FILE))"
 	docker push "$$docker_username/rotisserie-static:$$(cat $(REV_FILE))"
-<<<<<<< HEAD
 
 # Runs all image related tasks.
 all-images: set-rev images tag-images upload-images
 
 ## Kubernetes ##
-=======
->>>>>>> f0f906b... Removing sudo for docker commands
 
-<<<<<<< HEAD
-=======
-# Runs all image related tasks.
-all-images: set-rev images tag-images upload-images
-
-## Kubernetes ##
-
->>>>>>> e2feef3... Added Makefile options and updated secrets file
 # Creates secrets required for the cluster based on the rotisserie-secrets.yaml file.
 secrets:
 	kubectl create -f rotisserie-secrets.yaml || true
@@ -95,22 +75,8 @@ delete-deployments:
 	kubectl delete deploy rotisserie-ocr
 	kubectl delete deploy rotisserie-static
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-# Runs delete-deployments then runs deploy.
-=======
-# Runs delete-deployments and deploy.
->>>>>>> e2feef3... Added Makefile options and updated secrets file
-redeploy: delete-deployments deploy
-=======
-# Runs delete-deployments, then creates new images with all-images, then runs deploy.
-redeploy: delete-deployments all-images deploy
->>>>>>> 7af984a... Added all-images to redeploy to build images
-=======
 # Runs delete-deployments then runs deploy.
 redeploy: delete-deployments deploy
->>>>>>> c922e38... Removed all-images from redeploy
 
 # Creates a new deployment from scratch, without kube-lego.
 roll: all-images secrets deploy
