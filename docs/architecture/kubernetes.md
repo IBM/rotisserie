@@ -11,7 +11,7 @@ We setup secrets before the deployment so that we can store sensitive informatio
 apiVersion: v1
 kind: Secret
 metadata:
-  name: twitch-auth
+  name: rotisserie-secrets
 type: Opaque
 data:
   token: YOUR_OAUTH_TOKEN_IN_BASE64
@@ -22,18 +22,18 @@ data:
 
 The application pod consists of a single container running our Node.js app. The application polls the Twitch API for Player Unknown Battlegrounds streams. We record part of the stream and pull out a screenshot that can be sent to the OCR pod for processing.
 
-Since we are using secrets, the images are built without sensitive information. In the example below we reference the secret twitch-auth and pull the token needed to authenticate. We also store the clientID, which is required with newer versions of the Twitch API.
+Since we are using secrets, the images are built without sensitive information. In the example below we reference the secret rotisserie-secrets and pull the token needed to authenticate. We also store the clientID, which is required with newer versions of the Twitch API.
 
 ```bash
        - name: token
             valueFrom:
               secretKeyRef:
-                name: twitch-auth
+                name: rotisserie-secrets
                 key: token
           - name: clientID
             valueFrom:
               secretKeyRef:
-                name: twitch-auth
+                name: rotisserie-secrets
                 key: clientID
 ```
 
@@ -311,14 +311,14 @@ images: set-rev
     ./deploy/images/make-image.sh deploy/images/static-server.Dockerfile "rotisserie-static:$$(cat $(REV_FILE))"
 
 tag-images: set-rev
-    sudo docker tag "rotisserie-app:$$(cat $(REV_FILE))" "$$docker_username/rotisserie-app:$$(cat $(REV_FILE))"
-    sudo docker tag "rotisserie-ocr:$$(cat $(REV_FILE))" "$$docker_username/rotisserie-ocr:$$(cat $(REV_FILE))"
-    sudo docker tag "rotisserie-static:$$(cat $(REV_FILE))" "$$docker_username/rotisserie-static:$$(cat $(REV_FILE))"
+     docker tag "rotisserie-app:$$(cat $(REV_FILE))" "$$docker_username/rotisserie-app:$$(cat $(REV_FILE))"
+     docker tag "rotisserie-ocr:$$(cat $(REV_FILE))" "$$docker_username/rotisserie-ocr:$$(cat $(REV_FILE))"
+     docker tag "rotisserie-static:$$(cat $(REV_FILE))" "$$docker_username/rotisserie-static:$$(cat $(REV_FILE))"
 
 upload-images: set-rev
-    sudo docker push "$$docker_username/rotisserie-app:$$(cat $(REV_FILE))"
-    sudo docker push "$$docker_username/rotisserie-ocr:$$(cat $(REV_FILE))"
-    sudo docker push "$$docker_username/rotisserie-static:$$(cat $(REV_FILE))"
+     docker push "$$docker_username/rotisserie-app:$$(cat $(REV_FILE))"
+     docker push "$$docker_username/rotisserie-ocr:$$(cat $(REV_FILE))"
+     docker push "$$docker_username/rotisserie-static:$$(cat $(REV_FILE))"
 
 .PHONY: deploy
 deploy: set-rev

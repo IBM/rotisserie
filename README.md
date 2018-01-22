@@ -167,7 +167,7 @@ rotisserie.
 $ echo -n "YOUR_OAUTH_TOKEN" | base64
 ```
 
-2. Modify the twitch-auth-secrets.yaml file to use your token
+2. Modify the rotisserie-secrets.yaml file to use your token
 
 ```yaml
 ...
@@ -178,7 +178,7 @@ data:
 3. Finally, create the Kubernetes Secret.
 
 ```shell
-$ kubectl create -f twitch-auth-secrets.yaml
+$ kubectl create -f rotisserie-secrets.yaml
 ```
 
 4. Modify the `rotisserie-app.yaml` and `rotisserie-ocr.yaml` yaml files to use your image.

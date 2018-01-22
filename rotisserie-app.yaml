@@ -36,11 +36,11 @@ spec:
         - name: token
           valueFrom:
             secretKeyRef:
-              name: twitch-auth
+              name: rotisserie-secrets
               key: token
         - name: clientID
           valueFrom:
             secretKeyRef:
-              name: twitch-auth
+              name: rotisserie-secrets
               key: clientID
           #USE SECRET

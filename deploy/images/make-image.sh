@@ -15,4 +15,4 @@ trap "rm -rf $build_dir" EXIT
 cp -rp $src_dir $build_dir/rotisserie
 cp $dockerfile $build_dir/rotisserie/Dockerfile
 
-sudo docker build $build_dir/rotisserie -t $image_name
+docker build $build_dir/rotisserie -t $image_name
