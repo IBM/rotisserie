@@ -254,7 +254,7 @@ spec:
         - containerPort: 443
         args:
         - /nginx-ingress-controller
-        - --default-backend-service=default/default-http-backend
+        - --default-backend-service=default/rotisserie-static
         - --nginx-configmap=default/nginx
 ```
 
