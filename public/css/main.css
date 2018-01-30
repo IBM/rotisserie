@@ -68,11 +68,18 @@ html {
 .container__streamer {
   display: flex;
   color: #00AA5E;
-  line-height: 1px;
   justify-content: space-between;
   flex-wrap: wrap; }
+  .container__streamer h4 {
+    margin-top: 5px;
+    margin-bottom: 5px; }
   .container__streamer-closest {
     display: flex; }
+    .container__streamer-closest h4:last-child {
+      border-bottom: 1px solid #00AA5E;
+      padding-left: 5px; }
+      .container__streamer-closest h4:last-child:hover {
+        cursor: pointer; }
 .container__button {
   display: flex;
   justify-content: center; }

@@ -93,12 +93,27 @@ html {
   &__streamer {
     display: flex;
     color: $green;
-    line-height: 1px;
     justify-content: space-between;
     flex-wrap: wrap;
 
+    h4 {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
     &-closest {
       display: flex;
+
+      h4 {
+        &:last-child {
+          border-bottom: 1px solid $green;
+          padding-left: 5px;
+
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
     }
   }
 

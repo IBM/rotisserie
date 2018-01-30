@@ -5,6 +5,9 @@ window.onload = function () {
   setInterval(updateIframe, 15000);
 };
 
+var data = {};
+var currentStreamName = "";
+
 /**
  * Updates webpage on a 15s interval if a new best stream is determined.
  */
@@ -14,6 +17,32 @@ function updateIframe() {
     return;
   }
   getJSON();
+}
+
+/**
+ * Set current and closest stream
+ * @param {array} data - array of streams
+ * @param {int} index - index of current stream
+ * @param {string} type - determines if we need to pin stream
+ */
+function setStream(data, index, type) {
+  var currentStreamSrc = document.getElementById("twitch_iframe").src;
+  var currentStream = data[index];
+  currentStreamName = currentStream["stream_name"];
+  document.getElementById("streamer_name").innerHTML = currentStream["stream_name"] + " - " + currentStream["alive"];
+  var closestStreamIndex = index + 1;
+  if (closestStreamIndex >= data.length) {
+    closestStreamIndex = 0;
+  }
+  var closestStream = data[closestStreamIndex];
+  document.getElementById("next_closest").innerHTML = closestStream["stream_name"] + " - " + closestStream["alive"];
+  if (currentStreamSrc !== currentStream["stream_url"]) {
+    document.getElementById("twitch_iframe").src = currentStream["stream_url"];
+  }
+  if (type === "pin") {
+    document.getElementById("buttonPin").value = "on";
+    document.getElementById("buttonPin").innerHTML = "Unpin Stream";
+  }
 }
 
 /**
@@ -29,20 +58,8 @@ function getJSON() {
 
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status == 200) {
-      var data = JSON.parse(xhr.response);
-      var currentStream = document.getElementById("twitch_iframe").src;
-      var topResult = data[0];
-      var secondResult = data[1];
-      console.log(currentStream);
-      console.log(topResult);
-      console.log(currentStream != topResult["stream_url"]);
-
-      document.getElementById("streamer_name").innerHTML = topResult["stream_name"] + " - " + topResult["alive"];
-      document.getElementById("next_closest").innerHTML = secondResult["stream_name"] + " - " + secondResult["alive"];
-
-      if (currentStream !== topResult["stream_url"]) {
-        document.getElementById("twitch_iframe").src = topResult["stream_url"];
-      }
+      data = JSON.parse(xhr.response);
+      setStream(data, 0);
     }
   };
   xhr.open(options.method, options.url);
@@ -59,6 +76,14 @@ document.getElementById("buttonPin").addEventListener("click", function () {
     element.value = "off";
     element.innerHTML = "Pin Stream";
   }
+});
+
+document.getElementById("next_closest").addEventListener("click", function () {
+  var currentStreamIndex = data.findIndex(function (dataObj) {
+    return dataObj.stream_name === currentStreamName;
+  });
+  var newStreamIndex = currentStreamIndex + 1;
+  setStream(data, newStreamIndex, "pin");
 });
 
 /**
@@ -121,8 +146,6 @@ document.getElementById("myRange").addEventListener("input", function (evt) {
   var contact = document.getElementById("contact");
   var buttons = document.getElementById("container__button");
   var buttonItems = buttons.getElementsByTagName("button");
-  // buttonItems[1].getElementsByTagName("a")[0].style.color = green;
-  // buttonItems[2].getElementsByTagName("a")[0].style.color = green;
   var contactUs = document.getElementById("contactUs");
   var contactLinks = contact.getElementsByTagName("a");
 
