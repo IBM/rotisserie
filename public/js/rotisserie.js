@@ -59,7 +59,8 @@ function getJSON() {
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status == 200) {
       data = JSON.parse(xhr.response);
-      setStream(data, 0);
+      setStream(data, 0, "set");
+      document.getElementsByClassName("container__streamer-closest")[0].style.display = "flex";
     }
   };
   xhr.open(options.method, options.url);
@@ -83,7 +84,12 @@ document.getElementById("next_closest").addEventListener("click", function () {
     return dataObj.stream_name === currentStreamName;
   });
   var newStreamIndex = currentStreamIndex + 1;
-  setStream(data, newStreamIndex, "pin");
+  if (newStreamIndex < data.length) {
+    setStream(data, newStreamIndex, "pin");
+    if (newStreamIndex === data.length - 1) {
+      document.getElementsByClassName("container__streamer-closest")[0].style.display = "none";
+    }
+  }
 });
 
 /**
