@@ -3,6 +3,9 @@ window.onload = () => {
   setInterval(updateIframe, 15000);
 };
 
+let data = {};
+let currentStreamName = "";
+
 /**
  * Updates webpage on a 15s interval if a new best stream is determined.
  */
@@ -12,6 +15,69 @@ function updateIframe() {
     return;
   }
   getJSON();
+}
+
+/**
+ * Determine if to pin or unpin stream
+ * @param {bool} pinStreamBool - boolean to pin or unpin stream
+ */
+function pinStream(pinStreamBool) {
+  let element = document.getElementById("buttonPin");
+  const white = "rgb(255, 255, 255)";
+  const green = "rgb(0, 170, 94)";
+  if (pinStreamBool) {
+    element.value = "on";
+    element.innerHTML = "Unpin Stream";
+    element.style.backgroundColor = green;
+    element.style.color = white;
+  } else {
+    element.value = "off";
+    element.innerHTML = "Pin Stream";
+    element.style.backgroundColor = white;
+    element.style.color = green;
+  }
+}
+
+/**
+ * Set current and closest stream
+ * @param {array} data - array of streams
+ * @param {int} index - index of current stream
+ * @param {string} type - determines if we need to pin stream
+ */
+function setStream(data, index, type) {
+  let currentStreamSrc = document.getElementById("twitch_iframe").src;
+  let currentStream = data[index];
+  currentStreamName = currentStream["stream_name"];
+  document.getElementById("streamer_name").innerHTML =
+  `${currentStream["stream_name"]} - ${currentStream["alive"]}`;
+  let closestStreamIndex = index + 1;
+  const closestStream = data[closestStreamIndex];
+  document.getElementById("next_closest").innerHTML =
+    `${closestStream["stream_name"]} - ${closestStream["alive"]}`;
+  if (currentStreamSrc !== currentStream["stream_url"]) {
+    document.getElementById("twitch_iframe").src = currentStream["stream_url"];
+  }
+  if (closestStreamIndex === (data.length - 1)) {
+    document.getElementsByClassName("container__streamer-closest")[0]
+      .style.visibility = "hidden";
+  } else {
+    document.getElementsByClassName("container__streamer-closest")[0]
+      .style.visibility = "visible";
+  }
+  if (type === "pin") {
+    pinStream(true);
+  }
+  let previousSteamIndex = index - 1;
+  if (previousSteamIndex >= 0) {
+    const previousStream = data[previousSteamIndex];
+    document.getElementById("previous_stream").innerHTML =
+    `${previousStream["stream_name"]} - ${previousStream["alive"]}`;
+    document.getElementsByClassName("container__streamer-back")[0]
+      .style.visibility = "visible";
+  } else {
+    document.getElementsByClassName("container__streamer-back")[0]
+      .style.visibility = "hidden";
+  }
 }
 
 /**
@@ -27,39 +93,17 @@ function getJSON() {
 
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4 && xhr.status == 200) {
-      const data = JSON.parse(xhr.response);
-      let currentStream = document.getElementById("twitch_iframe").src;
-      let topResult = data[0];
-      let secondResult = data[1];
-      console.log(currentStream);
-      console.log(topResult);
-      console.log((currentStream != topResult["stream_url"]));
-
-      document.getElementById("streamer_name").innerHTML =
-        `${topResult["stream_name"]} - ${topResult["alive"]}`;
-      document.getElementById("next_closest").innerHTML =
-        `${secondResult["stream_name"]} - ${secondResult["alive"]}`;
-
-      if (currentStream !== topResult["stream_url"]) {
-        document.getElementById("twitch_iframe").src = topResult["stream_url"];
-      }
+      data = JSON.parse(xhr.response);
+      setStream(data, 0, "set");
+      document.getElementsByClassName("container__streamer-closest")[0]
+        .style.visibility = "visible";
+      document.getElementsByClassName("container__streamer-back")[0]
+        .style.visibility = "hidden";
     }
   };
   xhr.open(options.method, options.url);
   xhr.send();
 };
-
-document.getElementById("buttonPin").addEventListener("click", () => {
-  let element = document.getElementById("buttonPin");
-  let pinned= element.value;
-  if (pinned === "off") {
-    element.value = "on";
-    element.innerHTML = "Unpin Stream";
-  } else {
-    element.value = "off";
-    element.innerHTML = "Pin Stream";
-  }
-});
 
 /**
  * Apply colors to buttons
@@ -100,6 +144,40 @@ function changeTextColor(element, color) {
   }
 }
 
+// listen for user click on pin stream button
+document.getElementById("buttonPin").addEventListener("click", () => {
+  let element = document.getElementById("buttonPin");
+  let pinned= element.value;
+  if (pinned === "off") {
+    pinStream(true);
+  } else {
+    pinStream(false);
+  }
+});
+
+// listen for user click to view next closest stream
+document.getElementsByClassName("container__streamer-closest")[0]
+  .addEventListener("click", () => {
+    let currentStreamIndex = data.findIndex((dataObj) => {
+      return dataObj.stream_name === currentStreamName
+      ;
+    });
+    let newStreamIndex = currentStreamIndex + 1;
+    setStream(data, newStreamIndex, "pin");
+  });
+
+// listen for user click to view previous stream
+document.getElementsByClassName("container__streamer-back")[0]
+  .addEventListener("click", () => {
+    let currentStreamIndex = data.findIndex((dataObj) => {
+      return dataObj.stream_name === currentStreamName
+      ;
+    });
+    let newStreamIndex = currentStreamIndex - 1;
+    setStream(data, newStreamIndex, "pin");
+  });
+
+// listen for user to change range
 document.getElementById("myRange").addEventListener("input", (evt) => {
   const sliderValue = document.getElementById("myRange").value;
   // body and button text color
@@ -122,8 +200,6 @@ document.getElementById("myRange").addEventListener("input", (evt) => {
   const contact = document.getElementById("contact");
   const buttons = document.getElementById("container__button");
   const buttonItems = buttons.getElementsByTagName("button");
-  // buttonItems[1].getElementsByTagName("a")[0].style.color = green;
-  // buttonItems[2].getElementsByTagName("a")[0].style.color = green;
   const contactUs = document.getElementById("contactUs");
   const contactLinks = contact.getElementsByTagName("a");
 
@@ -142,4 +218,3 @@ document.getElementById("myRange").addEventListener("input", (evt) => {
   changeButtonColor(a, b, c, "rgb(255, 255, 255)",
     "rgb(0, 170, 94)", white, buttonItems);
 });
-

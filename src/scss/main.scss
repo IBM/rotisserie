@@ -1,4 +1,5 @@
 @import "variables.scss";
+@import "mixins.scss";
 
 body,
 html {
@@ -93,12 +94,40 @@ html {
   &__streamer {
     display: flex;
     color: $green;
-    line-height: 1px;
     justify-content: space-between;
     flex-wrap: wrap;
 
-    &-closest {
+    h4 {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
+    &-about {
       display: flex;
+
+      h4:first-child {
+        padding-right: 5px;
+      }
+    }
+
+    &-back {
+      visibility: hidden;
+    }
+
+    &-closest, &-back {
+      display: flex;
+
+      h4:first-child {
+        padding-right: 5px;
+      }
+
+      svg {
+        padding-top: 10px;
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
     }
   }
 
@@ -158,19 +187,11 @@ html {
     .slider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
-      background: $green;
-      cursor: pointer;
+      @include slider;
     }
 
     .slider::-moz-range-thumb {
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
-      background: $green;
-      cursor: pointer;
+      @include slider;
     }
   }
 
@@ -209,4 +230,12 @@ html {
       height: 100%;
     }
   }
+}
+
+#next_closest, #container__svg-back {
+  padding-right: 5px;
+}
+
+#previous_stream {
+  padding-left: 5px;
 }
