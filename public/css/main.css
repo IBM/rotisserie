@@ -65,17 +65,6 @@ html {
   justify-content: center;
   align-items: center;
   flex-direction: column; }
-.container__back {
-  display: none;
-  color: #00AA5E; }
-  .container__back svg {
-    padding-top: 5px; }
-    .container__back svg:hover {
-      cursor: pointer; }
-  .container__back h4 {
-    margin-top: 0;
-    margin-bottom: 5px;
-    margin-left: 5px; }
 .container__streamer {
   display: flex;
   color: #00AA5E;
@@ -84,13 +73,20 @@ html {
   .container__streamer h4 {
     margin-top: 5px;
     margin-bottom: 5px; }
-  .container__streamer-closest {
+  .container__streamer-about {
     display: flex; }
-    .container__streamer-closest h4:last-child {
-      border-bottom: 1px solid #00AA5E;
-      padding-left: 5px; }
-      .container__streamer-closest h4:last-child:hover {
-        cursor: pointer; }
+    .container__streamer-about h4:first-child {
+      padding-right: 5px; }
+  .container__streamer-back {
+    visibility: hidden; }
+  .container__streamer-closest, .container__streamer-back {
+    display: flex; }
+    .container__streamer-closest h4:first-child, .container__streamer-back h4:first-child {
+      padding-right: 5px; }
+    .container__streamer-closest svg, .container__streamer-back svg {
+      padding-top: 10px; }
+    .container__streamer-closest:hover, .container__streamer-back:hover {
+      cursor: pointer; }
 .container__button {
   display: flex;
   justify-content: center; }
@@ -167,5 +163,11 @@ html {
     left: 0;
     width: 100%;
     height: 100%; }
+
+#next_closest, #container__svg-back {
+  padding-right: 5px; }
+
+#previous_stream {
+  padding-left: 5px; }
 
 /*# sourceMappingURL=main.css.map */

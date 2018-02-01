@@ -59,10 +59,10 @@ function setStream(data, index, type) {
   }
   if (closestStreamIndex === (data.length - 1)) {
     document.getElementsByClassName("container__streamer-closest")[0]
-      .style.display = "none";
+      .style.visibility = "hidden";
   } else {
     document.getElementsByClassName("container__streamer-closest")[0]
-      .style.display = "flex";
+      .style.visibility = "visible";
   }
   if (type === "pin") {
     pinStream(true);
@@ -72,11 +72,11 @@ function setStream(data, index, type) {
     const previousStream = data[previousSteamIndex];
     document.getElementById("previous_stream").innerHTML =
     `${previousStream["stream_name"]} - ${previousStream["alive"]}`;
-    document.getElementsByClassName("container__back")[0]
-      .style.display = "flex";
+    document.getElementsByClassName("container__streamer-back")[0]
+      .style.visibility = "visible";
   } else {
-    document.getElementsByClassName("container__back")[0]
-      .style.display = "none";
+    document.getElementsByClassName("container__streamer-back")[0]
+      .style.visibility = "hidden";
   }
 }
 
@@ -96,9 +96,9 @@ function getJSON() {
       data = JSON.parse(xhr.response);
       setStream(data, 0, "set");
       document.getElementsByClassName("container__streamer-closest")[0]
-        .style.display = "flex";
-      document.getElementsByClassName("container__back")[0]
-        .style.display = "none";
+        .style.visibility = "visible";
+      document.getElementsByClassName("container__streamer-back")[0]
+        .style.visibility = "hidden";
     }
   };
   xhr.open(options.method, options.url);
@@ -156,28 +156,26 @@ document.getElementById("buttonPin").addEventListener("click", () => {
 });
 
 // listen for user click to view next closest stream
-document.getElementById("next_closest").addEventListener("click", () => {
-  let currentStreamIndex = data.findIndex((dataObj) => {
-    return dataObj.stream_name === currentStreamName
-    ;
+document.getElementsByClassName("container__streamer-closest")[0]
+  .addEventListener("click", () => {
+    let currentStreamIndex = data.findIndex((dataObj) => {
+      return dataObj.stream_name === currentStreamName
+      ;
+    });
+    let newStreamIndex = currentStreamIndex + 1;
+    setStream(data, newStreamIndex, "pin");
   });
-  let newStreamIndex = currentStreamIndex + 1;
-  setStream(data, newStreamIndex, "pin");
-});
 
 // listen for user click to view previous stream
-const backElement = document.getElementById("container__svg-back");
-if (backElement) {
-  document.getElementById("container__svg-back")
-    .addEventListener("click", () => {
-      let currentStreamIndex = data.findIndex((dataObj) => {
-        return dataObj.stream_name === currentStreamName
-        ;
-      });
-      let newStreamIndex = currentStreamIndex - 1;
-      setStream(data, newStreamIndex, "pin");
+document.getElementsByClassName("container__streamer-back")[0]
+  .addEventListener("click", () => {
+    let currentStreamIndex = data.findIndex((dataObj) => {
+      return dataObj.stream_name === currentStreamName
+      ;
     });
-}
+    let newStreamIndex = currentStreamIndex - 1;
+    setStream(data, newStreamIndex, "pin");
+  });
 
 // listen for user to change range
 document.getElementById("myRange").addEventListener("input", (evt) => {
@@ -220,4 +218,3 @@ document.getElementById("myRange").addEventListener("input", (evt) => {
   changeButtonColor(a, b, c, "rgb(255, 255, 255)",
     "rgb(0, 170, 94)", white, buttonItems);
 });
-

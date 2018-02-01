@@ -58,9 +58,9 @@ function setStream(data, index, type) {
     document.getElementById("twitch_iframe").src = currentStream["stream_url"];
   }
   if (closestStreamIndex === data.length - 1) {
-    document.getElementsByClassName("container__streamer-closest")[0].style.display = "none";
+    document.getElementsByClassName("container__streamer-closest")[0].style.visibility = "hidden";
   } else {
-    document.getElementsByClassName("container__streamer-closest")[0].style.display = "flex";
+    document.getElementsByClassName("container__streamer-closest")[0].style.visibility = "visible";
   }
   if (type === "pin") {
     pinStream(true);
@@ -69,9 +69,9 @@ function setStream(data, index, type) {
   if (previousSteamIndex >= 0) {
     var previousStream = data[previousSteamIndex];
     document.getElementById("previous_stream").innerHTML = previousStream["stream_name"] + " - " + previousStream["alive"];
-    document.getElementsByClassName("container__back")[0].style.display = "flex";
+    document.getElementsByClassName("container__streamer-back")[0].style.visibility = "visible";
   } else {
-    document.getElementsByClassName("container__back")[0].style.display = "none";
+    document.getElementsByClassName("container__streamer-back")[0].style.visibility = "hidden";
   }
 }
 
@@ -90,8 +90,8 @@ function getJSON() {
     if (xhr.readyState === 4 && xhr.status == 200) {
       data = JSON.parse(xhr.response);
       setStream(data, 0, "set");
-      document.getElementsByClassName("container__streamer-closest")[0].style.display = "flex";
-      document.getElementsByClassName("container__back")[0].style.display = "none";
+      document.getElementsByClassName("container__streamer-closest")[0].style.visibility = "visible";
+      document.getElementsByClassName("container__streamer-back")[0].style.visibility = "hidden";
     }
   };
   xhr.open(options.method, options.url);
@@ -149,7 +149,7 @@ document.getElementById("buttonPin").addEventListener("click", function () {
 });
 
 // listen for user click to view next closest stream
-document.getElementById("next_closest").addEventListener("click", function () {
+document.getElementsByClassName("container__streamer-closest")[0].addEventListener("click", function () {
   var currentStreamIndex = data.findIndex(function (dataObj) {
     return dataObj.stream_name === currentStreamName;
   });
@@ -158,16 +158,13 @@ document.getElementById("next_closest").addEventListener("click", function () {
 });
 
 // listen for user click to view previous stream
-var backElement = document.getElementById("container__svg-back");
-if (backElement) {
-  document.getElementById("container__svg-back").addEventListener("click", function () {
-    var currentStreamIndex = data.findIndex(function (dataObj) {
-      return dataObj.stream_name === currentStreamName;
-    });
-    var newStreamIndex = currentStreamIndex - 1;
-    setStream(data, newStreamIndex, "pin");
+document.getElementsByClassName("container__streamer-back")[0].addEventListener("click", function () {
+  var currentStreamIndex = data.findIndex(function (dataObj) {
+    return dataObj.stream_name === currentStreamName;
   });
-}
+  var newStreamIndex = currentStreamIndex - 1;
+  setStream(data, newStreamIndex, "pin");
+});
 
 // listen for user to change range
 document.getElementById("myRange").addEventListener("input", function (evt) {
