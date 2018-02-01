@@ -1,4 +1,5 @@
 @import "variables.scss";
+@import "mixins.scss";
 
 body,
 html {
@@ -90,6 +91,24 @@ html {
     flex-direction: column;
   }
 
+  &__back {
+    display: none;
+    color: $green;
+
+    svg {
+      padding-top: 5px;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    h4 {
+      margin-top: 0;
+      margin-bottom: 5px;
+      margin-left: 5px;
+    }
+  }
+
   &__streamer {
     display: flex;
     color: $green;
@@ -173,19 +192,11 @@ html {
     .slider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
-      background: $green;
-      cursor: pointer;
+      @include slider;
     }
 
     .slider::-moz-range-thumb {
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
-      background: $green;
-      cursor: pointer;
+      @include slider;
     }
   }
 

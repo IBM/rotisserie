@@ -65,6 +65,17 @@ html {
   justify-content: center;
   align-items: center;
   flex-direction: column; }
+.container__back {
+  display: none;
+  color: #00AA5E; }
+  .container__back svg {
+    padding-top: 5px; }
+    .container__back svg:hover {
+      cursor: pointer; }
+  .container__back h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    margin-left: 5px; }
 .container__streamer {
   display: flex;
   color: #00AA5E;

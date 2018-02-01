@@ -20,6 +20,27 @@ function updateIframe() {
 }
 
 /**
+ * Determine if to pin or unpin stream
+ * @param {bool} pinStreamBool - boolean to pin or unpin stream
+ */
+function pinStream(pinStreamBool) {
+  var element = document.getElementById("buttonPin");
+  var white = "rgb(255, 255, 255)";
+  var green = "rgb(0, 170, 94)";
+  if (pinStreamBool) {
+    element.value = "on";
+    element.innerHTML = "Unpin Stream";
+    element.style.backgroundColor = green;
+    element.style.color = white;
+  } else {
+    element.value = "off";
+    element.innerHTML = "Pin Stream";
+    element.style.backgroundColor = white;
+    element.style.color = green;
+  }
+}
+
+/**
  * Set current and closest stream
  * @param {array} data - array of streams
  * @param {int} index - index of current stream
@@ -31,17 +52,26 @@ function setStream(data, index, type) {
   currentStreamName = currentStream["stream_name"];
   document.getElementById("streamer_name").innerHTML = currentStream["stream_name"] + " - " + currentStream["alive"];
   var closestStreamIndex = index + 1;
-  if (closestStreamIndex >= data.length) {
-    closestStreamIndex = 0;
-  }
   var closestStream = data[closestStreamIndex];
   document.getElementById("next_closest").innerHTML = closestStream["stream_name"] + " - " + closestStream["alive"];
   if (currentStreamSrc !== currentStream["stream_url"]) {
     document.getElementById("twitch_iframe").src = currentStream["stream_url"];
   }
+  if (closestStreamIndex === data.length - 1) {
+    document.getElementsByClassName("container__streamer-closest")[0].style.display = "none";
+  } else {
+    document.getElementsByClassName("container__streamer-closest")[0].style.display = "flex";
+  }
   if (type === "pin") {
-    document.getElementById("buttonPin").value = "on";
-    document.getElementById("buttonPin").innerHTML = "Unpin Stream";
+    pinStream(true);
+  }
+  var previousSteamIndex = index - 1;
+  if (previousSteamIndex >= 0) {
+    var previousStream = data[previousSteamIndex];
+    document.getElementById("previous_stream").innerHTML = previousStream["stream_name"] + " - " + previousStream["alive"];
+    document.getElementsByClassName("container__back")[0].style.display = "flex";
+  } else {
+    document.getElementsByClassName("container__back")[0].style.display = "none";
   }
 }
 
@@ -61,36 +91,12 @@ function getJSON() {
       data = JSON.parse(xhr.response);
       setStream(data, 0, "set");
       document.getElementsByClassName("container__streamer-closest")[0].style.display = "flex";
+      document.getElementsByClassName("container__back")[0].style.display = "none";
     }
   };
   xhr.open(options.method, options.url);
   xhr.send();
 };
-
-document.getElementById("buttonPin").addEventListener("click", function () {
-  var element = document.getElementById("buttonPin");
-  var pinned = element.value;
-  if (pinned === "off") {
-    element.value = "on";
-    element.innerHTML = "Unpin Stream";
-  } else {
-    element.value = "off";
-    element.innerHTML = "Pin Stream";
-  }
-});
-
-document.getElementById("next_closest").addEventListener("click", function () {
-  var currentStreamIndex = data.findIndex(function (dataObj) {
-    return dataObj.stream_name === currentStreamName;
-  });
-  var newStreamIndex = currentStreamIndex + 1;
-  if (newStreamIndex < data.length) {
-    setStream(data, newStreamIndex, "pin");
-    if (newStreamIndex === data.length - 1) {
-      document.getElementsByClassName("container__streamer-closest")[0].style.display = "none";
-    }
-  }
-});
 
 /**
  * Apply colors to buttons
@@ -131,6 +137,39 @@ function changeTextColor(element, color) {
   }
 }
 
+// listen for user click on pin stream button
+document.getElementById("buttonPin").addEventListener("click", function () {
+  var element = document.getElementById("buttonPin");
+  var pinned = element.value;
+  if (pinned === "off") {
+    pinStream(true);
+  } else {
+    pinStream(false);
+  }
+});
+
+// listen for user click to view next closest stream
+document.getElementById("next_closest").addEventListener("click", function () {
+  var currentStreamIndex = data.findIndex(function (dataObj) {
+    return dataObj.stream_name === currentStreamName;
+  });
+  var newStreamIndex = currentStreamIndex + 1;
+  setStream(data, newStreamIndex, "pin");
+});
+
+// listen for user click to view previous stream
+var backElement = document.getElementById("container__svg-back");
+if (backElement) {
+  document.getElementById("container__svg-back").addEventListener("click", function () {
+    var currentStreamIndex = data.findIndex(function (dataObj) {
+      return dataObj.stream_name === currentStreamName;
+    });
+    var newStreamIndex = currentStreamIndex - 1;
+    setStream(data, newStreamIndex, "pin");
+  });
+}
+
+// listen for user to change range
 document.getElementById("myRange").addEventListener("input", function (evt) {
   var sliderValue = document.getElementById("myRange").value;
   // body and button text color
