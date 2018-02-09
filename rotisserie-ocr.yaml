@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: rotisserie-ocr
-        image: anthonyamanse/rotisserie-ocr
+        image: rizcheldayao/rotisserie-ocr
         imagePullPolicy: Always
         ports:
         - containerPort: 3001
