@@ -16,17 +16,20 @@ html {
   color: $white;
   display: flex;
   justify-content: space-between;
+  max-height: 42px;
 
   h1 {
     text-transform: uppercase;
-    padding: 0 1rem;
+    padding: 5px 1rem;
     font-weight: 100;
+    margin: 0;
   }
 
   &__nav {
     display: flex;
     list-style: none;
     padding: 0 1rem;
+    margin: 0;
 
     li {
       text-decoration: none;
@@ -64,7 +67,7 @@ html {
 
 .section {
   &__video {
-    padding: 2rem 5rem 0 5rem;
+    padding: 10px 5rem 0 5rem;
   }
   &__contact {
     padding: 2rem 5rem;
