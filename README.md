@@ -5,6 +5,8 @@
 [![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/eggshell/rotisserie/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+*Read this in other languages: [中国](README-cn.md).*
+
 [**LIVE NOW**](http://rotisserie.tv)
 
 rotisserie takes the concept of the [red zone](https://en.wikipedia.org/wiki/Red_zone_(gridiron_football))
