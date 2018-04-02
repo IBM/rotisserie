@@ -47,7 +47,7 @@ spec:
     spec:
       containers:
       - name: rotisserie-static
-        image: $docker_username/rotisserie-static:$IMAGE_TAG
+        image: registry.ng.bluemix.net/rotisserie/rotisserie-static:$IMAGE_TAG
         imagePullPolicy: Always
         env:
         - name: NGINX_LISTEN
@@ -67,7 +67,7 @@ spec:
     spec:
       containers:
         - name: rotisserie-app
-          image: $docker_username/rotisserie-app:$IMAGE_TAG
+          image: registry.ng.bluemix.net/rotisserie/rotisserie-app:$IMAGE_TAG
           env:
           - name: token
             valueFrom:
@@ -94,7 +94,7 @@ spec:
     spec:
       containers:
         - name: rotisserie-ocr
-          image: $docker_username/rotisserie-ocr:$IMAGE_TAG
+          image: registry.ng.bluemix.net/rotisserie/rotisserie-ocr:$IMAGE_TAG
           ports:
             - containerPort: 3001
 ---
