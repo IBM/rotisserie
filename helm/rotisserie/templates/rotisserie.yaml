@@ -1,0 +1,158 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "rotisserie.fullname" . }}-static
+  chart: {{ template "rotisserie.chart" . }}
+  release: {{ .Release.Name }}
+  heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ template "rotisserie.fullname" . }}-static
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}-static
+        image: {{ .Values.imageRepository }}/rotisserie-static:{{ .Values.imageTag }}
+        imagePullPolicy: Always
+        env:
+        - name: NGINX_LISTEN
+          value: "*:8082"
+        ports:
+        - containerPort: 8082
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "rotisserie.fullname" . }}-app
+  chart: {{ template "rotisserie.chart" . }}
+  release: {{ .Release.Name }}
+  heritage: {{ .Release.Service }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ template "rotisserie.fullname" . }}-app
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-app
+          image: {{ .Values.imageRepository }}/rotisserie-app:{{ .Values.imageTag }}
+          env:
+          - name: ROTISSERIE_OCR_SERVICE_HOST
+            value: {{ template "rotisserie.fullname" .}}-ocr
+          - name: ROTISSERIE_OCR_SERVICE_PORT
+            value: "3001"
+          - name: token
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "rotisserie.fullname" . }}-secrets
+                key: token
+          - name: clientID
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "rotisserie.fullname" . }}-secrets
+                key: clientID
+          ports:
+            - containerPort: 3000
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "rotisserie.fullname" . }}-ocr
+  chart: {{ template "rotisserie.chart" . }}
+  release: {{ .Release.Name }}
+  heritage: {{ .Release.Service }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ template "rotisserie.fullname" . }}-ocr
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-ocr
+          image: {{ .Values.imageRepository }}/rotisserie-ocr:{{ .Values.imageTag }}
+          ports:
+            - containerPort: 3001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "rotisserie.fullname" . }}-static
+  chart: {{ template "rotisserie.chart" . }}
+  release: {{ .Release.Name }}
+  heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - port: 8082
+    protocol: TCP
+    name: {{ template "rotisserie.fullname" . }}-static
+  selector:
+    app: {{ template "rotisserie.fullname" . }}-static
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "rotisserie.fullname" . }}-ocr
+  chart: {{ template "rotisserie.chart" . }}
+  release: {{ .Release.Name }}
+  heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - port: 3001
+    protocol: TCP
+    name: {{ template "rotisserie.fullname" . }}-ocr
+  selector:
+    app: {{ template "rotisserie.fullname" . }}-ocr
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "rotisserie.fullname" . }}-app
+  chart: {{ template "rotisserie.chart" . }}
+  release: {{ .Release.Name }}
+  heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - port: 3000
+    protocol: TCP
+    name: {{ template "rotisserie.fullname" . }}-app
+  selector:
+    app: {{ template "rotisserie.fullname" . }}-app
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "rotisserie.fullname" . }}-ingress
+  chart: {{ template "rotisserie.chart" . }}
+  release: {{ .Release.Name }}
+  heritage: {{ .Release.Service }}
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    ingress.kubernetes.io/ssl-redirect: "true"
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+  - secretName: {{ template "rotisserie.fullname" .}}-rotisserie-tls
+    hosts:
+  {{- range .Values.ingress.hostnames }}
+    - {{ . }}
+  {{- end }}
+  rules:
+  {{- range .Values.ingress.hostnames }}
+  - host: {{ . }}
+    http:
+      paths:
+      - path: /current
+        backend:
+          serviceName: {{ template "rotisserie.fullname" $ }}-app
+          servicePort: 3000
+      - path: /
+        backend:
+          serviceName: {{ template "rotisserie.fullname" $ }}-static
+          servicePort: 8082
+      - path: /all
+        backend:
+          serviceName: {{ template "rotisserie.fullname" $ }}-app
+          servicePort: 3000
+  {{- end }}
