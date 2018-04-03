@@ -1,0 +1,23 @@
+# Default values for rotisserie.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Specify image tag.
+images:
+  tag:
+
+# Specify the domain to use for ingress. If using a second hostname
+# then set hostname2, otherwise leave blank.
+ingress:
+  hostname:
+  hostname2:
+
+# Specify secrets for the rotisserie-app.
+secrets:
+  token:
+  clientID:
+
+# Specify the email and hostname for kube-lego.
+kubelego:
+  legoEmail:
+  legoUrl: https://acme-v01.api.letsencrypt.org/directory
