@@ -19,12 +19,12 @@ spec:
         - name: LEGO_EMAIL
           valueFrom:
             configMapKeyRef:
-              name: kube-lego
+              name: {{ template "rotisserie.fullname" . }}-kube-lego
               key: lego.email
         - name: LEGO_URL
           valueFrom:
             configMapKeyRef:
-              name: kube-lego
+              name: {{ template "rotisserie.fullname" . }}-kube-lego
               key: lego.url
         - name: LEGO_POD_IP
           valueFrom:
@@ -62,7 +62,7 @@ spec:
         args:
         - /nginx-ingress-controller
         - --default-backend-service=default/{{ template "rotisserie.fullname" . }}-static
-        - --nginx-configmap=default/nginx
+        - --nginx-configmap=default/{{ template "rotisserie.fullname" . }}-nginx
 ---
 apiVersion: v1
 kind: Service
