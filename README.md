@@ -1,5 +1,6 @@
 # rotisserie
 
+![IBM Cloud Deployments](https://metrics-tracker.mybluemix.net/stats/b7e0679c800a31bc460ba070d7a47776/badge.svg)
 [![Build Status](https://api.travis-ci.org/IBM/rotisserie.svg?branch=master)](https://travis-ci.org/IBM/rotisserie)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
