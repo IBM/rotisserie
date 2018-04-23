@@ -199,7 +199,7 @@ automatically switches between streams.
 If a whitelist is defined and there are matches between streams on the whitelist
 and streams in the Twitch response, that list eventually becomes the list returned.
 If a blacklist is defined and there are matches between streams on the blacklist
-and streams in the Twitch response, those streams are exluded from the returned
+and streams in the Twitch response, those streams are excluded from the returned
 list. The list of objects is then flitered down to just include display names of
 streams. This list is logged to the console and returned to `updateStreamsList()`.
 
