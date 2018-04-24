@@ -127,3 +127,24 @@ spec:
         backend:
           serviceName: rotisserie-app
           servicePort: 3000
+---
+apiVersion: batch/v1
+kind: Job
+metadata: {name: 'rotisseriemetrics'}
+spec:
+  template:
+    metadata: {name: 'rotisseriemetrics'}
+    spec:
+      containers:
+        - env:
+            - {name: config, value: '{"event_id": "web",
+                "repository_id": "https://github.com/IBM/rotisserie",
+                "target_services": [null], "target_runtimes":
+                ["Kubernetes Cluster"], "event_organizer":
+                "dev-journeys"}'}
+            - {name: language, value: node.js}
+          image: journeycode/kubernetes:latest
+          name: 'rotisseriemetrics'
+          resources:
+            limits: {cpu: 100m}
+      restartPolicy: Never
