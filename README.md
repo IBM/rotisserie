@@ -1,8 +1,6 @@
 # rotisserie
 
-[![npm version](https://badge.fury.io/js/rotisserietv.svg)](https://badge.fury.io/js/rotisserietv)
 [![Build Status](https://api.travis-ci.org/IBM/rotisserie.svg?branch=master)](https://travis-ci.org/IBM/rotisserie)
-[![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/eggshell/rotisserie/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 *Read this in other languages: [中国](README-cn.md).*
