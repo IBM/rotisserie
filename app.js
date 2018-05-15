@@ -7,7 +7,8 @@ const path = require("path");
 // external dependencies
 const express = require("express");
 const request = require("request");
-
+const Log = require("log");
+const log = new Log("info");
 const FFMpeg = require("fluent-ffmpeg");
 const gm = require("gm").subClass({imageMagick: true});
 const {spawn} = require("child_process");
@@ -23,6 +24,7 @@ let currentStream = {
   "stream_url": "https://example.com",
 };
 let allStreams = [currentStream];
+
 /**
  * Ensures given filesystem directory if it does not exist.
  * @param {string} dirPath - Relative or absolute path to
@@ -63,14 +65,14 @@ function listStreams(callback) {
 
   request(options, function(error, response, body) {
     if (body === undefined || body === null) {
-      console.log("No response from Twitch.");
+      log.error("No response from Twitch.");
       if (error) {
-        console.log("  " + error);
+        log.error("  " + error);
       }
       return Array([]);
     }
-    if (error) console.log("error:", error);
-    console.log("statusCode:", response.statusCode);
+    if (error) log.error("error:", error);
+    log.info("statusCode:", response.statusCode);
 
     bodyJSON = JSON.parse(body);
     allAgesStreams = bodyJSON.streams.filter(function(d) {
@@ -91,7 +93,7 @@ function listStreams(callback) {
     usernameList = allAgesStreams.map(function(d) {
       return d.channel["display_name"];
     });
-    console.log(usernameList);
+    log.info(usernameList);
     return callback(usernameList);
   });
 }
@@ -106,14 +108,14 @@ function listStreams(callback) {
  */
 function recordStream(options) {
   return new Promise((resolve, reject) => {
-    console.log("recording clip of stream: " + options.streamName);
+    log.info("recording clip of stream: " + options.streamName);
     const child = spawn("livestreamer", ["--yes-run-as-root", "-Q", "-f",
       "--twitch-oauth-token", process.env.token,
       "twitch.tv/" + options.streamName, "720p", "-o",
       options.clipsDir + options.streamName + ".mp4"]);
     setTimeout(function() {
       child.kill("SIGINT");
-      console.log("recorded stream: " + options.streamName);
+      log.info("recorded stream: " + options.streamName);
       resolve(options);
     }, 4000);
   });
@@ -132,7 +134,7 @@ function recordStream(options) {
 function takeScreenshot(options) {
   return new Promise((resolve, reject) => {
     if (fs.existsSync(options.clipsDir + options.streamName + ".mp4")) {
-      console.log("taking screenshot of stream: " + options.streamName);
+      log.info("taking screenshot of stream: " + options.streamName);
       new FFMpeg(options.clipsDir + options.streamName + ".mp4")
         .takeScreenshots({
           timestamps: [0],
@@ -144,7 +146,7 @@ function takeScreenshot(options) {
         })
         .on("error", function(err) {
           fs.unlinkSync(options.clipsDir + options.streamName + ".mp4");
-          console.log("Deleted " + options.clipsDir
+          log.info("Deleted " + options.clipsDir
                         + options.streamName + ".mp4");
           reject(new Error("An error occurred: " + err.message));
         });
@@ -168,7 +170,7 @@ function takeScreenshot(options) {
  */
 function cropScreenshot(options) {
   return new Promise((resolve, reject) => {
-    console.log("cropping screenshot of stream: " + options.streamName);
+    log.info("cropping screenshot of stream: " + options.streamName);
     if (fs.existsSync(options.thumbnailsDir + options.streamName + ".png")) {
       gm(options.thumbnailsDir + options.streamName + ".png")
         .crop(22, 22, 1190, 20)
@@ -177,7 +179,7 @@ function cropScreenshot(options) {
           resolve(options);
           if (err) reject(err);
         });
-      console.log("cropped screenshot of: " + options.streamName);
+      log.info("cropped screenshot of: " + options.streamName);
     } else {
       reject(new Error(options.streamName + ": input file not found"));
     }
@@ -234,7 +236,7 @@ function updateStreamsList(cropsDir) {
   // get list of twitch streams and record each one
   listStreams(function(response) {
     let streamsList = response;
-    console.log(streamsList.length);
+    log.info(streamsList.length);
     let array = [];
     let newAllStreams = [];
     for (let stream in streamsList) {
@@ -251,10 +253,10 @@ function updateStreamsList(cropsDir) {
         .then(cropScreenshot)
         .then(ocrCroppedShot)
         .then(function(streamobj) {
-          console.log(streamobj.name + " = " + streamobj.alive + " alive.");
+          log.info(streamobj.name + " = " + streamobj.alive + " alive.");
           array.push(streamobj);
         }).catch((error) => {
-          console.log(error.message);
+          log.error(error.message);
         });
     }
     setTimeout(function() {
@@ -262,15 +264,15 @@ function updateStreamsList(cropsDir) {
         return a.alive - b.alive;
       });
       if (array.length > 0) {
-        console.log(array);
-        console.log("lowest stream: " + array[0].name);
+        log.info(array);
+        log.info("lowest stream: " + array[0].name);
         currentStream = streamToObject(array[0]);
         for (let idx in array) {
           newAllStreams.push(streamToObject(array[idx]));
         }
         allStreams = newAllStreams;
       } else {
-        console.log("Empty array, not switching");
+        log.error("Empty array, not switching");
       }
     }, 25000);
   });
@@ -331,7 +333,7 @@ function main() {
 
   // start http server and log success
   app.listen(3000, function() {
-    console.log("Example app listening on port 3000!");
+    log.info("Example app listening on port 3000!");
   });
 }
 
