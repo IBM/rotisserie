@@ -22,16 +22,10 @@ if ! $(curl -s http://localhost:3001/info | jq '.app' | grep -q 'ocr'); then
 fi
 
 echo "Validate version"
-curl -s http://localhost:3001/info | jq '.version' | grep -q -- '0.1'
+curl -s http://localhost:3001/info | jq '.version' | grep -q -- '0.2'
 
 echo "Validate images/ocr"
-test_image tests/images/DrDisRespectLIVE.png 8
-test_image tests/images/Emilyispro.png 100
-test_image tests/images/summit1g.png 100
-test_image tests/images/DreadedCone.png 100
-test_image tests/images/Iam_chappie.png 33
-test_image tests/images/Chad.png 47
-test_image tests/images/BradWOTO.png 100 # This one is all messed up, better to error
-
-# Failing Tests
-#test_image images/Nick28T.png 68 (shows as 58)
+for image in tests/images/*; do
+	result=$(cut -d '_' -f2 <<< "${image%.*}")
+	test_image $image $result
+done
