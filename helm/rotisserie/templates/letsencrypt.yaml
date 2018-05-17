@@ -1,7 +1,0 @@
-apiVersion: v1
-metadata:
-  name: {{ template "rotisserie.fullname" . }}-kube-lego
-data:
-  lego.email: {{ .Values.kubelego.legoEmail }}
-  lego.url: {{ .Values.kubelego.legoUrl }}
-kind: ConfigMap

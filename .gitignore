@@ -29,3 +29,6 @@ Session.vim
 .netrwhist
 *~
 tags
+
+# Ignore makerev
+.make-rev-check

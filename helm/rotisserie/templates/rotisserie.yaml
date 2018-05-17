@@ -120,6 +120,30 @@ spec:
   selector:
     app: {{ template "rotisserie.fullname" . }}-app
 ---
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: {{ template "rotisserie.fullname" . }}-tls
+  namespace: default
+spec:
+  secretName:
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-prod
+  dnsNames:
+  {{- range .Values.ingress.hostnames}}
+  - {{ . }}
+  {{- end }}
+  acme:
+    config:
+    - http01:
+        ingressClass: nginx
+      domains:
+      {{- range .Values.ingress.hostnames}}
+      - {{ . }}
+      {{- end}}
+---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -128,12 +152,11 @@ metadata:
   release: {{ .Release.Name }}
   heritage: {{ .Release.Service }}
   annotations:
-    kubernetes.io/tls-acme: "true"
-    ingress.kubernetes.io/ssl-redirect: "true"
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "True"
+    ingress.bluemix.net/redirect-to-https: "True"
 spec:
   tls:
-  - secretName: {{ template "rotisserie.fullname" .}}-rotisserie-tls
+  - secretName: {{ template "rotisserie.fullname" .}}-tls
     hosts:
   {{- range .Values.ingress.hostnames }}
     - {{ . }}
