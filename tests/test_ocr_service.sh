@@ -22,7 +22,7 @@ if ! $(curl -s http://localhost:3001/info | jq '.app' | grep -q 'ocr'); then
 fi
 
 echo "Validate version"
-curl -s http://localhost:3001/info | jq '.version' | grep -q -- '0.2'
+curl -s http://localhost:3001/info | jq '.version' | grep -q -- '0.3'
 
 echo "Validate images/ocr"
 for image in tests/images/*; do

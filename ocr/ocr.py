@@ -24,7 +24,8 @@ def load_graph(graph_file):
     return graph
 
 
-app.graph = load_graph("./model.pb")
+app.pubg_graph = load_graph("./pubg.pb")
+app.fortnite_graph = load_graph("./fortnite.pb")
 app.ocr_debug = os.environ.get("OCR_DEBUG", False)
 
 
@@ -32,8 +33,50 @@ app.ocr_debug = os.environ.get("OCR_DEBUG", False)
 async def info(request):
     return json({
         "app": "ocr",
-        "version": "0.2",
+        "version": "0.3",
         "health": "good"
+    })
+
+
+async def _process_image(model, image_data):
+    config = tf.ConfigProto(allow_soft_placement=True)
+    with tf.Session(graph=model, config=config) as sess:
+        img_pl = model.get_tensor_by_name("import/input_image_as_bytes:0")
+        input_feed = {img_pl: image_data}
+        output_feed = [
+            model.get_tensor_by_name("import/prediction:0"),
+            model.get_tensor_by_name("import/probability:0")
+        ]
+
+        res = sess.run(output_feed, input_feed)
+        try:
+            number = int(res[0])
+        except ValueError:
+            number = 100
+
+    if app.ocr_debug:
+        filename = "debug/{}_{}.png".format(uuid.uuid4(), number)
+        with open(filename, 'wb') as f:
+            f.write(image_data)
+
+        print("Identified image {} as {} with {:5.2f}% probability.".format(
+            filename, number, res[1] * 100))
+
+    return number
+
+
+@app.route("/process_fortnite", methods=["POST"])
+async def process_fortnite(request):
+    if not request.files:
+        return json({
+            "number": 100
+        })
+
+    image_data = request.files.get("image").body
+    number = await _process_image(app.fortnite_graph, image_data)
+
+    return json({
+        "number": number or 100
     })
 
 
@@ -50,8 +93,8 @@ async def process_pubg(request):
     px = im.load()
 
     left = px[15, 9]
-    center = px[16,9]
-    right = px[17,9]
+    center = px[16, 9]
+    right = px[17, 9]
 
     # Before a game has started the top right looks like:
     # XX | Joined
@@ -88,28 +131,7 @@ async def process_pubg(request):
                 "number": 100
             })
 
-    config = tf.ConfigProto(allow_soft_placement=True)
-    with tf.Session(graph=app.graph, config=config) as sess:
-        img_pl = app.graph.get_tensor_by_name("import/input_image_as_bytes:0")
-        input_feed = {img_pl: image_data}
-        output_feed = [
-            app.graph.get_tensor_by_name("import/prediction:0"),
-            app.graph.get_tensor_by_name("import/probability:0")
-        ]
-
-        res = sess.run(output_feed, input_feed)
-        try:
-            number = int(res[0])
-        except ValueError:
-            number = 100
-
-    if app.ocr_debug:
-        filename = "debug/{}_{}.png".format(uuid.uuid4(), number)
-        with open(filename, 'wb') as f:
-            f.write(image_data)
-
-        print("Identified image {} as {} with {:5.2f}% probability.".format(
-            filename, number, res[1] * 100))
+    number = await _process_image(app.pubg_graph, image_data)
 
     return json({
         "number": number

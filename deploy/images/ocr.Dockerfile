@@ -1,7 +1,8 @@
 FROM python:3.6-slim
 
 COPY ocr/ocr.py ocr/requirements.txt /
-ADD https://s3-api.us-geo.objectstorage.softlayer.net/rotisserie-ml-models/model.pb /
+ADD https://s3-api.us-geo.objectstorage.softlayer.net/rotisserie-ml-models/pubg.pb /
+ADD https://s3-api.us-geo.objectstorage.softlayer.net/rotisserie-ml-models/fortnite.pb /
 
 RUN apt-get update && \
     apt-get -y install gcc && \
