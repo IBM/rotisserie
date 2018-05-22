@@ -26,6 +26,6 @@ secrets:
   clientID:
 
 # Specify the email and hostname for kube-lego.
-kubelego:
-  legoEmail:
-  legoUrl: https://acme-v01.api.letsencrypt.org/directory
+certManager:
+  email:
+  url: https://acme-v01.api.letsencrypt.org/directory
