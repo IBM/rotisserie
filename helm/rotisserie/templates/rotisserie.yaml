@@ -127,7 +127,7 @@ metadata:
   name: {{ template "rotisserie.fullname" . }}-tls
   namespace: default
 spec:
-  secretName:
+  secretName: {{ template "rotisserie.fullname" . }}-tls
   issuerRef:
     kind: ClusterIssuer
     name: letsencrypt-prod
