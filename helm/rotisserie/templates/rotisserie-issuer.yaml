@@ -1,7 +1,8 @@
 apiVersion: certmanager.k8s.io/v1alpha1
-kind: ClusterIssuer
+kind: Issuer
 metadata:
-  name: letsencrypt-prod
+  name: {{ template "rotisserie.fullname" . }}-letsencrypt-prod
+  namespace: {{ .Values.namespace }}
 spec:
   acme:
     # The ACME server URL

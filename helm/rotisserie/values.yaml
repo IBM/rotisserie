@@ -2,11 +2,15 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+## Namespace
+
+# specify the namespace being used. defaults to default
+namespace: default
+
 ## Images
 
-# the repository URL for the image
+# the repository URL for the image and then the image tag
 imageRepository:
-# the tag for the image version being used
 imageTag:
 
 ## Ingress
@@ -20,12 +24,14 @@ ingress:
 
 ## Secrets
 
-# Specify secrets for the rotisserie-app.
+# Specify secrets for the rotisserie-app
 secrets:
   token:
   clientID:
 
-# Specify the email and hostname for kube-lego.
+# Cert-Manager
+
+# Specify the email and hostname for cert-manager
 certManager:
   email:
   url: https://acme-v01.api.letsencrypt.org/directory
