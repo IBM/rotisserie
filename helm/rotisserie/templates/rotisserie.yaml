@@ -129,8 +129,7 @@ metadata:
 spec:
   secretName: {{ template "rotisserie.fullname" . }}-tls
   issuerRef:
-    kind: ClusterIssuer
-    name: letsencrypt-prod
+    name: {{ template "rotisserie.fullname" . }}-letsencrypt-prod
   dnsNames:
   {{- range .Values.ingress.hostnames}}
   - {{ . }}
