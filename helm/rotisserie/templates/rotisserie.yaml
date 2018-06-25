@@ -53,6 +53,11 @@ spec:
               secretKeyRef:
                 name: {{ template "rotisserie.fullname" . }}-secrets
                 key: clientID
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: redis
+                key: redis-password
           ports:
             - containerPort: 3000
 ---
@@ -74,6 +79,35 @@ spec:
           image: {{ .Values.imageRepository }}/rotisserie-ocr:{{ .Values.imageTag }}
           ports:
             - containerPort: 3001
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "rotisserie.fullname" . }}-sp
+  chart: {{ template "rotisserie.chart" . }}
+  release: {{ .Release.Name }}
+  heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.streamProcessors }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "rotisserie.fullname" . }}-sp
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-sp
+          image: {{ .Values.imageRepository }}/rotisserie-sp:{{ .Values.imageTag }}
+          env:
+          - name: TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "rotisserie.fullname" . }}-secrets
+                key: token
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: redis
+                key: redis-password
 ---
 apiVersion: v1
 kind: Service
