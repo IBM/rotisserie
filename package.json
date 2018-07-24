@@ -1,7 +1,7 @@
 {
   "name": "rotisserietv",
-  "version": "0.0.1",
-  "description": "webapp for viewing the most exciting PlayerUnknown's BattleGrounds streams on Twitch",
+  "version": "0.0.2",
+  "description": "webapp for viewing the most exciting Battle Royale",
   "main": "index.js",
   "scripts": {
     "dev": "npm-run-all -s sass:build -p babel sass:watch",
@@ -10,7 +10,7 @@
     "babel": "babel ./src/js/ -d ./public/js/ -w"
   },
   "author": "Cullen Taylor",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/IBM/rotisserie.git"
