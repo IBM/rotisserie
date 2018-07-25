@@ -55,7 +55,7 @@ function listStreams(callback) {
   let clientID = process.env.clientID;
   let whitelist = process.env.ROTISSERIE_WHITELIST;
   let blacklist = process.env.ROTISSERIE_BLACKLIST;
-  let gameURL = "https://api.twitch.tv/kraken/streams?game=PLAYERUNKNOWN'S+BATTLEGROUNDS&language=en&stream_type=live&limit=20";
+  let gameURL = "https://api.twitch.tv/kraken/streams?game=PLAYERUNKNOWN'S+BATTLEGROUNDS&language=en&stream_type=live&limit=100";
   let options = {
     url: gameURL,
     headers: {
