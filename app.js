@@ -1,19 +1,11 @@
 #!/usr/bin/env node
 
-// built-in requirements
-const fs = require("fs");
-const path = require("path");
-
 // external dependencies
 const express = require("express");
 const request = require("request");
 const Log = require("log");
 const log = new Log("info");
-const FFMpeg = require("fluent-ffmpeg");
-const gm = require("gm").subClass({imageMagick: true});
-const {spawn} = require("child_process");
 const redis = require("redis");
-const util = require("util");
 
 // construct express app
 const app = express();
@@ -26,10 +18,8 @@ let currentStream = {
   "stream_url": "https://example.com",
 };
 let allStreams = [currentStream];
-
-
-let client = redis.createClient({host:"redis-master"})
-client.auth(process.env.REDIS_PASSWORD)
+let client = redis.createClient({host: "redis-master"});
+client.auth(process.env.REDIS_PASSWORD);
 
 /**
  * Gets list of PUBG streams from Twitch API v5.
@@ -113,46 +103,49 @@ function streamToObject(stream) {
   return object;
 }
 
-
+/**
+ * Finds lowest stream from list of streams and their associated playercounts
+ * from redis.
+ */
 function findLowestStream() {
   // Grab first 50 elements of stream-by-alive. Because it's
   // a sorted set the elements will be returned by the number
   // of players alive, ascending.
-  args = ['stream-by-alive', '0', '50', 'WITHSCORES']
+  args = ["stream-by-alive", "0", "50", "WITHSCORES"];
 
   // Start a transaction to retrieve top 50 streams and then delete
   // the key.
   client.multi()
-  .zrange(args)
-  .del("stream-by-alive")
-  .exec(function(err, responses) {
-    if (err) throw err;
+    .zrange(args)
+    .del("stream-by-alive")
+    .exec(function(err, responses) {
+      if (err) throw err;
 
-    // multi passes a list of repsonses for each command in the
-    // transaction. We only care about the first one, the zrange
-    // command.
-    response = responses[0]
+      // multi passes a list of repsonses for each command in the
+      // transaction. We only care about the first one, the zrange
+      // command.
+      response = responses[0];
 
-    newStreams = []
-    streams = []
+      newStreams = [];
+      streams = [];
 
-    // Turn list of stream,score items into a list of objects
-    for (var idx = 0; idx < response.length; idx += 2) {
-      obj = {'name': response[idx], 'alive': response[idx+1]};
-      streams.push(obj);
-    }
+      // Turn list of stream,score items into a list of objects
+      for (let idx = 0; idx < response.length; idx += 2) {
+        obj = {"name": response[idx], "alive": response[idx+1]};
+        streams.push(obj);
+      }
 
-    for (let stream of streams) {
-      newStreams.push(streamToObject(stream))
-    }
+      for (let stream of streams) {
+        newStreams.push(streamToObject(stream));
+      }
 
-    if (newStreams.length > 0) {
-      newStreams.reverse;
-      allStreams = newStreams;
-    } else {
-      log.error("Empty stream list, not switching.");
-    }
-  });
+      if (newStreams.length > 0) {
+        newStreams.reverse;
+        allStreams = newStreams;
+      } else {
+        log.error("Empty stream list, not switching.");
+      }
+    });
 }
 
 
@@ -160,9 +153,6 @@ function findLowestStream() {
  * Runs logic to get lowest stream and starts express app server.
  */
 function main() {
-  // init website with lowest stream.
-  //updateStreamsList(cropsDir);
-
   // Pull list of streams every 20 seconds
   setInterval(function() {
     updateStreamsList();

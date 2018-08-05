@@ -56,7 +56,7 @@ spec:
           - name: REDIS_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: redis
+                name: {{ template "rotisserie.fullname" . }}-redis
                 key: redis-password
           ports:
             - containerPort: 3000
@@ -106,7 +106,7 @@ spec:
           - name: REDIS_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: redis
+                name: {{ template "rotisserie.fullname" . }}-redis
                 key: redis-password
 ---
 apiVersion: v1
