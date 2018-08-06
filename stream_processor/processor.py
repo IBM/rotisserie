@@ -4,6 +4,7 @@ import redis
 import requests
 import os
 import subprocess
+import sys
 import time
 
 
@@ -11,7 +12,7 @@ db = redis.StrictRedis(host='redis-master',
                        password=os.getenv('REDIS_PASSWORD'))
 
 # This is a redis set that contains a list of stream names
-read_key = os.getenv('REDIS_READ_KEY', 'stream-list')
+read_key = os.getenv('REDIS_READ_KEY', 'work')
 
 # Results are written to a sorted set. Sorted sets contain a string
 # and a score and are sorted in ascending order based on the score.
@@ -31,47 +32,45 @@ aliases = ','.join(["720", "720p", "720p60", "720p60_alt", "best", "source"])
 def main():
     """Main loop
 
-    Loops and pops values from the set of streams. For each of those streams
-    it captures 4 seconds of the video, captures a screenshot of the first
-    frame and submits it to the OCR service to get a value. That value, along
+    Pops top value from the set of streams. For that stream, it captures 4
+    seconds of the video, captures a screenshot of the first frame and
+    submits it to the OCR service to get a value. That value, along
     with the stream name is added to the sorted set of parsed streams.
     """
-    while True:
-        stream_name = db.spop(read_key)
+    stream_name = db.spop(read_key)
 
-        # Out of streams, wait 5 seconds and check again
-        if not stream_name:
-            time.sleep(5)
-            continue
+    # Out of streams, exit normally
+    if not stream_name:
+        print("Out of streams, exiting normally")
+        sys.exit()
 
-        stream_name = stream_name.decode('utf-8')
-        print(stream_name)
+    stream_name = stream_name.decode('utf-8')
+    print(stream_name)
 
-        if not stream_name:
-            continue
+    if not stream_name:
+        sys.exit()
 
-        try:
-            subprocess.run(["streamlink", "--twitch-oauth-token", token,
-                            "-Q", "-f", "-o", "{}.mp4".format(stream_name),
-                            "twitch.tv/{}".format(stream_name), aliases],
-                           check=True, timeout=4)
-        except subprocess.CalledProcessError as e:
-            print(e)
-            continue
-        except subprocess.TimeoutExpired:
-            # This is expected. We're using the timeout in subprocess.run
-            # to only capture 4 seconds of video.
-            pass
+    try:
+        subprocess.run(["streamlink", "--twitch-oauth-token", token,
+                        "-Q", "-f", "-o", "{}.mp4".format(stream_name),
+                        "twitch.tv/{}".format(stream_name), aliases],
+                       check=True, timeout=4)
+    except subprocess.CalledProcessError as e:
+        print(e)
+        sys.exit()
+    except subprocess.TimeoutExpired:
+        # This is expected. We're using the timeout in subprocess.run
+        # to only capture 4 seconds of video.
+        pass
 
-        screenshot = take_screenshot(stream_name)
-        if not screenshot:
-            continue
+    screenshot = take_screenshot(stream_name)
+    if not screenshot:
+        sys.exit()
 
-        value = ocr(screenshot)
-
-        db.zadd(write_key, value, stream_name)
-
-        os.unlink("{}.mp4".format(stream_name))
+    value = ocr(screenshot)
+    db.zadd(write_key, value, stream_name)
+    os.unlink("{}.mp4".format(stream_name))
+    sys.exit()
 
 
 def take_screenshot(stream_name):
