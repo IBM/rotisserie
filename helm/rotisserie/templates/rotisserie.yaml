@@ -165,16 +165,12 @@ spec:
   - host: {{ . }}
     http:
       paths:
-      - path: /current
+      - path: /
         backend:
           serviceName: {{ template "rotisserie.fullname" $ }}-app
           servicePort: 3000
-      - path: /
+      - path: /static
         backend:
           serviceName: {{ template "rotisserie.fullname" $ }}-static
           servicePort: 8082
-      - path: /all
-        backend:
-          serviceName: {{ template "rotisserie.fullname" $ }}-app
-          servicePort: 3000
   {{- end }}

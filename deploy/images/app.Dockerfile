@@ -4,8 +4,9 @@ COPY app.js /
 COPY package.json /
 COPY package-lock.json /
 COPY public /public
+COPY views /views
 RUN echo http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
-    apk add --no-cache livestreamer ffmpeg imagemagick git py2-singledispatch && \
+    apk add --no-cache git py2-singledispatch && \
     npm install
 
 ARG OCR_HOST

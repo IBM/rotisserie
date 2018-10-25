@@ -1,19 +1,25 @@
 import io
 import os
 import uuid
+import streamlink
+import asyncio
+import tensorflow as tf
 
 from sanic import Sanic
 from sanic.response import json
-import tensorflow as tf
 from PIL import Image
 
 app = Sanic()
+app.config.KEEP_ALIVE = False
+
+streamlink_session = streamlink.Streamlink()
 
 
 def load_graph(graph_file):
     """
     Load a frozen TensorFlow graph
     """
+    import tensorflow as tf
     with tf.gfile.GFile(graph_file, "rb") as f:
         graph_def = tf.GraphDef()
         graph_def.ParseFromString(f.read())
@@ -26,7 +32,17 @@ def load_graph(graph_file):
 
 app.pubg_graph = load_graph("./pubg.pb")
 app.fortnite_graph = load_graph("./fortnite.pb")
+app.blackout_graph = load_graph("./blackout.pb")
 app.ocr_debug = os.environ.get("OCR_DEBUG", False)
+quality = ("720p", "720", "720p60", "720p60_alt", "best", "source")
+
+
+async def get_stream(url):
+    streams = streamlink_session.streams(url)
+
+    for opt in quality:
+        if opt in streams:
+            return streams[opt]
 
 
 @app.route("/info", methods=["GET"])
@@ -49,10 +65,11 @@ async def _process_image(model, image_data):
         ]
 
         res = sess.run(output_feed, input_feed)
-        try:
-            number = int(res[0])
-        except ValueError:
-            number = 100
+
+    try:
+        number = int(res[0])
+    except ValueError:
+        number = 100
 
     if app.ocr_debug:
         filename = "debug/{}_{}.png".format(uuid.uuid4(), number)
@@ -65,14 +82,61 @@ async def _process_image(model, image_data):
     return number
 
 
+async def get_stream_image(stream_name, crop_dims):
+    stream_url = "http://twitch.tv/{}".format(stream_name)
+    try:
+        stream = await get_stream(stream_url)
+    except Exception:
+        stream = None
+
+    if not stream:
+        return
+
+    crop_dims = dict(zip(('x', 'y', 'w', 'h'), crop_dims))
+    crop_string = "crop={w}:{h}:{x}:{y}".format(**crop_dims)
+
+    video_url = stream.url
+    process = await asyncio.create_subprocess_exec(
+        "ffmpeg", "-i", video_url,
+        "-loglevel", "quiet",
+        "-an",
+        "-f", "image2pipe",
+        "-pix_fmt", "gray",
+        "-vframes", "1",
+        "-filter:v", crop_string,
+        "-vcodec", "png", "-",
+        stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE
+    )
+
+    stdout, stderr = await process.communicate()
+    return stdout
+
+
+@app.route("/process_blackout", methods=["POST"])
+async def process_blackout(request):
+    stream_name = request.form.get("stream")
+    crop_dims = (1226, 32, 26, 18)
+    image_data = await get_stream_image(stream_name, crop_dims)
+
+    if not image_data:
+        return json({"number": 100})
+
+    number = await _process_image(app.blackout_graph, image_data)
+
+    return json({
+        "number": number or 100
+    })
+
+
 @app.route("/process_fortnite", methods=["POST"])
 async def process_fortnite(request):
-    if not request.files:
-        return json({
-            "number": 100
-        })
+    stream_name = request.form.get("stream")
+    crop_dims = (1188, 204, 22, 18)
+    image_data = await get_stream_image(stream_name, crop_dims)
 
-    image_data = request.files.get("image").body
+    if not image_data:
+        return json({"number": 100})
+
     number = await _process_image(app.fortnite_graph, image_data)
 
     return json({
@@ -82,12 +146,12 @@ async def process_fortnite(request):
 
 @app.route("/process_pubg", methods=["POST"])
 async def process_pubg(request):
-    if not request.files:
-        return json({
-            "number": 100
-        })
+    stream_name = request.form.get("stream")
+    crop_dims = (1191, 22, 23, 21)
+    image_data = await get_stream_image(stream_name, crop_dims)
 
-    image_data = request.files.get("image").body
+    if not image_data:
+        return json({"number": 100})
 
     im = Image.open(io.BytesIO(image_data)).convert('L')
     px = im.load()
