@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Rotisserie</title>
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/static/css/main.css">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108255910-1"></script>
@@ -19,6 +19,12 @@
       <div class="navbar__title">
           <h1>Rotisserie</h1>
       </div>
+
+        <ul class="navbar__nav">
+	  <li><a href="/fornite">Fortnite</a></li>
+	  <li><a href="/blackout">Blackout</a></li>
+	  <li><a href="/pubg">PUBG</a></li>
+	</ul>
         <ul class="navbar__nav">
           <li><a href="#about">About</a></li>
           <li><a href="#contact">Contact</a></li>
@@ -78,6 +84,6 @@
             <p>If you would like more information on how this application was built, check out <a href="https://developer.ibm.com/code/patterns/implement-computer-vision-playerunknowns-battlegrounds-live-streams/">IBM Code Pattern</a></p>
           </div>
     </section>
-     <script src="/js/rotisserie.js"> </script>
+     <script id="mainscript" src="/static/js/rotisserie.js" game-type="{{ game }}"> </script>
   </body>
 </html>

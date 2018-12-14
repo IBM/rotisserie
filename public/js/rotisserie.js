@@ -1,6 +1,9 @@
 "use strict";
 
+var gameType = "";
+
 window.onload = function () {
+  gameType = document.getElementById('mainscript').getAttribute('game-type');
   updateIframe();
   setInterval(updateIframe, 15000);
 };
@@ -80,9 +83,10 @@ function setStream(data, index, type) {
  */
 function getJSON() {
   var options = {
-    url: "/all",
+    url: "/all/" + gameType,
     method: "GET"
   };
+  console.log("Calling /all/ for  " + gameType);
 
   var xhr = new XMLHttpRequest();
 

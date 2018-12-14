@@ -1,6 +1,8 @@
 import io
 import os
 import uuid
+import streamlink
+import subprocess
 
 from sanic import Sanic
 from sanic.response import json
@@ -26,7 +28,17 @@ def load_graph(graph_file):
 
 app.pubg_graph = load_graph("./pubg.pb")
 app.fortnite_graph = load_graph("./fortnite.pb")
+app.blackout_graph = load_graph("./blackout.pb")
 app.ocr_debug = os.environ.get("OCR_DEBUG", False)
+quality = ("720p", "720", "720p60", "720p60_alt", "best", "source")
+
+
+def get_stream(url):
+    streams = streamlink.streams(url)
+
+    for opt in quality:
+        if opt in streams:
+            return streams[opt]
 
 
 @app.route("/info", methods=["GET"])
@@ -65,14 +77,54 @@ async def _process_image(model, image_data):
     return number
 
 
+async def get_stream_image(stream_name, crop_dims):
+    stream_url = "http://twitch.tv/{}".format(stream_name)
+    stream = get_stream(stream_url)
+
+    if not stream:
+        return
+
+    crop_dims = dict(zip(('x', 'y', 'w', 'h'), crop_dims))
+    crop_string = "crop={w}:{h}:{x}:{y}".format(**crop_dims)
+
+    video_url = stream.url
+    pipe = subprocess.run(["ffmpeg", "-i", video_url,
+        "-loglevel", "quiet",
+        "-an",
+        "-f", "image2pipe",
+        "-pix_fmt", "gray",
+        "-vframes", "1",
+        "-filter:v", crop_string,
+        "-vcodec", "png", "-"],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+
+    return pipe.stdout
+
+@app.route("/process_blackout", methods=["POST"])
+async def process_blackout(request):
+    stream_name = request.form.get("stream")
+    crop_dims = (1226, 32, 26, 18)
+    image_data = await get_stream_image(stream_name, crop_dims)
+
+    if not image_data:
+        return json({"number": 100})
+
+    number = await _process_image(app.blackout_graph, image_data)
+
+    return json({
+        "number": number or 100
+    })
+
+
 @app.route("/process_fortnite", methods=["POST"])
 async def process_fortnite(request):
-    if not request.files:
-        return json({
-            "number": 100
-        })
+    stream_name = request.form.get("stream")
+    crop_dims = (1188, 204, 22, 18)
+    image_data = await get_stream_image(stream_name, crop_dims)
 
-    image_data = request.files.get("image").body
+    if not image_data:
+        return json({"number": 100})
+
     number = await _process_image(app.fortnite_graph, image_data)
 
     return json({
@@ -82,12 +134,12 @@ async def process_fortnite(request):
 
 @app.route("/process_pubg", methods=["POST"])
 async def process_pubg(request):
-    if not request.files:
-        return json({
-            "number": 100
-        })
+    stream_name = request.form.get("stream")
+    crop_dims = (1191, 22, 23, 21)
+    image_data = await get_stream_image(stream_name, crop_dims)
 
-    image_data = request.files.get("image").body
+    if not image_data:
+        return json({"number": 100})
 
     im = Image.open(io.BytesIO(image_data)).convert('L')
     px = im.load()
