@@ -87,7 +87,7 @@ async def get_stream_image(stream_name, crop_dims):
     stream_url = "http://twitch.tv/{}".format(stream_name)
     try:
         stream = await get_stream(stream_url)
-    except streamlink.Exceptions.PluginError:
+    except Exception:
         stream = None
 
     if not stream:
