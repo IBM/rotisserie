@@ -37,14 +37,6 @@ app.ocr_debug = os.environ.get("OCR_DEBUG", False)
 quality = ("720p", "720", "720p60", "720p60_alt", "best", "source")
 
 
-
-def make_session():
-    import tensorflow as tf
-    config = tf.ConfigProto(allow_soft_placement=True)
-    return tf.Session(config=config, graph=app.fortnite_graph)
-
-app.sess = make_session()
-
 async def get_stream(url):
     streams = streamlink_session.streams(url)
 
@@ -63,16 +55,16 @@ async def info(request):
 
 
 async def _process_image(model, image_data):
-#with tf.Session(graph=model, config=config) as sess:
-    img_pl = model.get_tensor_by_name("import/input_image_as_bytes:0")
-    input_feed = {img_pl: image_data}
-    output_feed = [
-        model.get_tensor_by_name("import/prediction:0"),
-        model.get_tensor_by_name("import/probability:0")
-    ]
+    config = tf.ConfigProto(allow_soft_placement=True)
+    with tf.Session(graph=model, config=config) as sess:
+        img_pl = model.get_tensor_by_name("import/input_image_as_bytes:0")
+        input_feed = {img_pl: image_data}
+        output_feed = [
+            model.get_tensor_by_name("import/prediction:0"),
+            model.get_tensor_by_name("import/probability:0")
+        ]
 
-    print(app.sess)
-    res = app.sess.run(output_feed, input_feed)
+        res = sess.run(output_feed, input_feed)
 
     try:
         number = int(res[0])
