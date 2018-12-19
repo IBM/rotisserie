@@ -85,7 +85,10 @@ async def _process_image(model, image_data):
 
 async def get_stream_image(stream_name, crop_dims):
     stream_url = "http://twitch.tv/{}".format(stream_name)
-    stream = await get_stream(stream_url)
+    try:
+        stream = await get_stream(stream_url)
+    except streamlink.Exceptions.PluginError:
+        stream = None
 
     if not stream:
         return
