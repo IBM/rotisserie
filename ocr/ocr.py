@@ -3,13 +3,23 @@ import os
 import uuid
 import streamlink
 import subprocess
+import signal
+import asyncio
+import objgraph
+import tracemalloc
+import pdb
 
 from sanic import Sanic
 from sanic.response import json
 import tensorflow as tf
 from PIL import Image
 
+tracemalloc.start(25)
+
 app = Sanic()
+app.config.KEEP_ALIVE = False
+
+streamlink_session = streamlink.Streamlink()
 
 
 def load_graph(graph_file):
@@ -33,8 +43,8 @@ app.ocr_debug = os.environ.get("OCR_DEBUG", False)
 quality = ("720p", "720", "720p60", "720p60_alt", "best", "source")
 
 
-def get_stream(url):
-    streams = streamlink.streams(url)
+async def get_stream(url):
+    streams = streamlink_session.streams(url)
 
     for opt in quality:
         if opt in streams:
@@ -61,10 +71,11 @@ async def _process_image(model, image_data):
         ]
 
         res = sess.run(output_feed, input_feed)
-        try:
-            number = int(res[0])
-        except ValueError:
-            number = 100
+
+    try:
+        number = int(res[0])
+    except ValueError:
+        number = 100
 
     if app.ocr_debug:
         filename = "debug/{}_{}.png".format(uuid.uuid4(), number)
@@ -79,7 +90,7 @@ async def _process_image(model, image_data):
 
 async def get_stream_image(stream_name, crop_dims):
     stream_url = "http://twitch.tv/{}".format(stream_name)
-    stream = get_stream(stream_url)
+    stream = await get_stream(stream_url)
 
     if not stream:
         return
@@ -88,17 +99,19 @@ async def get_stream_image(stream_name, crop_dims):
     crop_string = "crop={w}:{h}:{x}:{y}".format(**crop_dims)
 
     video_url = stream.url
-    pipe = subprocess.run(["ffmpeg", "-i", video_url,
+    process = await asyncio.create_subprocess_exec("ffmpeg", "-i", video_url,
         "-loglevel", "quiet",
         "-an",
         "-f", "image2pipe",
         "-pix_fmt", "gray",
         "-vframes", "1",
         "-filter:v", crop_string,
-        "-vcodec", "png", "-"],
-        stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        "-vcodec", "png", "-",
+        stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE)
 
-    return pipe.stdout
+    stdout, stderr = await process.communicate()
+    return stdout
+
 
 @app.route("/process_blackout", methods=["POST"])
 async def process_blackout(request):
