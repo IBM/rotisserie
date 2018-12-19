@@ -3,18 +3,11 @@ import os
 import uuid
 import streamlink
 import subprocess
-import signal
 import asyncio
-import objgraph
-import tracemalloc
-import pdb
 
 from sanic import Sanic
 from sanic.response import json
-import tensorflow as tf
 from PIL import Image
-
-tracemalloc.start(25)
 
 app = Sanic()
 app.config.KEEP_ALIVE = False
@@ -26,6 +19,7 @@ def load_graph(graph_file):
     """
     Load a frozen TensorFlow graph
     """
+    import tensorflow as tf
     with tf.gfile.GFile(graph_file, "rb") as f:
         graph_def = tf.GraphDef()
         graph_def.ParseFromString(f.read())
@@ -42,6 +36,14 @@ app.blackout_graph = load_graph("./blackout.pb")
 app.ocr_debug = os.environ.get("OCR_DEBUG", False)
 quality = ("720p", "720", "720p60", "720p60_alt", "best", "source")
 
+
+
+def make_session():
+    import tensorflow as tf
+    config = tf.ConfigProto(allow_soft_placement=True)
+    return tf.Session(config=config, graph=app.fortnite_graph)
+
+app.sess = make_session()
 
 async def get_stream(url):
     streams = streamlink_session.streams(url)
@@ -61,16 +63,16 @@ async def info(request):
 
 
 async def _process_image(model, image_data):
-    config = tf.ConfigProto(allow_soft_placement=True)
-    with tf.Session(graph=model, config=config) as sess:
-        img_pl = model.get_tensor_by_name("import/input_image_as_bytes:0")
-        input_feed = {img_pl: image_data}
-        output_feed = [
-            model.get_tensor_by_name("import/prediction:0"),
-            model.get_tensor_by_name("import/probability:0")
-        ]
+#with tf.Session(graph=model, config=config) as sess:
+    img_pl = model.get_tensor_by_name("import/input_image_as_bytes:0")
+    input_feed = {img_pl: image_data}
+    output_feed = [
+        model.get_tensor_by_name("import/prediction:0"),
+        model.get_tensor_by_name("import/probability:0")
+    ]
 
-        res = sess.run(output_feed, input_feed)
+    print(app.sess)
+    res = app.sess.run(output_feed, input_feed)
 
     try:
         number = int(res[0])
@@ -205,4 +207,5 @@ async def process_pubg(request):
 
 if __name__ == "__main__":
     cpus = len(os.sched_getaffinity(0))
+    cpus = 2
     app.run(host="0.0.0.0", port=3001, workers=cpus)
