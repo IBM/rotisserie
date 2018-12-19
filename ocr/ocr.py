@@ -4,6 +4,7 @@ import uuid
 import streamlink
 import subprocess
 import asyncio
+import tensorflow as tf
 
 from sanic import Sanic
 from sanic.response import json
@@ -199,5 +200,4 @@ async def process_pubg(request):
 
 if __name__ == "__main__":
     cpus = len(os.sched_getaffinity(0))
-    cpus = 2
     app.run(host="0.0.0.0", port=3001, workers=cpus)
