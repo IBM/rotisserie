@@ -23,9 +23,3 @@ fi
 
 echo "Validate version"
 curl -s http://localhost:3001/info | jq '.version' | grep -q -- '0.3'
-
-echo "Validate images/ocr"
-for image in tests/images/*; do
-	result=$(cut -d '_' -f2 <<< "${image%.*}")
-	test_image $image $result
-done
