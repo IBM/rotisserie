@@ -73,6 +73,7 @@ function listStreams(game, callback) {
     url: gameURL,
     headers: {
       "Client-ID": clientID,
+      "Accept": "application/vnd.twitchtv.v5+json",
     },
   };
 
