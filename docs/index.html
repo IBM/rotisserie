@@ -1,10 +1,30 @@
-<!doctype html>
-
-<html lang="en">
-<head>
-  <title>Rotisserie TV/title>
-</head>
-
-<body>
-</body>
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <title>Rotisserie</title>
+  </head>
+  <body>
+    <p>
+      <img src="screenshot" />
+    </p>
+    <section class="section__about" id="about">
+      Rotisserie was a web application created by IBM developer advocates.
+      It featured always exciting streams of Battle Royale style games.
+      Rotisserie was written in Node.js and Python. It worked by getting a
+      list of live streams from Twitch and then feeding screenshots to a
+      machine learning model to determine the number of people alive. This
+      page showed you the stream with the fewest remaining players alive in
+      their match. The application watched streams in the background and every
+      30 seconds would determine which had the fewest players alive.
+    </section>
+    <section class="section__contact" id="contact">
+      <div class="container__related">
+        <h2>Related links</h2>
+        <p>
+	  If you would like more information on how this application was built, check out <a href="https://developer.ibm.com/code/patterns/implement-computer-vision-playerunknowns-battlegrounds-live-streams/">IBM Code Pattern</a>
+	</p>
+      </div>
+    </section>
+  </body>
 </html>
