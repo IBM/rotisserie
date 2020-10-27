@@ -139,14 +139,14 @@ environment variables, set either by the user or a Kubernetes configuration:
 
 ```
 let clientID = process.env.clientID;
-let whitelist = process.env.ROTISSERIE_WHITELIST;
-let blacklist = process.env.ROTISSERIE_BLACKLIST;
+let allowlist = process.env.ROTISSERIE_ALLOWLIST;
+let blocklist = process.env.ROTISSERIE_BLOCKLIST;
 ```
 
 `clientID` is a secret obtained from Twitch corresponding to a single account.
-The `whitelist` and `blacklist` are lists of streams which the user has deemed
-to be fit or unfit for use in rotisserie. If a stream is on the whitelist, it
-will always be considered for use in rotisserie. If a stream is on the blacklist,
+The `allowlist` and `blocklist` are lists of streams which the user has deemed
+to be fit or unfit for use in rotisserie. If a stream is on the allowlist, it
+will always be considered for use in rotisserie. If a stream is on the blocklist,
 it will always be blocked from consideration for use in rotisserie. We will talk
 about why a stream might be deemed unfit for use later on.
 
@@ -196,9 +196,9 @@ because the user has to manually click a button saying they understand the strea
 has been flagged, which goes against the design of having an application which
 automatically switches between streams.
 
-If a whitelist is defined and there are matches between streams on the whitelist
+If a allowlist is defined and there are matches between streams on the allowlist
 and streams in the Twitch response, that list eventually becomes the list returned.
-If a blacklist is defined and there are matches between streams on the blacklist
+If a blocklist is defined and there are matches between streams on the blocklist
 and streams in the Twitch response, those streams are excluded from the returned
 list. The list of objects is then flitered down to just include display names of
 streams. This list is logged to the console and returned to `updateStreamsList()`.
@@ -208,16 +208,16 @@ bodyJSON = JSON.parse(body);
   allAgesStreams = bodyJSON.streams.filter(function(d) {
     return d.channel.mature === false;
   });
-  if (whitelist !== null && whitelist !== undefined) {
-    whitelist = whitelist.split(" ");
+  if (allowlist !== null && allowlist !== undefined) {
+    allowlist = allowlist.split(" ");
     allAgesStreams = allAgesStreams.filter(function(d) {
-      return whitelist.includes(d.channel.name);
+      return allowlist.includes(d.channel.name);
     });
   }
-  if (blacklist !== null && blacklist !== undefined) {
-    blacklist = blacklist.split(" ");
+  if (blocklist !== null && blocklist !== undefined) {
+    blocklist = blocklist.split(" ");
     allAgesStreams = allAgesStreams.filter(function(d) {
-      return !blacklist.includes(d.channel.name);
+      return !blocklist.includes(d.channel.name);
     });
   }
   usernameList = allAgesStreams.map(function(d) {

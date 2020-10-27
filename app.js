@@ -66,8 +66,8 @@ function ensureDir(dirPath) {
  */
 function listStreams(game, callback) {
   const clientID = process.env.clientID;
-  let whitelist = process.env.ROTISSERIE_WHITELIST;
-  let blacklist = process.env.ROTISSERIE_BLACKLIST;
+  let allowlist = process.env.ROTISSERIE_ALLOWLIST;
+  let blocklist = process.env.ROTISSERIE_BLOCKLIST;
   const gameURL = "https://api.twitch.tv/kraken/streams?game="+supportedGames[game]+"&language=en&stream_type=live&limit=50";
   const options = {
     url: gameURL,
@@ -92,16 +92,16 @@ function listStreams(game, callback) {
     allAgesStreams = bodyJSON.streams.filter(function(d) {
       return d.channel.mature === false;
     });
-    if (whitelist !== null && whitelist !== undefined) {
-      whitelist = whitelist.split(" ");
+    if (allowlist !== null && allowlist !== undefined) {
+      allowlist = allowlist.split(" ");
       allAgesStreams = allAgesStreams.filter(function(d) {
-        return whitelist.includes(d.channel.name);
+        return allowlist.includes(d.channel.name);
       });
     }
-    if (blacklist !== null && blacklist !== undefined) {
-      blacklist = blacklist.split(" ");
+    if (blocklist !== null && blocklist !== undefined) {
+      blocklist = blocklist.split(" ");
       allAgesStreams = allAgesStreams.filter(function(d) {
-        return !blacklist.includes(d.channel.name);
+        return !blocklist.includes(d.channel.name);
       });
     }
     usernameList = allAgesStreams.map(function(d) {
