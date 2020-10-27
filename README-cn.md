@@ -243,7 +243,7 @@ make purge
 注：这取决于是否是使用唯一 sha 进行部署。请参阅 Makefile 中的 make-rev 规则。在大多数情况下应可以使用 ``git pull; make roll``。如果滚动失败或应用程序因未连接到代码而失败，可能需要在重新滚动之前添加虚拟提交。请仅从主项滚动。
 
 ## 将直播加入白名单和黑名单
-要加入白名单，只需将名为 `ROTISSERIE_WHITELIST` 的环境变量设置为包含空格分隔的用户名的字符串。加入黑名单的过程与此相同，但使用的是环境变量 `ROTISSERIE_BLACKLIST`。
+要加入白名单，只需将名为 `ROTISSERIE_ALLOWLIST` 的环境变量设置为包含空格分隔的用户名的字符串。加入黑名单的过程与此相同，但使用的是环境变量 `ROTISSERIE_BLOCKLIST`。
 
 
 ## 许可
